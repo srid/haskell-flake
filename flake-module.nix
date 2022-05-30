@@ -99,7 +99,7 @@ in
               in
               rec {
                 package = mkProject { };
-                app = { program = package; };
+                app = { type = "app"; program = pkgs.lib.getExe package; };
                 devShell = mkProject { returnShellEnv = true; withHoogle = true; };
               }
             )
