@@ -42,7 +42,7 @@ in
                 default = {};
               };
               overrides = mkOption {
-                type = functionTo (functionTo (types.attrsOf raw));
+                type = functionTo (functionTo (types.lazyAttrsOf raw));
                 description = ''Overrides for the Cabal project'';
                 default = self: super: { };
               };
