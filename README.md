@@ -14,6 +14,7 @@ A [`flake-parts`](https://flake.parts/) Nix module for Haskell development.
       ];
       perSystem = { self', pkgs, ... }: {
         haskellProjects.default = {
+          root = ./.;
           buildTools = hp: {
             fourmolu = hp.fourmolu;
           };

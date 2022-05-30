@@ -39,7 +39,6 @@ in
               root = mkOption {
                 type = types.path;
                 description = ''Path to the Cabal project root'';
-                default = "${self}";
               };
               source-overrides = mkOption {
                 type = types.attrsOf types.path; 
