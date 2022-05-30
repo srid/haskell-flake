@@ -37,7 +37,7 @@ in
                 default = "${self}";
               };
               source-overrides = mkOption {
-                type = type.attrsOf types.path; 
+                type = types.attrsOf types.path; 
                 description = ''Package overrides given new source path'';
                 default = {};
               };
