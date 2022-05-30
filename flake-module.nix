@@ -87,7 +87,7 @@ in
                     inherit returnShellEnv withHoogle name;
                     inherit (cfg) root overrides;
                     modifier = drv:
-                      cfg.modifier (pkgs.haskell.lib.overrideCabal drv (oa: {
+                       (pkgs.haskell.lib.overrideCabal drv (oa: {
                         buildTools = (oa.buildTools or [ ]) ++ optionals returnShellEnv buildTools;
                       }));
                   };
