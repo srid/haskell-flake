@@ -31,6 +31,10 @@ in
                 '';
                 default = pkgs.haskellPackages;
               };
+              name = mkOption {
+                type = types.str;
+                description = ''Name of the cabal package ("foo" if foo.cabal)'';
+              };
               root = mkOption {
                 type = types.path;
                 description = ''Path to the Cabal project root'';
@@ -75,7 +79,7 @@ in
       let
         projects =
           lib.mapAttrs
-            (name: cfg:
+            (_key: cfg:
               let
                 inherit (pkgs.lib.lists) optionals;
                 hp = cfg.haskellPackages;
@@ -89,7 +93,7 @@ in
                 buildTools = lib.attrValues (defaultBuildTools // cfg.buildTools hp);
                 mkProject = { returnShellEnv ? false, withHoogle ? false }:
                   hp.developPackage {
-                    inherit returnShellEnv withHoogle name;
+                    inherit returnShellEnv withHoogle ;
                     inherit (cfg) root source-overrides overrides;
                     modifier = drv:
                       cfg.modifier (pkgs.haskell.lib.overrideCabal drv (oa: {
@@ -104,26 +108,20 @@ in
               }
             )
             config.haskellProjects;
-        # Inject a 'default' attr if the attrset is a singleton set.
-        withDefault = attrs:
-          let xs = lib.attrValues attrs; in
-          if builtins.length xs == 1
-          then attrs // { default = mkDefault (builtins.head xs); }
-          else attrs;
       in
       {
         packages =
-          withDefault (lib.mapAttrs
+          lib.mapAttrs
             (_: project: project.package)
-            projects);
+            projects;
         apps =
-          withDefault (lib.mapAttrs
+          lib.mapAttrs
             (_: project: project.app)
-            projects);
+            projects;
         devShells =
-          withDefault (lib.mapAttrs
+          lib.mapAttrs
             (_: project: project.devShell)
-            projects);
+            projects;
       };
   };
 }
