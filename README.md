@@ -5,6 +5,7 @@ A [`flake-parts`](https://flake.parts/) Nix module for Haskell development.
 ## Usage
 
 ```nix
+{
   outputs = { self, nixpkgs, flake-parts, haskell-flake, ... }:
     flake-parts.lib.mkFlake { inherit self; } {
       systems = nixpkgs.lib.systems.flakeExposed;
@@ -19,6 +20,7 @@ A [`flake-parts`](https://flake.parts/) Nix module for Haskell development.
         };
       };
     };
+}
 ```
 
 For full example, see https://github.com/srid/haskell-template/blob/master/flake.nix
