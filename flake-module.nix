@@ -75,7 +75,7 @@ in
                 inherit (pkgs.lib.lists) optionals;
                 hp = cfg.haskellPackages;
                 defaultBuildTools = with hp; {
-                  inherit
+                  inheri
                     cabal-install
                     haskell-language-server
                     ghcid
@@ -87,9 +87,9 @@ in
                     inherit returnShellEnv withHoogle name;
                     inherit (cfg) root overrides;
                     modifier = drv:
-                      cfg.modifier (pkgs.haskell.lib.overrideCabal (oa: {
+                      cfg.modifier (pkgs.haskell.lib.overrideCabal drv (oa: {
                         buildTools = (oa.buildTools or [ ]) ++ optionals returnShellEnv buildTools;
-                      }) drv);
+                      }));
                   };
               in
               rec {
