@@ -75,7 +75,7 @@ in
                 inherit (pkgs.lib.lists) optionals;
                 hp = cfg.haskellPackages;
                 defaultBuildTools = with hp; {
-                  inheri
+                  inherit
                     cabal-install
                     haskell-language-server
                     ghcid
