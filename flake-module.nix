@@ -85,12 +85,11 @@ in
                 mkProject = { returnShellEnv ? false, withHoogle ? false }:
                   hp.developPackage {
                     inherit returnShellEnv withHoogle name;
-                    inherit (cfg) root;
-                    overrides = self: super: cfg.overrides self super;
+                    inherit (cfg) root overrides;
                     modifier = drv:
-                      cfg.modifier (pkgs.haskell.lib.overrideCabal drv (oa: {
+                      cfg.modifier (pkgs.haskell.lib.overrideCabal (oa: {
                         buildTools = (oa.buildTools or [ ]) ++ optionals returnShellEnv buildTools;
-                      }));
+                      }) drv);
                   };
               in
               rec {
