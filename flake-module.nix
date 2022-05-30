@@ -34,6 +34,7 @@ in
               name = mkOption {
                 type = types.str;
                 description = ''Name of the cabal package ("foo" if foo.cabal)'';
+                default = "";
               };
               root = mkOption {
                 type = types.path;
@@ -94,7 +95,7 @@ in
                 mkProject = { returnShellEnv ? false, withHoogle ? false }:
                   hp.developPackage {
                     inherit returnShellEnv withHoogle ;
-                    inherit (cfg) root source-overrides overrides;
+                    inherit (cfg) root name source-overrides overrides;
                     modifier = drv:
                       cfg.modifier (pkgs.haskell.lib.overrideCabal drv (oa: {
                         buildTools = (oa.buildTools or [ ]) ++ optionals returnShellEnv buildTools;
