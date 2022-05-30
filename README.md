@@ -23,4 +23,7 @@ A [`flake-parts`](https://flake.parts/) Nix module for Haskell development.
 }
 ```
 
-For full example, see https://github.com/srid/haskell-template/blob/master/flake.nix
+## Examples
+
+- Simple: https://github.com/srid/haskell-template/blob/master/flake.nix
+- Complex: https://github.com/srid/emanote/blob/master/flake.nix
