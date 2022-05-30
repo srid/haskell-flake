@@ -86,7 +86,7 @@ in
                   hp.developPackage {
                     inherit returnShellEnv withHoogle name;
                     inherit (cfg) root;
-                    overrides = self: super: overrides self super;
+                    overrides = self: super: cfg.overrides self super;
                     modifier = drv:
                       cfg.modifier (pkgs.haskell.lib.overrideCabal drv (oa: {
                         buildTools = (oa.buildTools or [ ]) ++ optionals returnShellEnv buildTools;
