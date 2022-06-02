@@ -111,6 +111,7 @@ in
             config.haskellProjects;
       in
       {
+        # TODO: Refactor this for DRY
         packages =
           lib.mapAttrs
             (_: project: project.package)
@@ -122,6 +123,14 @@ in
         devShells =
           lib.mapAttrs
             (_: project: project.devShell)
+            projects;
+        overrides =
+          lib.mapAttrs
+            (_: project: project.overrides)
+            projects;
+        source-overrides =
+          lib.mapAttrs
+            (_: project: project.source-overrides)
             projects;
       };
   };
