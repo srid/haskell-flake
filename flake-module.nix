@@ -105,6 +105,7 @@ in
                 package = mkProject { };
                 app = { type = "app"; program = pkgs.lib.getExe package; };
                 devShell = mkProject { returnShellEnv = true; withHoogle = true; };
+                inherit (cfg) overrides source-overrides;
               }
             )
             config.haskellProjects;
