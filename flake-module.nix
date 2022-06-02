@@ -105,7 +105,7 @@ in
                 package = mkProject { };
                 app = { type = "app"; program = pkgs.lib.getExe package; };
                 devShell = mkProject { returnShellEnv = true; withHoogle = true; };
-                inherit (cfg) overrides source-overrides;
+                inherit cfg;
               }
             )
             config.haskellProjects;
@@ -126,11 +126,11 @@ in
             projects;
         overrides =
           lib.mapAttrs
-            (_: project: project.overrides)
+            (_: project: project.cfg.overrides)
             projects;
         source-overrides =
           lib.mapAttrs
-            (_: project: project.source-overrides)
+            (_: project: project.cfg.source-overrides)
             projects;
       };
   };
