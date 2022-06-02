@@ -124,14 +124,16 @@ in
           lib.mapAttrs
             (_: project: project.devShell)
             projects;
-        overrides =
-          lib.mapAttrs
-            (_: project: project.cfg.overrides)
-            projects;
-        source-overrides =
-          lib.mapAttrs
-            (_: project: project.cfg.source-overrides)
-            projects;
+        lib = {
+          overrides =
+            lib.mapAttrs
+              (_: project: project.cfg.overrides)
+                projects;
+          source-overrides =
+            lib.mapAttrs
+              (_: project: project.cfg.source-overrides)
+              projects;
+        };
       };
   };
 }
