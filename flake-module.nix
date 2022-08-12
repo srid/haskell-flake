@@ -45,9 +45,9 @@ in
                 description = ''Path to the Cabal project root'';
               };
               source-overrides = mkOption {
-                type = types.attrsOf types.path; 
+                type = types.attrsOf types.path;
                 description = ''Package overrides given new source path'';
-                default = {};
+                default = { };
               };
               overrides = mkOption {
                 type = functionTo (functionTo (types.lazyAttrsOf raw));
@@ -97,7 +97,7 @@ in
                 buildTools = lib.attrValues (defaultBuildTools // cfg.buildTools hp);
                 mkProject = { returnShellEnv ? false, withHoogle ? false }:
                   hp.developPackage {
-                    inherit returnShellEnv withHoogle ;
+                    inherit returnShellEnv withHoogle;
                     inherit (cfg) root name source-overrides overrides;
                     modifier = drv:
                       cfg.modifier (pkgs.haskell.lib.overrideCabal drv (oa: {
