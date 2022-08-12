@@ -24,11 +24,15 @@ in
               haskellPackages = mkOption {
                 type = types.attrsOf raw;
                 description = ''
-                  Which Haskell package set to use
+                  Which Haskell package set / compiler to use.
 
-                  You can effectively select the GHC version here. To get the appropriate value, run:
+                  You can effectively select the GHC version here. 
+                  
+                  To get the appropriate value, run:
                     nix-env -f "<nixpkgs>" -qaP -A haskell.compiler
+                  And that use that in `pkgs.haskell.packages.ghc<version>`
                 '';
+                example = "pkgs.haskell.packages.ghc924";
                 default = pkgs.haskellPackages;
               };
               name = mkOption {

@@ -39,4 +39,6 @@ https://github.com/srid/haskell-template
 - Simple
   - https://github.com/srid/haskell-template/blob/master/flake.nix
   - https://github.com/fpindia/fpindia-site/blob/master/flake.nix
-- Complex: https://github.com/srid/emanote/blob/master/flake.nix
+- Complex: 
+  - https://github.com/srid/emanote/blob/master/flake.nix
+  - https://github.com/srid/ema/blob/master/flake.nix
