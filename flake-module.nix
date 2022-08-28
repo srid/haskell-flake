@@ -75,8 +75,17 @@ in
               };
               enableHLSCheck = mkOption {
                 type = types.bool;
-                description = ''Whether to enable a flake check to verify if HLS works (equivalent of `nix develop -i -c haskell-language-server`).'';
-                default = true;
+                description = ''
+                  Whether to enable a flake check to verify that HLS works.
+                  
+                  This is equivalent to `nix develop -i -c haskell-language-server`.
+
+                  Note that, HLS will try to access the network through Cabal (see 
+                  https://github.com/haskell/haskell-language-server/issues/3128),
+                  therefore sandboxing must be disabled when evaluating this
+                  check.
+                '';
+                default = false;
               };
             };
           });
