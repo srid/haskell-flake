@@ -140,7 +140,7 @@ in
                 app = { type = "app"; program = pkgs.lib.getExe package; };
                 devShell = mkProject { returnShellEnv = true; withHoogle = true; };
                 checks =
-                  if enableCheckHls then {
+                  lib.optionalAttrs enableCheckHls {
                     "${projectKey}-hls" =
                       runCommandInSimulatedShell
                         devShell
@@ -149,7 +149,7 @@ in
                         ''
                           haskell-language-server > $out
                         '';
-                  } else { };
+                  };
               }
             )
             config.haskellProjects;
