@@ -73,6 +73,11 @@ in
                 default = hp: { };
                 defaultText = ''Build tools useful for Haskell development are included by default.'';
               };
+              enableHLSCheck = mkOption {
+                type = types.bool;
+                description = ''Whether to enable a flake check to verify if HLS works (equivalent of `nix develop -i -c haskell-language-server`).'';
+                default = true;
+              };
             };
           });
         };
@@ -81,9 +86,27 @@ in
   config = {
     perSystem = { config, self', inputs', pkgs, ... }:
       let
+        # Like pkgs.runCommand but runs inside nix-shell with a mutable project directory.
+        #
+        # It currenty respects only the nativeBuildInputs (and no shellHook for
+        # instance), which seems sufficient for our purposes. We also set $HOME and
+        # make the project root mutable, because those are expected when running
+        # something in a project shell (it is indeed the case with HLS).
+        runCommandInSimulatedShell = devShell: projectRoot: name: attrs: command:
+          pkgs.runCommand name (attrs // { nativeBuildInputs = devShell.nativeBuildInputs; })
+            ''
+              # Copy project root to a mutable area
+              # We expect "command" to mutate it.
+              export HOME=$TMP
+              cp -R ${projectRoot} $HOME/project
+              chmod -R a+w $HOME/project
+              pushd $HOME/project
+
+              ${command}
+            '';
         projects =
           lib.mapAttrs
-            (_key: cfg:
+            (projectKey: cfg:
               let
                 inherit (pkgs.lib.lists) optionals;
                 hp = cfg.haskellPackages;
@@ -94,7 +117,8 @@ in
                     ghcid
                     hlint;
                 };
-                buildTools = lib.attrValues (defaultBuildTools // cfg.buildTools hp);
+                buildTools' = defaultBuildTools // cfg.buildTools hp;
+                buildTools = lib.attrValues buildTools';
                 mkProject = { returnShellEnv ? false, withHoogle ? false }:
                   hp.developPackage {
                     inherit returnShellEnv withHoogle;
@@ -109,6 +133,17 @@ in
                 package = mkProject { };
                 app = { type = "app"; program = pkgs.lib.getExe package; };
                 devShell = mkProject { returnShellEnv = true; withHoogle = true; };
+                checks =
+                  lib.optionalAttrs cfg.enableHLSCheck {
+                    "${projectKey}-hls" =
+                      runCommandInSimulatedShell
+                        devShell
+                        cfg.root "${projectKey}-hls-check"
+                        { }
+                        ''
+                          haskell-language-server > $out
+                        '';
+                  };
               }
             )
             config.haskellProjects;
@@ -122,6 +157,11 @@ in
           lib.mapAttrs
             (_: project: project.app)
             projects;
+        checks =
+          lib.mkMerge
+            (lib.mapAttrsToList
+              (_: project: project.checks)
+              projects);
         devShells =
           lib.mapAttrs
             (_: project: project.devShell)
