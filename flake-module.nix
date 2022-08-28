@@ -95,7 +95,7 @@ in
         # make the project root mutable, because those are expected when running
         # something in a project shell (it is indeed the case with HLS).
         runCommandInNixShell = devShell: projectRoot: name: attrs: command:
-          pkgs.runCommand name (attrs // { buildInputs = devShell.nativeBuildInputs; })
+          pkgs.runCommand name (attrs // { nativeBuildInputs = devShell.nativeBuildInputs; })
             ''
               # Copy project root to a mutable area
               # We expect "command" to mutate it.
