@@ -104,7 +104,7 @@ in
               chmod -R a+w $HOME/project
               pushd $HOME/project
 
-              ${command} > $out
+              ${command}
             '';
         projects =
           lib.mapAttrs
@@ -147,7 +147,7 @@ in
                         cfg.root "${projectKey}-hls-check"
                         { }
                         ''
-                          haskell-language-server
+                          haskell-language-server > $out
                         '';
                   } else { };
               }
