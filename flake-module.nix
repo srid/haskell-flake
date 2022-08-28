@@ -74,10 +74,9 @@ in
                 defaultText = ''Build tools useful for Haskell development are included by default.'';
               };
               enableHLSCheck = mkOption {
-                type = types.nullOr types.bool;
-                description = ''Whether to enable a flake check to verify if HLS works.'';
-                default = null;
-                defaultText = ''A 'null' value means the check is automatically enabled if buildTools has HLS specified.'';
+                type = types.bool;
+                description = ''Whether to enable a flake check to verify if HLS works (equivalent of `nix develop -i -c haskell-language-server`).'';
+                default = true;
               };
             };
           });
@@ -129,17 +128,13 @@ in
                         buildTools = (oa.buildTools or [ ]) ++ optionals returnShellEnv buildTools;
                       }));
                   };
-                enableHLSCheck =
-                  if cfg.enableHLSCheck == null
-                  then lib.attrByPath [ "haskell-language-server" ] null buildTools' != null
-                  else cfg.enableHLSCheck;
               in
               rec {
                 package = mkProject { };
                 app = { type = "app"; program = pkgs.lib.getExe package; };
                 devShell = mkProject { returnShellEnv = true; withHoogle = true; };
                 checks =
-                  lib.optionalAttrs enableHLSCheck {
+                  lib.optionalAttrs cfg.enableHLSCheck {
                     "${projectKey}-hls" =
                       runCommandInSimulatedShell
                         devShell
