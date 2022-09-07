@@ -119,29 +119,33 @@ in
               let
                 inherit (pkgs.lib.lists) optionals;
                 hp = cfg.haskellPackages;
-                defaultBuildTools = with hp; {
+                hpExtended = hp.extend
+                    (pkgs.lib.composeExtensions
+                      (pkgs.haskell.lib.packageSourceOverrides cfg.source-overrides)
+                      cfg.overrides);
+                # Like `developPackage` but returns the original derivation for maximum control.
+                developPackageDrv = { name, root, source-overrides, overrides, cabal2nixOptions ? "" }:
+                  hpExtended.callCabal2nixWithOptions name
+                    root
+                    cabal2nixOptions
+                    { };
+                defaultBuildTools = with hpExtended; {
                   inherit
                     cabal-install
                     haskell-language-server
                     ghcid
                     hlint;
                 };
-                buildTools' = defaultBuildTools // cfg.buildTools hp;
+                buildTools' = defaultBuildTools // cfg.buildTools hpExtended;
                 buildTools = lib.attrValues buildTools';
-                mkProject = { returnShellEnv ? false, withHoogle ? false }:
-                  hp.developPackage {
-                    inherit returnShellEnv withHoogle;
-                    inherit (cfg) root name source-overrides overrides;
-                    modifier = drv:
-                      cfg.modifier (pkgs.haskell.lib.overrideCabal drv (oa: {
-                        buildTools = (oa.buildTools or [ ]) ++ optionals returnShellEnv buildTools;
-                      }));
-                  };
+                projectDrv = cfg.modifier (developPackageDrv { inherit (cfg) name root source-overrides overrides; });
               in
               rec {
-                package = mkProject { };
+                package = projectDrv;
                 app = { type = "app"; program = pkgs.lib.getExe package; };
-                devShell = mkProject { returnShellEnv = true; withHoogle = true; };
+                devShell = (pkgs.haskell.lib.overrideCabal projectDrv (oa: {
+                  buildTools = (oa.buildTools or [ ]) ++ buildTools;
+                })).envFunc { withHoogle = true; };
                 checks =
                   lib.optionalAttrs cfg.enableHLSCheck {
                     "${projectKey}-hls" =
