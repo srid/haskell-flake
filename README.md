@@ -28,7 +28,7 @@ To keep `flake.nix` smaller (eg.: going from this [91-line flake.nix](https://gi
 }
 ```
 
-See [`flake-module.nix` -> `options`](flake-module.nix) for a list of options available. Uses [`developPackage`](https://github.com/NixOS/nixpkgs/blob/f1c167688a6f81f4a51ab542e5f476c8c595e457/pkgs/development/haskell-modules/make-package-set.nix#L245) under the hood, but see [#7](https://github.com/srid/haskell-flake/issues/7) for future improvements.
+See [`flake-module.nix` -> `options`](flake-module.nix) for a list of options available. Uses [`callCabal2nixWithOptions`](https://github.com/NixOS/nixpkgs/blob/f1c167688a6f81f4a51ab542e5f476c8c595e457/pkgs/development/haskell-modules/make-package-set.nix#L245) under the hood.  See [#7](https://github.com/srid/haskell-flake/issues/7) for future improvements.
 
 ## Template
 

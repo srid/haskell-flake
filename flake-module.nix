@@ -118,30 +118,27 @@ in
             (projectKey: cfg:
               let
                 inherit (pkgs.lib.lists) optionals;
-                hp = cfg.haskellPackages;
-                defaultBuildTools = with hp; {
+                # Apply user provided source-overrides and overrides to
+                # `cfg.haskellPackages`.
+                hp = cfg.haskellPackages.extend
+                  (pkgs.lib.composeExtensions
+                    (pkgs.haskell.lib.packageSourceOverrides cfg.source-overrides)
+                    cfg.overrides);
+                defaultBuildTools = hp: with hp; {
                   inherit
                     cabal-install
                     haskell-language-server
                     ghcid
                     hlint;
                 };
-                buildTools' = defaultBuildTools // cfg.buildTools hp;
-                buildTools = lib.attrValues buildTools';
-                mkProject = { returnShellEnv ? false, withHoogle ? false }:
-                  hp.developPackage {
-                    inherit returnShellEnv withHoogle;
-                    inherit (cfg) root name source-overrides overrides;
-                    modifier = drv:
-                      cfg.modifier (pkgs.haskell.lib.overrideCabal drv (oa: {
-                        buildTools = (oa.buildTools or [ ]) ++ optionals returnShellEnv buildTools;
-                      }));
-                  };
+                buildTools = lib.attrValues (defaultBuildTools hp // cfg.buildTools hp);
+                package = cfg.modifier (hp.callCabal2nixWithOptions cfg.name cfg.root "" { });
               in
               rec {
-                package = mkProject { };
+                inherit package;
                 app = { type = "app"; program = pkgs.lib.getExe package; };
-                devShell = mkProject { returnShellEnv = true; withHoogle = true; };
+                devShell = with pkgs.haskell.lib;
+                  (addBuildTools package buildTools).envFunc { withHoogle = true; };
                 checks =
                   lib.optionalAttrs cfg.enableHLSCheck {
                     "${projectKey}-hls" =
