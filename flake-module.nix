@@ -137,9 +137,8 @@ in
               rec {
                 inherit package;
                 app = { type = "app"; program = pkgs.lib.getExe package; };
-                devShell = (pkgs.haskell.lib.overrideCabal package (oa: {
-                  buildTools = (oa.buildTools or [ ]) ++ buildTools;
-                })).envFunc { withHoogle = true; };
+                devShell = with pkgs.haskell.lib;
+                  (addBuildTools package buildTools).envFunc { withHoogle = true; };
                 checks =
                   lib.optionalAttrs cfg.enableHLSCheck {
                     "${projectKey}-hls" =
