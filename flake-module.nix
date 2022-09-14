@@ -118,32 +118,26 @@ in
             (projectKey: cfg:
               let
                 inherit (pkgs.lib.lists) optionals;
-                hp = cfg.haskellPackages;
-                hpExtended = hp.extend
-                    (pkgs.lib.composeExtensions
-                      (pkgs.haskell.lib.packageSourceOverrides cfg.source-overrides)
-                      cfg.overrides);
-                # Like `developPackage` but returns the original derivation for maximum control.
-                developPackageDrv = { name, root, source-overrides, overrides, cabal2nixOptions ? "" }:
-                  hpExtended.callCabal2nixWithOptions name
-                    root
-                    cabal2nixOptions
-                    { };
-                defaultBuildTools = with hpExtended; {
+                # Apply user provided source-overrides and overrides to
+                # `cfg.haskellPackages`.
+                hp = cfg.haskellPackages.extend
+                  (pkgs.lib.composeExtensions
+                    (pkgs.haskell.lib.packageSourceOverrides cfg.source-overrides)
+                    cfg.overrides);
+                defaultBuildTools = hp: with hp; {
                   inherit
                     cabal-install
                     haskell-language-server
                     ghcid
                     hlint;
                 };
-                buildTools' = defaultBuildTools // cfg.buildTools hpExtended;
-                buildTools = lib.attrValues buildTools';
-                projectDrv = cfg.modifier (developPackageDrv { inherit (cfg) name root source-overrides overrides; });
+                buildTools = lib.attrValues (defaultBuildTools hp // cfg.buildTools hp);
+                package = cfg.modifier (hp.callCabal2nixWithOptions cfg.name cfg.root "" { });
               in
               rec {
-                package = projectDrv;
+                inherit package;
                 app = { type = "app"; program = pkgs.lib.getExe package; };
-                devShell = (pkgs.haskell.lib.overrideCabal projectDrv (oa: {
+                devShell = (pkgs.haskell.lib.overrideCabal package (oa: {
                   buildTools = (oa.buildTools or [ ]) ++ buildTools;
                 })).envFunc { withHoogle = true; };
                 checks =
