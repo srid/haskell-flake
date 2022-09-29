@@ -87,6 +87,22 @@ in
                 '';
                 default = false;
               };
+              hlintCheck = mkOption {
+                type = types.submodule {
+                  options = {
+                    enable = mkOption {
+                      type = types.bool;
+                      description = "Check whether hlint is enabled";
+                      default = false;  
+                    };
+                    dirs = mkOption {
+                      type = types.listOf types.str;
+                      description = "Directories that should be checked with hlint";
+                      default = [];
+                    };
+                  };
+                };
+              };
             };
           });
         };
@@ -104,8 +120,12 @@ in
         runCommandInSimulatedShell = devShell: projectRoot: name: attrs: command:
           pkgs.runCommand name (attrs // { nativeBuildInputs = devShell.nativeBuildInputs; })
             ''
+              # Set pipefail option for safer bash
+              set -euxo pipefail
+
               # Copy project root to a mutable area
               # We expect "command" to mutate it.
+              
               export HOME=$TMP
               cp -R ${projectRoot} $HOME/project
               chmod -R a+w $HOME/project
@@ -140,7 +160,7 @@ in
                 devShell = with pkgs.haskell.lib;
                   (addBuildTools package buildTools).envFunc { withHoogle = true; };
                 checks =
-                  lib.optionalAttrs cfg.enableHLSCheck {
+                  (lib.optionalAttrs cfg.enableHLSCheck {
                     "${projectKey}-hls" =
                       runCommandInSimulatedShell
                         devShell
@@ -149,7 +169,25 @@ in
                         ''
                           haskell-language-server > $out
                         '';
-                  };
+                  }) // (
+                    lib.optionalAttrs cfg.hlintCheck.enable {
+                      "${projectKey}-hlint" =
+                        runCommandInSimulatedShell
+                          devShell
+                          cfg.root "${projectKey}-hlint-check"
+                          { buildInputs = [ pkgs.coreutils ]; }
+                          (
+                            let
+                              dirs = cfg.hlintCheck.dirs;
+                              defaultCmd = ''
+                                $(find . -name \*.hs | awk -F "/" '{print $2}')
+                              '';
+                            in ''
+                              hlint ${if dirs == [] then defaultCmd else lib.concatStringsSep " " dirs}
+                            ''
+                          );
+                    }
+                  );
               }
             )
             config.haskellProjects;
