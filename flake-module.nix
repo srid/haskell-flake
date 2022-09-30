@@ -73,19 +73,42 @@ in
                 default = hp: { };
                 defaultText = ''Build tools useful for Haskell development are included by default.'';
               };
-              enableHLSCheck = mkOption {
-                type = types.bool;
-                description = ''
-                  Whether to enable a flake check to verify that HLS works.
+              hlsCheck = mkOption {
+                type = types.submodule {
+                  options = {
+                    enable = mkOption {
+                      type = types.bool;
+                      description = ''
+                        Whether to enable a flake check to verify that HLS works.
                   
-                  This is equivalent to `nix develop -i -c haskell-language-server`.
+                        This is equivalent to `nix develop -i -c haskell-language-server`.
 
-                  Note that, HLS will try to access the network through Cabal (see 
-                  https://github.com/haskell/haskell-language-server/issues/3128),
-                  therefore sandboxing must be disabled when evaluating this
-                  check.
-                '';
-                default = false;
+                        Note that, HLS will try to access the network through Cabal (see 
+                        https://github.com/haskell/haskell-language-server/issues/3128),
+                        therefore sandboxing must be disabled when evaluating this
+                        check.
+                      '';
+                      default = false;
+                    };
+
+                  };
+                };
+              };
+              hlintCheck = mkOption {
+                type = types.submodule {
+                  options = {
+                    enable = mkOption {
+                      type = types.bool;
+                      description = "Whether to add a flake check to run hlint";
+                      default = false;
+                    };
+                    dirs = mkOption {
+                      type = types.listOf types.str;
+                      description = "Relative path strings from `root` to directories that should be checked with hlint";
+                      default = [ "." ];
+                    };
+                  };
+                };
               };
             };
           });
@@ -104,6 +127,9 @@ in
         runCommandInSimulatedShell = devShell: projectRoot: name: attrs: command:
           pkgs.runCommand name (attrs // { nativeBuildInputs = devShell.nativeBuildInputs; })
             ''
+              # Set pipefail option for safer bash
+              set -euo pipefail
+
               # Copy project root to a mutable area
               # We expect "command" to mutate it.
               export HOME=$TMP
@@ -112,6 +138,7 @@ in
               pushd $HOME/project
 
               ${command}
+              touch $out
             '';
         projects =
           lib.mapAttrs
@@ -133,22 +160,26 @@ in
                 };
                 buildTools = lib.attrValues (defaultBuildTools hp // cfg.buildTools hp);
                 package = cfg.modifier (hp.callCabal2nixWithOptions cfg.name cfg.root "" { });
-              in
-              rec {
-                inherit package;
-                app = { type = "app"; program = pkgs.lib.getExe package; };
                 devShell = with pkgs.haskell.lib;
                   (addBuildTools package buildTools).envFunc { withHoogle = true; };
-                checks =
-                  lib.optionalAttrs cfg.enableHLSCheck {
+                devShellCheck = name: command:
+                  runCommandInSimulatedShell devShell cfg.root "${projectKey}-${name}-check" { } command;
+              in
+              rec {
+                inherit package devShell;
+                app = { type = "app"; program = pkgs.lib.getExe package; };
+                checks = lib.filterAttrs (_: v: v != null)
+                  {
                     "${projectKey}-hls" =
-                      runCommandInSimulatedShell
-                        devShell
-                        cfg.root "${projectKey}-hls-check"
-                        { }
+                      if cfg.hlsCheck.enable then
+                        devShellCheck "hls" "haskell-language-server"
+                      else null;
+                    "${projectKey}-hlint" =
+                      if cfg.hlintCheck.enable then
+                        devShellCheck "hlint" ''
+                          hlint ${lib.concatStringsSep " " cfg.hlintCheck.dirs}
                         ''
-                          haskell-language-server > $out
-                        '';
+                      else null;
                   };
               }
             )
