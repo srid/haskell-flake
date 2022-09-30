@@ -168,16 +168,19 @@ in
               rec {
                 inherit package devShell;
                 app = { type = "app"; program = pkgs.lib.getExe package; };
-                checks =
-                  (lib.optionalAttrs cfg.hlsCheck.enable {
-                    "${projectKey}-hls" = devShellCheck "hls" "haskell-language-server";
-                  }) // (
-                    lib.optionalAttrs cfg.hlintCheck.enable {
-                      "${projectKey}-hlint" = devShellCheck "hlint" ''
-                        hlint ${lib.concatStringsSep " " cfg.hlintCheck.dirs}
-                      '';
-                    }
-                  );
+                checks = lib.filterAttrs (_: v: v != null)
+                  {
+                    "${projectKey}-hls" =
+                      if cfg.hlsCheck.enable then
+                        devShellCheck "hls" "haskell-language-server"
+                      else null;
+                    "${projectKey}-hlint" =
+                      if cfg.hlintCheck.enable then
+                        devShellCheck "hlint" ''
+                          hlint ${lib.concatStringsSep " " cfg.hlintCheck.dirs}
+                        ''
+                      else null;
+                  };
               }
             )
             config.haskellProjects;
