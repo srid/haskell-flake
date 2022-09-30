@@ -73,19 +73,26 @@ in
                 default = hp: { };
                 defaultText = ''Build tools useful for Haskell development are included by default.'';
               };
-              enableHLSCheck = mkOption {
-                type = types.bool;
-                description = ''
-                  Whether to enable a flake check to verify that HLS works.
+              hlsCheck = mkOption {
+                type = types.submodule {
+                  options = {
+                    enable = mkOption {
+                      type = types.bool;
+                      description = ''
+                        Whether to enable a flake check to verify that HLS works.
                   
-                  This is equivalent to `nix develop -i -c haskell-language-server`.
+                        This is equivalent to `nix develop -i -c haskell-language-server`.
 
-                  Note that, HLS will try to access the network through Cabal (see 
-                  https://github.com/haskell/haskell-language-server/issues/3128),
-                  therefore sandboxing must be disabled when evaluating this
-                  check.
-                '';
-                default = false;
+                        Note that, HLS will try to access the network through Cabal (see 
+                        https://github.com/haskell/haskell-language-server/issues/3128),
+                        therefore sandboxing must be disabled when evaluating this
+                        check.
+                      '';
+                      default = false;
+                    };
+
+                  };
+                };
               };
               hlintCheck = mkOption {
                 type = types.submodule {
@@ -162,7 +169,7 @@ in
                 inherit package devShell;
                 app = { type = "app"; program = pkgs.lib.getExe package; };
                 checks =
-                  (lib.optionalAttrs cfg.enableHLSCheck {
+                  (lib.optionalAttrs cfg.hlsCheck.enable {
                     "${projectKey}-hls" = devShellCheck "hls" "haskell-language-server";
                   }) // (
                     lib.optionalAttrs cfg.hlintCheck.enable {
