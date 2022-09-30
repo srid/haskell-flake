@@ -154,34 +154,22 @@ in
                 };
                 buildTools = lib.attrValues (defaultBuildTools hp // cfg.buildTools hp);
                 package = cfg.modifier (hp.callCabal2nixWithOptions cfg.name cfg.root "" { });
-              in
-              rec {
-                inherit package;
-                app = { type = "app"; program = pkgs.lib.getExe package; };
                 devShell = with pkgs.haskell.lib;
                   (addBuildTools package buildTools).envFunc { withHoogle = true; };
+                devShellCheck = name: command:
+                  runCommandInSimulatedShell devShell cfg.root "${projectKey}-${name}-check" { } command;
+              in
+              rec {
+                inherit package devShell;
+                app = { type = "app"; program = pkgs.lib.getExe package; };
                 checks =
                   (lib.optionalAttrs cfg.enableHLSCheck {
-                    "${projectKey}-hls" =
-                      runCommandInSimulatedShell
-                        devShell
-                        cfg.root "${projectKey}-hls-check"
-                        { }
-                        ''
-                          haskell-language-server
-                        '';
+                    "${projectKey}-hls" = devShellCheck "hls" "haskell-language-server";
                   }) // (
                     lib.optionalAttrs cfg.hlintCheck.enable {
-                      "${projectKey}-hlint" =
-                        runCommandInSimulatedShell
-                          devShell
-                          cfg.root
-                          "${projectKey}-hlint-check"
-                          { }
-                          ''
-                            hlint ${lib.concatStringsSep " " cfg.hlintCheck.dirs}
-                          ''
-                      ;
+                      "${projectKey}-hlint" = devShellCheck "hlint" ''
+                        hlint ${lib.concatStringsSep " " cfg.hlintCheck.dirs}
+                      '';
                     }
                   );
               }
