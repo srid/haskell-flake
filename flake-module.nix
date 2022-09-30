@@ -178,6 +178,7 @@ in
                           { buildInputs = [ pkgs.coreutils ]; }
                           ''
                             hlint ${lib.concatStringsSep " " cfg.hlintCheck.dirs}
+                            touch $out
                           ''
                       ;
                     }
