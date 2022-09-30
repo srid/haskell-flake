@@ -121,7 +121,7 @@ in
           pkgs.runCommand name (attrs // { nativeBuildInputs = devShell.nativeBuildInputs; })
             ''
               # Set pipefail option for safer bash
-              set -euxo pipefail
+              set -euo pipefail
 
               # Copy project root to a mutable area
               # We expect "command" to mutate it.
