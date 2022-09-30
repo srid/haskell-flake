@@ -132,6 +132,7 @@ in
               pushd $HOME/project
 
               ${command}
+              touch $out
             '';
         projects =
           lib.mapAttrs
@@ -168,7 +169,6 @@ in
                         { }
                         ''
                           haskell-language-server
-                          touch $out
                         '';
                   }) // (
                     lib.optionalAttrs cfg.hlintCheck.enable {
@@ -180,7 +180,6 @@ in
                           { }
                           ''
                             hlint ${lib.concatStringsSep " " cfg.hlintCheck.dirs}
-                            touch $out
                           ''
                       ;
                     }
