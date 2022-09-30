@@ -92,7 +92,7 @@ in
                   options = {
                     enable = mkOption {
                       type = types.bool;
-                      description = "Check whether hlint is enabled";
+                      description = "Whether to add a flake check to run hlint";
                       default = false;
                     };
                     dirs = mkOption {
@@ -125,7 +125,6 @@ in
 
               # Copy project root to a mutable area
               # We expect "command" to mutate it.
-              
               export HOME=$TMP
               cp -R ${projectRoot} $HOME/project
               chmod -R a+w $HOME/project
