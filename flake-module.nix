@@ -167,7 +167,8 @@ in
                         cfg.root "${projectKey}-hls-check"
                         { }
                         ''
-                          haskell-language-server > $out
+                          haskell-language-server
+                          touch $out
                         '';
                   }) // (
                     lib.optionalAttrs cfg.hlintCheck.enable {
