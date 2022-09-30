@@ -93,12 +93,12 @@ in
                     enable = mkOption {
                       type = types.bool;
                       description = "Check whether hlint is enabled";
-                      default = false;  
+                      default = false;
                     };
                     dirs = mkOption {
                       type = types.listOf types.str;
                       description = "Directories that should be checked with hlint";
-                      default = [];
+                      default = [ "." ];
                     };
                   };
                 };
@@ -176,16 +176,10 @@ in
                           devShell
                           cfg.root "${projectKey}-hlint-check"
                           { buildInputs = [ pkgs.coreutils ]; }
-                          (
-                            let
-                              dirs = cfg.hlintCheck.dirs;
-                              defaultCmd = ''
-                                $(find . -name \*.hs | awk -F "/" '{print $2}')
-                              '';
-                            in ''
-                              hlint ${if dirs == [] then defaultCmd else lib.concatStringsSep " " dirs}
-                            ''
-                          );
+                          ''
+                            hlint ${lib.concatStringsSep " " cfg.hlintCheck.dirs}
+                          ''
+                      ;
                     }
                   );
               }
