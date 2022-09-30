@@ -97,7 +97,7 @@ in
                     };
                     dirs = mkOption {
                       type = types.listOf types.str;
-                      description = "Directories that should be checked with hlint";
+                      description = "Relative path strings from `root` to directories that should be checked with hlint";
                       default = [ "." ];
                     };
                   };
