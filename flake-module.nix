@@ -174,7 +174,8 @@ in
                       "${projectKey}-hlint" =
                         runCommandInSimulatedShell
                           devShell
-                          cfg.root "${projectKey}-hlint-check"
+                          cfg.root
+                          "${projectKey}-hlint-check"
                           { buildInputs = [ pkgs.coreutils ]; }
                           ''
                             hlint ${lib.concatStringsSep " " cfg.hlintCheck.dirs}
