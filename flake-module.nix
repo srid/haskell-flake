@@ -110,6 +110,32 @@ in
                   };
                 };
               };
+              topLevelPackages = mkOption {
+                type = types.submodule {
+                  options = {
+                    enableMultiPkgs = mkBoolOption {
+                      description = "Whether or not to use multiple top-level package dirs";
+                      default = false;
+                    };
+
+                    dirs = mkOption {
+                      type = types.listOf types.str;
+                      description = ''
+                        Subdirs containing a separate Cabal package
+
+                        Define as nonempty only if enableMultiPkgs is set to `true`
+                      '';
+                      default = [ ];
+                    };
+
+                    defaultPkg = mkOption {
+                      type = types.str;
+                      description = "Default package to pass to flake if multiple packages exist";
+                      default = "";
+                    };
+                  };
+                };
+              };
             };
           });
         };
@@ -151,6 +177,23 @@ in
                   (pkgs.lib.composeExtensions
                     (pkgs.haskell.lib.packageSourceOverrides cfg.source-overrides)
                     cfg.overrides);
+                hp = hp.extend
+                  (
+                    let
+                      enableMultiPkgs = cfg.topLevelPackages.enableMultiPkgs;
+                      dirs = cfg.topLevelPackages.dirs;
+                    in
+                    if enableMultiPkgs then
+                      (self: _:
+                        listToAttrs (map
+                          (dir: {
+                            name = dir;
+                            value = self.callCabal2nix dir ./${dir} { };
+                          })
+                          dirs)
+                      )
+                    else (_: _: { })
+                  );
                 defaultBuildTools = hp: with hp; {
                   inherit
                     cabal-install
@@ -159,9 +202,22 @@ in
                     hlint;
                 };
                 buildTools = lib.attrValues (defaultBuildTools hp // cfg.buildTools hp);
-                package = cfg.modifier (hp.callCabal2nixWithOptions cfg.name cfg.root "" { });
+                package =
+                  if cfg.topLevelPackages.enableMultiPkgs then
+                    hp.${cfg.topLevelPackages.defaultPkg}
+                  else
+                    cfg.modifier (hp.callCabal2nixWithOptions cfg.name cfg.root "" { });
                 devShell = with pkgs.haskell.lib;
-                  (addBuildTools package buildTools).envFunc { withHoogle = true; };
+                  (addBuildTools package buildTools).envFunc (
+                    {
+                      withHoogle = true;
+                    } // (
+                      if cfg.topLevelPackages.enableMultiPkgs then {
+                        packages = pkgs: map (pkg: pkgs.${pkg}) cfg.topLevelPackages.dirs;
+                        buildInputs = [ hp.ghcid ];
+                      } else { }
+                    )
+                  );
                 devShellCheck = name: command:
                   runCommandInSimulatedShell devShell cfg.root "${projectKey}-${name}-check" { } command;
               in
