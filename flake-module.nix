@@ -90,7 +90,6 @@ in
                       '';
                       default = false;
                     };
-
                   };
                 };
               };
@@ -214,7 +213,7 @@ in
                     } // (
                       if cfg.topLevelPackages.enableMultiPkgs then {
                         packages = pkgs: map (pkg: pkgs.${pkg}) cfg.topLevelPackages.dirs;
-                        buildInputs = [ hp.ghcid ];
+                        nativeBuildInputs = [ hp.ghcid ];
                       } else { }
                     )
                   );
