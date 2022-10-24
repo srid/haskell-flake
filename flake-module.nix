@@ -164,8 +164,7 @@ in
                   "${cfg.name}" = package';
                 })).shellFor {
                   packages = p: [
-                    # TODO: Why do we need to add build tools?
-                    (cfg.modifier (pkgs.haskell.lib.addBuildTools p."${cfg.name}" buildTools))
+                    (cfg.modifier p."${cfg.name}")
                   ];
                   withHoogle = true;
                   buildInputs = buildTools;
