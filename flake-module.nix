@@ -109,10 +109,10 @@ in
                 default = { };
                 type = hlsCheckSubmodule;
               };
-            };
-            hlintCheck = mkOption {
-              default = { };
-              type = hlintCheckSubmodule;
+              hlintCheck = mkOption {
+                default = { };
+                type = hlintCheckSubmodule;
+              };
             };
           };
         in
