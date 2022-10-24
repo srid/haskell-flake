@@ -16,10 +16,42 @@ in
 {
   options = {
     perSystem = mkPerSystemOption
-      ({ config, self', inputs', pkgs, system, ... }: {
-        options.haskellProjects = mkOption {
-          description = "Haskell projects";
-          type = types.attrsOf (types.submodule {
+      ({ config, self', inputs', pkgs, system, ... }:
+        let
+          hlsCheckSubmodule = types.submodule {
+            options = {
+              enable = mkOption {
+                type = types.bool;
+                description = ''
+                  Whether to enable a flake check to verify that HLS works.
+                  
+                  This is equivalent to `nix develop -i -c haskell-language-server`.
+
+                  Note that, HLS will try to access the network through Cabal (see 
+                  https://github.com/haskell/haskell-language-server/issues/3128),
+                  therefore sandboxing must be disabled when evaluating this
+                  check.
+                '';
+                default = false;
+              };
+
+            };
+          };
+          hlintCheckSubmodule = types.submodule {
+            options = {
+              enable = mkOption {
+                type = types.bool;
+                description = "Whether to add a flake check to run hlint";
+                default = false;
+              };
+              dirs = mkOption {
+                type = types.listOf types.str;
+                description = "Relative path strings from `root` to directories that should be checked with hlint";
+                default = [ "." ];
+              };
+            };
+          };
+          projectSubmodule = types.submodule {
             options = {
               haskellPackages = mkOption {
                 type = types.attrsOf raw;
@@ -75,47 +107,21 @@ in
               };
               hlsCheck = mkOption {
                 default = { };
-                type = types.submodule {
-                  options = {
-                    enable = mkOption {
-                      type = types.bool;
-                      description = ''
-                        Whether to enable a flake check to verify that HLS works.
-                  
-                        This is equivalent to `nix develop -i -c haskell-language-server`.
-
-                        Note that, HLS will try to access the network through Cabal (see 
-                        https://github.com/haskell/haskell-language-server/issues/3128),
-                        therefore sandboxing must be disabled when evaluating this
-                        check.
-                      '';
-                      default = false;
-                    };
-
-                  };
-                };
-              };
-              hlintCheck = mkOption {
-                default = { };
-                type = types.submodule {
-                  options = {
-                    enable = mkOption {
-                      type = types.bool;
-                      description = "Whether to add a flake check to run hlint";
-                      default = false;
-                    };
-                    dirs = mkOption {
-                      type = types.listOf types.str;
-                      description = "Relative path strings from `root` to directories that should be checked with hlint";
-                      default = [ "." ];
-                    };
-                  };
-                };
+                type = hlsCheckSubmodule;
               };
             };
-          });
-        };
-      });
+            hlintCheck = mkOption {
+              default = { };
+              type = hlintCheckSubmodule;
+            };
+          };
+        in
+        {
+          options.haskellProjects = mkOption {
+            description = "Haskell projects";
+            type = types.attrsOf projectSubmodule;
+          };
+        });
   };
   config = {
     perSystem = { config, self', inputs', pkgs, ... }:
