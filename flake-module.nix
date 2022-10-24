@@ -53,6 +53,7 @@ in
                 description = ''Overrides for the Cabal project'';
                 default = self: super: { };
               };
+              # TODO: This option will go away after #7
               modifier = mkOption {
                 type = functionTo types.package;
                 description = ''
@@ -169,8 +170,6 @@ in
                   withHoogle = true;
                   buildInputs = buildTools;
                 };
-                # devShell = with pkgs.haskell.lib;
-                #  (addBuildTools package buildTools).envFunc { withHoogle = true; };
                 devShellCheck = name: command:
                   runCommandInSimulatedShell devShell cfg.root "${projectKey}-${name}-check" { } command;
               in
