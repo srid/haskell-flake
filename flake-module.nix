@@ -160,8 +160,16 @@ in
                 };
                 buildTools = lib.attrValues (defaultBuildTools hp // cfg.buildTools hp);
                 package = cfg.modifier (hp.callCabal2nixWithOptions cfg.name cfg.root "" { });
-                devShell = with pkgs.haskell.lib;
-                  (addBuildTools package buildTools).envFunc { withHoogle = true; };
+                devShell = hp.shellFor {
+                  packages = p: [ 
+                    # Why do we need to add build tools?
+                    (pkgs.haskell.lib.addBuildTools p.${cfg.name} buildTools)
+                  ];
+                  withHoogle = true;
+                  buildInputs = buildTools;
+                };
+                # devShell = with pkgs.haskell.lib;
+                #  (addBuildTools package buildTools).envFunc { withHoogle = true; };
                 devShellCheck = name: command:
                   runCommandInSimulatedShell devShell cfg.root "${projectKey}-${name}-check" { } command;
               in
