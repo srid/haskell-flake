@@ -163,7 +163,7 @@ in
                   # TODO: with or without modifier?
                   "${cfg.name}" = package;
                 })).shellFor {
-                  packages = p: [ 
+                  packages = p: [
                     # TODO: Why do we need to add build tools?
                     (pkgs.haskell.lib.addBuildTools p."${cfg.name}" buildTools)
                   ];
