@@ -38,7 +38,6 @@ in
               name = mkOption {
                 type = types.str;
                 description = ''Name of the cabal package ("foo" if foo.cabal)'';
-                default = "";
               };
               root = mkOption {
                 type = types.path;
@@ -54,6 +53,7 @@ in
                 description = ''Overrides for the Cabal project'';
                 default = self: super: { };
               };
+              # TODO: This option will go away after #7
               modifier = mkOption {
                 type = functionTo types.package;
                 description = ''
@@ -159,9 +159,17 @@ in
                     hlint;
                 };
                 buildTools = lib.attrValues (defaultBuildTools hp // cfg.buildTools hp);
-                package = cfg.modifier (hp.callCabal2nixWithOptions cfg.name cfg.root "" { });
-                devShell = with pkgs.haskell.lib;
-                  (addBuildTools package buildTools).envFunc { withHoogle = true; };
+                package' = hp.callCabal2nixWithOptions cfg.name cfg.root "" { };
+                package = cfg.modifier package';
+                devShell = (hp.extend (self: super: {
+                  "${cfg.name}" = package';
+                })).shellFor {
+                  packages = p: [
+                    (cfg.modifier p."${cfg.name}")
+                  ];
+                  withHoogle = true;
+                  buildInputs = buildTools;
+                };
                 devShellCheck = name: command:
                   runCommandInSimulatedShell devShell cfg.root "${projectKey}-${name}-check" { } command;
               in
