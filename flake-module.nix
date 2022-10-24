@@ -74,6 +74,7 @@ in
                 defaultText = ''Build tools useful for Haskell development are included by default.'';
               };
               hlsCheck = mkOption {
+                default = { };
                 type = types.submodule {
                   options = {
                     enable = mkOption {
@@ -95,6 +96,7 @@ in
                 };
               };
               hlintCheck = mkOption {
+                default = { };
                 type = types.submodule {
                   options = {
                     enable = mkOption {
