@@ -23,11 +23,13 @@ To use haskell-flake in your Haskell projects, create a `flake.nix` containing t
       imports = [ inputs.haskell-flake.flakeModule ];
       perSystem = { self', pkgs, ... }: {
         haskellProjects.default = {
+          name = "myproject";  # assumes myproject.cabal
           root = ./.;
           # buildTools = hp: { fourmolu = hp.fourmolu; };
           # source-overrides = { };
           # overrides = self: super: { };
-          # modifier = drv: drv;
+          # hlintCheck.enable = true;
+          # hlsCheck.enable = true;
         };
       };
     };
