@@ -163,7 +163,7 @@ in
                 devShell = hp.shellFor {
                   packages = p: [ 
                     # Why do we need to add build tools?
-                    (pkgs.haskell.lib.addBuildTools p.${cfg.name} buildTools)
+                    (pkgs.haskell.lib.addBuildTools p."${cfg.name}" buildTools)
                   ];
                   withHoogle = true;
                   buildInputs = buildTools;
