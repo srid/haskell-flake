@@ -74,6 +74,7 @@ in
                 defaultText = ''Build tools useful for Haskell development are included by default.'';
               };
               hlsCheck = mkOption {
+                default = { };
                 type = types.submodule {
                   options = {
                     enable = mkOption {
@@ -95,6 +96,7 @@ in
                 };
               };
               hlintCheck = mkOption {
+                default = { };
                 type = types.submodule {
                   options = {
                     enable = mkOption {
@@ -168,7 +170,7 @@ in
                     (cfg.modifier p."${cfg.name}")
                   ];
                   withHoogle = true;
-                  buildInputs = buildTools;
+                  nativeBuildInputs = buildTools;
                 };
                 devShellCheck = name: command:
                   runCommandInSimulatedShell devShell cfg.root "${projectKey}-${name}-check" { } command;
