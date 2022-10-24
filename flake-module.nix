@@ -38,7 +38,6 @@ in
               name = mkOption {
                 type = types.str;
                 description = ''Name of the cabal package ("foo" if foo.cabal)'';
-                default = "";
               };
               root = mkOption {
                 type = types.path;
@@ -160,9 +159,12 @@ in
                 };
                 buildTools = lib.attrValues (defaultBuildTools hp // cfg.buildTools hp);
                 package = cfg.modifier (hp.callCabal2nixWithOptions cfg.name cfg.root "" { });
-                devShell = hp.shellFor {
+                devShell = (hp.extend (self: super: {
+                  # TODO: with or without modifier?
+                  "${cfg.name}" = package;
+                })).shellFor {
                   packages = p: [ 
-                    # Why do we need to add build tools?
+                    # TODO: Why do we need to add build tools?
                     (pkgs.haskell.lib.addBuildTools p."${cfg.name}" buildTools)
                   ];
                   withHoogle = true;
