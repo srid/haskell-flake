@@ -158,14 +158,14 @@ in
                     hlint;
                 };
                 buildTools = lib.attrValues (defaultBuildTools hp // cfg.buildTools hp);
-                package = cfg.modifier (hp.callCabal2nixWithOptions cfg.name cfg.root "" { });
+                package' = hp.callCabal2nixWithOptions cfg.name cfg.root "" { };
+                package = cfg.modifier package';
                 devShell = (hp.extend (self: super: {
-                  # TODO: with or without modifier?
-                  "${cfg.name}" = package;
+                  "${cfg.name}" = package';
                 })).shellFor {
                   packages = p: [
                     # TODO: Why do we need to add build tools?
-                    (pkgs.haskell.lib.addBuildTools p."${cfg.name}" buildTools)
+                    (cfg.modifier (pkgs.haskell.lib.addBuildTools p."${cfg.name}" buildTools))
                   ];
                   withHoogle = true;
                   buildInputs = buildTools;
