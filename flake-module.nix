@@ -51,6 +51,23 @@ in
               };
             };
           };
+          packageAttrsSubmodule = with types; submodule {
+            options = {
+              root = mkOption {
+                type = path;
+                description = "Path to Haskell package";
+              };
+              modifier = mkOption {
+                type = functionTo package;
+                default = drv: drv;
+                description = "Modifier to be applied to Haskell package before applying to overlay";
+              };
+              flakeAttribute = mkOption {
+                type = str;
+                description = "Flake attribute name to be passed to caba2nix";
+              };
+            };
+          };
           projectSubmodule = types.submodule {
             options = {
               haskellPackages = mkOption {
@@ -112,6 +129,9 @@ in
               hlintCheck = mkOption {
                 default = { };
                 type = hlintCheckSubmodule;
+              };
+              packages = mkOption {
+                type = types.attrsOf packageAttrsSubmodule; 
               };
             };
           };
