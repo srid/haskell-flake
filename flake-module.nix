@@ -132,7 +132,7 @@ in
                 type = hlintCheckSubmodule;
               };
               packages = mkOption {
-                type = types.attrsOf packageAttrsSubmodule;
+                type = types.lazyAttrsOf packageAttrsSubmodule;
                 default =
                   lib.mapAttrs
                     (_: value: { root = value; })
