@@ -132,7 +132,7 @@ in
                 type = hlintCheckSubmodule;
               };
               packages = mkOption {
-                type = types.attrsOf packageAttrsSubmodule; 
+                type = types.attrsOf packageAttrsSubmodule;
                 default =
                   lib.mapAttrs
                     (_: value: { root = value; })
@@ -243,8 +243,8 @@ in
       {
         packages =
           # lib.mapAttrs
-            # (_: project: project.package)
-            # projects;
+          # (_: project: project.package)
+          # projects;
           lib.foldl (x: y: x // y) ({ }) (
             lib.mapAttrsToList
               (projectName: project:
@@ -252,15 +252,15 @@ in
                   (lib.mapAttrsToList
                     (packageName: package: {
                       name =
-                        if projectName = "default"
-                          then packageName
-                          else "${projectName}-${packageName}";
+                        if projectName == "default"
+                        then packageName
+                        else "${projectName}-${packageName}";
                       value = package;
                     })
                     project.packages
                   )
               )
-              projects      
+              projects
           );
         apps =
           lib.mapAttrs
