@@ -51,6 +51,7 @@ in
               };
             };
           };
+          # Define nested packages
           packageAttrsSubmodule = with types; submodule {
             options = {
               root = mkOption {
@@ -132,6 +133,10 @@ in
               };
               packages = mkOption {
                 type = types.attrsOf packageAttrsSubmodule; 
+                default =
+                  lib.mapAttrs
+                    (_: value: { root = value; })
+                    (lib.filesystem.haskellPathsInDir self.root);
               };
             };
           };
@@ -189,11 +194,20 @@ in
                 buildTools = lib.attrValues (defaultBuildTools hp // cfg.buildTools hp);
                 package' = hp.callCabal2nixWithOptions cfg.name cfg.root "" { };
                 package = cfg.modifier package';
-                devShell = (hp.extend (self: super: {
-                  "${cfg.name}" = package';
+                nestedPackagesOverlay = self: _:
+                  lib.mapAttrs
+                    (name: value: self.callCabal2nix (value.flakeAttribute or name) value.root { })
+                    cfg.packages;
+                nestedPackagesHp = hp.extend nestedPackagesOverlay;
+                devShell = (nestedPackagesHp.extend (self: super: {
+                  root = package';
                 })).shellFor {
-                  packages = p: [
-                    (cfg.modifier p."${cfg.name}")
+                  packages = p: (
+                    map
+                      (name: cfg.packages."${name}".modifier p."${name}")
+                      (lib.attrNames cfg.packages)
+                  ) ++ [
+                    (cfg.modifier p.root)
                   ];
                   withHoogle = true;
                   nativeBuildInputs = buildTools;
@@ -202,8 +216,13 @@ in
                   runCommandInSimulatedShell devShell cfg.root "${projectKey}-${name}-check" { } command;
               in
               rec {
-                inherit package devShell;
-                app = { type = "app"; program = pkgs.lib.getExe package; };
+                inherit devShell;
+                packages = { root = package; } // (
+                  lib.mapAttrs
+                    (name: value: value.modifier nestedPackagesHp."${name}")
+                    cfg.packages
+                );
+                app = { type = "app"; program = pkgs.lib.getExe packages.root; };
                 checks = lib.filterAttrs (_: v: v != null)
                   {
                     "${projectKey}-hls" =
@@ -223,9 +242,10 @@ in
       in
       {
         packages =
-          lib.mapAttrs
-            (_: project: project.package)
-            projects;
+          # lib.mapAttrs
+            # (_: project: project.package)
+            # projects;
+          {};
         apps =
           lib.mapAttrs
             (_: project: project.app)
