@@ -245,7 +245,23 @@ in
           # lib.mapAttrs
             # (_: project: project.package)
             # projects;
-          {};
+          lib.foldl (x: y: x // y) ({ }) (
+            lib.mapAttrsToList
+              (projectName: project:
+                lib.listToAttrs
+                  (lib.mapAttrsToList
+                    (packageName: package: {
+                      name =
+                        if projectName = "default"
+                          then packageName
+                          else "${projectName}-${packageName}";
+                      value = package;
+                    })
+                    project.packages
+                  )
+              )
+              projects      
+          );
         apps =
           lib.mapAttrs
             (_: project: project.app)
