@@ -192,23 +192,16 @@ in
                     hlint;
                 };
                 buildTools = lib.attrValues (defaultBuildTools hp // cfg.buildTools hp);
-                package' = hp.callCabal2nixWithOptions cfg.name cfg.root "" { };
-                package = cfg.modifier package';
                 nestedPackagesOverlay = self: _:
                   lib.mapAttrs
                     (name: value: self.callCabal2nix (value.flakeAttribute or name) value.root { })
                     cfg.packages;
                 nestedPackagesHp = hp.extend nestedPackagesOverlay;
-                devShell = (nestedPackagesHp.extend (self: super: {
-                  root = package';
-                })).shellFor {
-                  packages = p: (
+                devShell = nestedPackagesHp.shellFor {
+                  packages = p:
                     map
                       (name: cfg.packages."${name}".modifier p."${name}")
-                      (lib.attrNames cfg.packages)
-                  ) ++ [
-                    (cfg.modifier p.root)
-                  ];
+                      (lib.attrNames cfg.packages);
                   withHoogle = true;
                   nativeBuildInputs = buildTools;
                 };
@@ -217,12 +210,10 @@ in
               in
               rec {
                 inherit devShell;
-                packages = { root = package; } // (
+                packages =
                   lib.mapAttrs
                     (name: value: value.modifier nestedPackagesHp."${name}")
-                    cfg.packages
-                );
-                app = { type = "app"; program = pkgs.lib.getExe packages.root; };
+                    cfg.packages;
                 checks = lib.filterAttrs (_: v: v != null)
                   {
                     "${projectKey}-hls" =
@@ -262,10 +253,6 @@ in
               )
               projects
           );
-        apps =
-          lib.mapAttrs
-            (_: project: project.app)
-            projects;
         checks =
           lib.mkMerge
             (lib.mapAttrsToList
