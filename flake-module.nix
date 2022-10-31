@@ -124,7 +124,7 @@ in
                 default =
                   lib.mapAttrs
                     (_: value: { root = value; })
-                    (lib.filesystem.haskellPathsInDir ./.);
+                    (lib.filesystem.haskellPathsInDir self);
               };
             };
           };
