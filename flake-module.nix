@@ -51,12 +51,11 @@ in
               };
             };
           };
-          # Define nested packages
           packageAttrsSubmodule = with types; submodule {
             options = {
               root = mkOption {
                 type = path;
-                description = "Path to Haskell package";
+                description = "Path to Haskell package where the .cabal file lives";
               };
               modifier = mkOption {
                 type = functionTo package;
@@ -91,7 +90,6 @@ in
                 description = ''Overrides for the Cabal project'';
                 default = self: super: { };
               };
-              # TODO: This option will go away after #7
               modifier = mkOption {
                 type = functionTo types.package;
                 description = ''
@@ -121,6 +119,11 @@ in
               };
               packages = mkOption {
                 type = types.lazyAttrsOf packageAttrsSubmodule;
+                description = ''
+                  Attrset of local packages in the project repository.
+
+                  Autodetected by default by looking for `.cabal` files in sub-directories.
+                '';
                 default =
                   lib.mapAttrs
                     (_: value: { root = value; })
@@ -166,12 +169,17 @@ in
             (projectKey: cfg:
               let
                 inherit (pkgs.lib.lists) optionals;
+                projectOverlay =
+                  pkgs.lib.composeExtensions (pkgs.haskell.lib.packageSourceOverrides cfg.source-overrides) cfg.overrides;
                 # Apply user provided source-overrides and overrides to
                 # `cfg.haskellPackages`.
-                hp = cfg.haskellPackages.extend
-                  (pkgs.lib.composeExtensions
-                    (pkgs.haskell.lib.packageSourceOverrides cfg.source-overrides)
-                    cfg.overrides);
+                projectPackages = cfg.haskellPackages.extend projectOverlay;
+                localPackagesOverlay = self: _:
+                  lib.mapAttrs
+                    (name: value: value.modifier (self.callCabal2nix name value.root { }))
+                    cfg.packages;
+                finalPackages = projectPackages.extend localPackagesOverlay;
+
                 defaultBuildTools = hp: with hp; {
                   inherit
                     cabal-install
@@ -179,16 +187,11 @@ in
                     ghcid
                     hlint;
                 };
-                buildTools = lib.attrValues (defaultBuildTools hp // cfg.buildTools hp);
-                nestedPackagesOverlay = self: _:
-                  lib.mapAttrs
-                    (name: value: self.callCabal2nix name value.root { })
-                    cfg.packages;
-                nestedPackagesHp = hp.extend nestedPackagesOverlay;
-                devShell = nestedPackagesHp.shellFor {
+                buildTools = lib.attrValues (defaultBuildTools projectPackages // cfg.buildTools projectPackages);
+                devShell = finalPackages.shellFor {
                   packages = p:
                     map
-                      (name: cfg.packages."${name}".modifier p."${name}")
+                      (name: p."${name}")
                       (lib.attrNames cfg.packages);
                   withHoogle = true;
                   nativeBuildInputs = buildTools;
@@ -200,7 +203,7 @@ in
                 inherit devShell;
                 packages =
                   lib.mapAttrs
-                    (name: value: value.modifier nestedPackagesHp."${name}")
+                    (name: _: finalPackages."${name}")
                     cfg.packages;
                 checks = lib.filterAttrs (_: v: v != null)
                   {
@@ -221,9 +224,6 @@ in
       in
       {
         packages =
-          # lib.mapAttrs
-          # (_: project: project.package)
-          # projects;
           lib.foldl (x: y: x // y) ({ }) (
             lib.mapAttrsToList
               (projectName: project:
@@ -231,6 +231,8 @@ in
                   (lib.mapAttrsToList
                     (packageName: package: {
                       name =
+                        # Prefix package names with the project name (unless
+                        # project is named `default`)
                         if projectName == "default"
                         then packageName
                         else "${projectName}-${packageName}";
