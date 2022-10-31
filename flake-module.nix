@@ -63,10 +63,6 @@ in
                 default = drv: drv;
                 description = "Modifier to be applied to Haskell package before applying to overlay";
               };
-              flakeAttribute = mkOption {
-                type = str;
-                description = "Flake attribute name to be passed to caba2nix";
-              };
             };
           };
           projectSubmodule = types.submodule {
@@ -194,7 +190,7 @@ in
                 buildTools = lib.attrValues (defaultBuildTools hp // cfg.buildTools hp);
                 nestedPackagesOverlay = self: _:
                   lib.mapAttrs
-                    (name: value: self.callCabal2nix (value.flakeAttribute or name) value.root { })
+                    (name: value: self.callCabal2nix name value.root { })
                     cfg.packages;
                 nestedPackagesHp = hp.extend nestedPackagesOverlay;
                 devShell = nestedPackagesHp.shellFor {
