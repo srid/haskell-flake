@@ -81,14 +81,6 @@ in
                 example = "pkgs.haskell.packages.ghc924";
                 default = pkgs.haskellPackages;
               };
-              name = mkOption {
-                type = types.str;
-                description = ''Name of the cabal package ("foo" if foo.cabal)'';
-              };
-              root = mkOption {
-                type = types.path;
-                description = ''Path to the Cabal project root'';
-              };
               source-overrides = mkOption {
                 type = types.attrsOf types.path;
                 description = ''Package overrides given new source path'';
