@@ -51,7 +51,7 @@ in
               };
             };
           };
-          packageAttrsSubmodule = with types; submodule {
+          packageSubmodule = with types; submodule {
             options = {
               root = mkOption {
                 type = path;
@@ -118,7 +118,7 @@ in
                 type = hlintCheckSubmodule;
               };
               packages = mkOption {
-                type = types.lazyAttrsOf packageAttrsSubmodule;
+                type = types.lazyAttrsOf packageSubmodule;
                 description = ''
                   Attrset of local packages in the project repository.
 
