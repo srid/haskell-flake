@@ -60,7 +60,7 @@ in
               modifier = mkOption {
                 type = functionTo package;
                 default = drv: drv;
-                description = "Modifier to be applied to Haskell package before applying to overlay";
+                description = "Modifier to be applied to Haskell package before adding to overlay";
               };
             };
           };
