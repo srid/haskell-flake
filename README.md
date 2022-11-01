@@ -8,7 +8,7 @@ To keep `flake.nix` smaller (eg.: going from this [91-line flake.nix](https://gi
 
 ## Usage
 
-To use haskell-flake in your Haskell projects, create a `flake.nix` containing the following:
+To use `haskell-flake` in your Haskell projects, create a `flake.nix` containing the following:
 
 ```nix
 {
@@ -23,24 +23,27 @@ To use haskell-flake in your Haskell projects, create a `flake.nix` containing t
       imports = [ inputs.haskell-flake.flakeModule ];
       perSystem = { self', pkgs, ... }: {
         haskellProjects.default = {
-          name = "myproject";  # assumes myproject.cabal
-          root = ./.;
-          # buildTools = hp: { fourmolu = hp.fourmolu; };
-          # source-overrides = { };
+          packages = { 
+            # You can add more than one local package here.
+            my-package.root = ./.;  # Assumes ./my-package.cabal
+          };
+          # buildTools = hp: { fourmolu = hp.fourmolu; ghcid = null; };
           # overrides = self: super: { };
           # hlintCheck.enable = true;
           # hlsCheck.enable = true;
         };
+        # haskell-flake doesn't set the default package, but you can do it here.
+        packages.default = self'.packages.my-package;
       };
     };
 }
 ```
 
-See [`flake-module.nix` -> `options`](flake-module.nix) for a list of options available. Uses [`callCabal2nixWithOptions`](https://github.com/NixOS/nixpkgs/blob/f1c167688a6f81f4a51ab542e5f476c8c595e457/pkgs/development/haskell-modules/make-package-set.nix#L245) under the hood.  See [#7](https://github.com/srid/haskell-flake/issues/7) for future improvements.
+See [`flake-module.nix` -> `options`](flake-module.nix) for a list of options available. `haskell-flake` uses `callCabal2nix` and `shellFor` [under the hood](https://github.com/srid/haskell-multi-nix/blob/master/flake.nix).
 
 ## Template
 
-https://github.com/srid/haskell-template
+If you are bootstrapping a *new* Haskell project, you may use https://github.com/srid/haskell-template which already uses `haskell-flake`.
 
 ## Examples
 
