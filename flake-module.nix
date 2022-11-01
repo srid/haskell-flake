@@ -60,7 +60,15 @@ in
               modifier = mkOption {
                 type = functionTo package;
                 default = drv: drv;
-                description = "Modifier to be applied to Haskell package before adding to overlay";
+                description = ''
+                  Modifier to be applied to Haskell package before adding to overlay
+
+                  Typically you want to use `overrideCabal` to override various
+                  attributes of Cabal project.
+              
+                  For examples on what is possible, see:
+                  https://github.com/NixOS/nixpkgs/blob/master/pkgs/development/haskell-modules/lib/compose.nix
+                '';
               };
             };
           };
@@ -89,19 +97,6 @@ in
                 type = functionTo (functionTo (types.lazyAttrsOf raw));
                 description = ''Overrides for the Cabal project'';
                 default = self: super: { };
-              };
-              modifier = mkOption {
-                type = functionTo types.package;
-                description = ''
-                  Modifier for the Cabal project
-
-                  Typically you want to use `overrideCabal` to override various
-                  attributes of Cabal project.
-              
-                  For examples on what is possible, see:
-                  https://github.com/NixOS/nixpkgs/blob/master/pkgs/development/haskell-modules/lib/compose.nix
-                '';
-                default = drv: drv;
               };
               buildTools = mkOption {
                 type = functionTo (types.attrsOf (types.nullOr types.package));
@@ -223,12 +218,12 @@ in
             config.haskellProjects;
       in
       {
-        packages =
-          lib.foldl (x: y: x // y) ({ }) (
-            lib.mapAttrsToList
-              (projectName: project:
-                lib.listToAttrs
-                  (lib.mapAttrsToList
+        packages = with lib;
+          mkMerge
+            (
+              mapAttrsToList
+                (projectName: project:
+                  mapAttrs'
                     (packageName: package: {
                       name =
                         # Prefix package names with the project name (unless
@@ -239,10 +234,9 @@ in
                       value = package;
                     })
                     project.packages
-                  )
-              )
-              projects
-          );
+                )
+                projects
+            );
         checks =
           lib.mkMerge
             (lib.mapAttrsToList
