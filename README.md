@@ -50,6 +50,7 @@ If you are bootstrapping a *new* Haskell project, you may use https://github.com
 - Simple
   - https://github.com/srid/haskell-template/blob/master/flake.nix
   - https://github.com/fpindia/fpindia-site/blob/master/flake.nix
+  - https://github.com/srid/haskell-multi-nix/blob/master/flake.nix (Demonstrates multiple local packages)
 - Complex: 
   - https://github.com/srid/emanote/blob/master/flake.nix
   - https://github.com/srid/ema/blob/master/flake.nix
