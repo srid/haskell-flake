@@ -57,19 +57,6 @@ in
                 type = path;
                 description = "Path to Haskell package where the .cabal file lives";
               };
-              modifier = mkOption {
-                type = functionTo package;
-                default = drv: drv;
-                description = ''
-                  Modifier to be applied to Haskell package before adding to overlay
-
-                  Typically you want to use `overrideCabal` to override various
-                  attributes of Cabal project.
-              
-                  For examples on what is possible, see:
-                  https://github.com/NixOS/nixpkgs/blob/master/pkgs/development/haskell-modules/lib/compose.nix
-                '';
-              };
             };
           };
           projectSubmodule = types.submodule {
@@ -95,7 +82,11 @@ in
               };
               overrides = mkOption {
                 type = functionTo (functionTo (types.lazyAttrsOf raw));
-                description = ''Overrides for the Cabal project'';
+                description = ''
+                  Overrides for the Cabal project
+                
+                  For handy functions, see https://github.com/NixOS/nixpkgs/blob/master/pkgs/development/haskell-modules/lib/compose.nix
+                '';
                 default = self: super: { };
               };
               buildTools = mkOption {
