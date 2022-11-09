@@ -51,6 +51,14 @@ in
               };
             };
           };
+          packageSubmodule = with types; submodule {
+            options = {
+              root = mkOption {
+                type = path;
+                description = "Path to Haskell package where the .cabal file lives";
+              };
+            };
+          };
           projectSubmodule = types.submodule {
             options = {
               haskellPackages = mkOption {
@@ -62,18 +70,11 @@ in
                   
                   To get the appropriate value, run:
                     nix-env -f "<nixpkgs>" -qaP -A haskell.compiler
-                  And that use that in `pkgs.haskell.packages.ghc<version>`
+
+                  And then, use that in `pkgs.haskell.packages.ghc<version>`
                 '';
                 example = "pkgs.haskell.packages.ghc924";
                 default = pkgs.haskellPackages;
-              };
-              name = mkOption {
-                type = types.str;
-                description = ''Name of the cabal package ("foo" if foo.cabal)'';
-              };
-              root = mkOption {
-                type = types.path;
-                description = ''Path to the Cabal project root'';
               };
               source-overrides = mkOption {
                 type = types.attrsOf types.path;
@@ -82,22 +83,12 @@ in
               };
               overrides = mkOption {
                 type = functionTo (functionTo (types.lazyAttrsOf raw));
-                description = ''Overrides for the Cabal project'';
-                default = self: super: { };
-              };
-              # TODO: This option will go away after #7
-              modifier = mkOption {
-                type = functionTo types.package;
                 description = ''
-                  Modifier for the Cabal project
-
-                  Typically you want to use `overrideCabal` to override various
-                  attributes of Cabal project.
-              
-                  For examples on what is possible, see:
-                  https://github.com/NixOS/nixpkgs/blob/master/pkgs/development/haskell-modules/lib/compose.nix
+                  Overrides for the Cabal project
+                
+                  For handy functions, see https://github.com/NixOS/nixpkgs/blob/master/pkgs/development/haskell-modules/lib/compose.nix
                 '';
-                default = drv: drv;
+                default = self: super: { };
               };
               buildTools = mkOption {
                 type = functionTo (types.attrsOf (types.nullOr types.package));
@@ -112,6 +103,18 @@ in
               hlintCheck = mkOption {
                 default = { };
                 type = hlintCheckSubmodule;
+              };
+              packages = mkOption {
+                type = types.lazyAttrsOf packageSubmodule;
+                description = ''
+                  Attrset of local packages in the project repository.
+
+                  Autodetected by default by looking for `.cabal` files in sub-directories.
+                '';
+                default =
+                  lib.mapAttrs
+                    (_: value: { root = value; })
+                    (lib.filesystem.haskellPathsInDir self);
               };
             };
           };
@@ -153,12 +156,23 @@ in
             (projectKey: cfg:
               let
                 inherit (pkgs.lib.lists) optionals;
-                # Apply user provided source-overrides and overrides to
-                # `cfg.haskellPackages`.
-                hp = cfg.haskellPackages.extend
-                  (pkgs.lib.composeExtensions
-                    (pkgs.haskell.lib.packageSourceOverrides cfg.source-overrides)
-                    cfg.overrides);
+                localPackagesOverlay = self: _:
+                  lib.mapAttrs
+                    (name: value: self.callCabal2nix name value.root { })
+                    cfg.packages;
+                finalOverlay =
+                  pkgs.lib.composeManyExtensions 
+                    [ # The order here matters.
+                      #
+                      # User's overrides (cfg.overrides) is applied **last** so
+                      # as to give them maximum control over the final package
+                      # set used.
+                      cfg.overrides
+                      (pkgs.haskell.lib.packageSourceOverrides cfg.source-overrides) 
+                      localPackagesOverlay
+                    ];
+                finalPackages = cfg.haskellPackages.extend finalOverlay;
+
                 defaultBuildTools = hp: with hp; {
                   inherit
                     cabal-install
@@ -166,15 +180,12 @@ in
                     ghcid
                     hlint;
                 };
-                buildTools = lib.attrValues (defaultBuildTools hp // cfg.buildTools hp);
-                package' = hp.callCabal2nixWithOptions cfg.name cfg.root "" { };
-                package = cfg.modifier package';
-                devShell = (hp.extend (self: super: {
-                  "${cfg.name}" = package';
-                })).shellFor {
-                  packages = p: [
-                    (cfg.modifier p."${cfg.name}")
-                  ];
+                buildTools = lib.attrValues (defaultBuildTools finalPackages // cfg.buildTools finalPackages);
+                devShell = finalPackages.shellFor {
+                  packages = p:
+                    map
+                      (name: p."${name}")
+                      (lib.attrNames cfg.packages);
                   withHoogle = true;
                   nativeBuildInputs = buildTools;
                 };
@@ -182,8 +193,11 @@ in
                   runCommandInSimulatedShell devShell cfg.root "${projectKey}-${name}-check" { } command;
               in
               rec {
-                inherit package devShell;
-                app = { type = "app"; program = pkgs.lib.getExe package; };
+                inherit devShell;
+                packages =
+                  lib.mapAttrs
+                    (name: _: finalPackages."${name}")
+                    cfg.packages;
                 checks = lib.filterAttrs (_: v: v != null)
                   {
                     "${projectKey}-hls" =
@@ -202,14 +216,25 @@ in
             config.haskellProjects;
       in
       {
-        packages =
-          lib.mapAttrs
-            (_: project: project.package)
-            projects;
-        apps =
-          lib.mapAttrs
-            (_: project: project.app)
-            projects;
+        packages = with lib;
+          mkMerge
+            (
+              mapAttrsToList
+                (projectName: project:
+                  mapAttrs'
+                    (packageName: package: {
+                      name =
+                        # Prefix package names with the project name (unless
+                        # project is named `default`)
+                        if projectName == "default"
+                        then packageName
+                        else "${projectName}-${packageName}";
+                      value = package;
+                    })
+                    project.packages
+                )
+                projects
+            );
         checks =
           lib.mkMerge
             (lib.mapAttrsToList
