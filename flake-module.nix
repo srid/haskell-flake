@@ -156,16 +156,17 @@ in
             (projectKey: cfg:
               let
                 inherit (pkgs.lib.lists) optionals;
-                projectOverlay =
-                  pkgs.lib.composeExtensions (pkgs.haskell.lib.packageSourceOverrides cfg.source-overrides) cfg.overrides;
-                # Apply user provided source-overrides and overrides to
-                # `cfg.haskellPackages`.
-                projectPackages = cfg.haskellPackages.extend projectOverlay;
                 localPackagesOverlay = self: _:
                   lib.mapAttrs
                     (name: value: self.callCabal2nix name value.root { })
                     cfg.packages;
-                finalPackages = projectPackages.extend localPackagesOverlay;
+                finalOverlay =
+                  pkgs.lib.composeManyExtensions 
+                    [ (pkgs.haskell.lib.packageSourceOverrides cfg.source-overrides) 
+                      cfg.overrides
+                      localPackagesOverlay
+                    ];
+                finalPackages = cfg.haskellPackages.extend finalOverlay;
 
                 defaultBuildTools = hp: with hp; {
                   inherit
@@ -174,7 +175,7 @@ in
                     ghcid
                     hlint;
                 };
-                buildTools = lib.attrValues (defaultBuildTools projectPackages // cfg.buildTools projectPackages);
+                buildTools = lib.attrValues (defaultBuildTools finalPackages // cfg.buildTools finalPackages);
                 devShell = finalPackages.shellFor {
                   packages = p:
                     map
