@@ -70,7 +70,8 @@ in
                   
                   To get the appropriate value, run:
                     nix-env -f "<nixpkgs>" -qaP -A haskell.compiler
-                  And that use that in `pkgs.haskell.packages.ghc<version>`
+
+                  And then, use that in `pkgs.haskell.packages.ghc<version>`
                 '';
                 example = "pkgs.haskell.packages.ghc924";
                 default = pkgs.haskellPackages;
@@ -162,7 +163,7 @@ in
                 projectPackages = cfg.haskellPackages.extend projectOverlay;
                 localPackagesOverlay = self: _:
                   lib.mapAttrs
-                    (name: value: value.modifier (self.callCabal2nix name value.root { }))
+                    (name: value: self.callCabal2nix name value.root { })
                     cfg.packages;
                 finalPackages = projectPackages.extend localPackagesOverlay;
 
