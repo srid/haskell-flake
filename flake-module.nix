@@ -190,7 +190,7 @@ in
                   nativeBuildInputs = buildTools;
                 };
                 devShellCheck = name: command:
-                  runCommandInSimulatedShell devShell ./. "${projectKey}-${name}-check" { } command;
+                  runCommandInSimulatedShell devShell self "${projectKey}-${name}-check" { } command;
               in
               rec {
                 inherit devShell;
