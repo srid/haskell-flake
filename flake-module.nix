@@ -162,8 +162,13 @@ in
                     cfg.packages;
                 finalOverlay =
                   pkgs.lib.composeManyExtensions 
-                    [ (pkgs.haskell.lib.packageSourceOverrides cfg.source-overrides) 
+                    [ # The order here matters.
+                      #
+                      # User's overrides (cfg.overrides) is applied **last** so
+                      # as to give them maximum control over the final package
+                      # set used.
                       cfg.overrides
+                      (pkgs.haskell.lib.packageSourceOverrides cfg.source-overrides) 
                       localPackagesOverlay
                     ];
                 finalPackages = cfg.haskellPackages.extend finalOverlay;
