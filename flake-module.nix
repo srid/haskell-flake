@@ -96,6 +96,25 @@ in
                 default = hp: { };
                 defaultText = ''Build tools useful for Haskell development are included by default.'';
               };
+              shell.extraHaskellLibraries = mkOption {
+                type = functionTo (types.listOf types.package);
+                description = ''
+                  A list of libraries that are included in the devShell, as if they were dependencies of one of the packages.
+
+                  This is useful for Haskell scripts that rely on the devShell to provide their libraries.
+                '';
+                default = p: [];
+                defaultText = lib.literalExpression "p: [ ]";
+                example = lib.literal
+              };
+              shell.buildInputs = mkOption {
+                type = types.listOf types.package;
+                description = ''
+                  A list of non-Haskell `buildInputs` that are included in the devShell.
+
+                  This is useful for dependencies on C libraries, such as `pkgs.zlib`.
+                '';
+              };
               hlsCheck = mkOption {
                 default = { };
                 type = hlsCheckSubmodule;
@@ -189,6 +208,8 @@ in
                       (lib.attrNames cfg.packages);
                   withHoogle = true;
                   nativeBuildInputs = buildTools;
+                  extraDependencies = p: { libraryHaskellDepends = cfg.extraHaskellLibraries p; };
+                  buildInputs = cfg.buildInputs;
                 };
                 devShellCheck = name: command:
                   runCommandInSimulatedShell devShell self "${projectKey}-${name}-check" { } command;
