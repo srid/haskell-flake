@@ -161,15 +161,16 @@ in
                     (name: value: self.callCabal2nix name value.root { })
                     cfg.packages;
                 finalOverlay =
-                  pkgs.lib.composeManyExtensions 
-                    [ # The order here matters.
+                  pkgs.lib.composeManyExtensions
+                    [
+                      # The order here matters.
                       #
                       # User's overrides (cfg.overrides) is applied **last** so
                       # as to give them maximum control over the final package
                       # set used.
-                      cfg.overrides
-                      (pkgs.haskell.lib.packageSourceOverrides cfg.source-overrides) 
                       localPackagesOverlay
+                      (pkgs.haskell.lib.packageSourceOverrides cfg.source-overrides)
+                      cfg.overrides
                     ];
                 finalPackages = cfg.haskellPackages.extend finalOverlay;
 
