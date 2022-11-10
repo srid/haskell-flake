@@ -157,8 +157,11 @@ in
               let
                 inherit (pkgs.lib.lists) optionals;
                 localPackagesOverlay = self: _:
+                  let
+                    fromSdist = self.buildFromCabalSdist or (builtins.trace "Your version of Nixpkgs does not support hs.buildFromCabalSdist yet." (pkg: pkg));
+                  in
                   lib.mapAttrs
-                    (name: value: self.callCabal2nix name value.root { })
+                    (name: value: fromSdist (self.callCabal2nix name value.root { }))
                     cfg.packages;
                 finalOverlay =
                   pkgs.lib.composeManyExtensions
