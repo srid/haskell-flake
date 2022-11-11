@@ -28,7 +28,7 @@ in
                   This is equivalent to `nix develop -i -c haskell-language-server`.
 
                   Note that, HLS will try to access the network through Cabal (see 
-                  https://github.com/haskell/haskell-language-server/issues/3128),
+                  <https://github.com/haskell/haskell-language-server/issues/3128>),
                   therefore sandboxing must be disabled when evaluating this
                   check.
                 '';
@@ -55,7 +55,7 @@ in
             options = {
               root = mkOption {
                 type = path;
-                description = "Path to Haskell package where the .cabal file lives";
+                description = "Path to Haskell package where the `.cabal` file lives";
               };
             };
           };
@@ -69,12 +69,14 @@ in
                   You can effectively select the GHC version here. 
                   
                   To get the appropriate value, run:
-                    nix-env -f "<nixpkgs>" -qaP -A haskell.compiler
+
+                      nix-env -f "<nixpkgs>" -qaP -A haskell.compiler
 
                   And then, use that in `pkgs.haskell.packages.ghc<version>`
                 '';
                 example = "pkgs.haskell.packages.ghc924";
                 default = pkgs.haskellPackages;
+                defaultText = lib.literalExpression "pkgs.haskellPackages";
               };
               source-overrides = mkOption {
                 type = types.attrsOf types.path;
@@ -86,9 +88,10 @@ in
                 description = ''
                   Overrides for the Cabal project
                 
-                  For handy functions, see https://github.com/NixOS/nixpkgs/blob/master/pkgs/development/haskell-modules/lib/compose.nix
+                  For handy functions, see <https://github.com/NixOS/nixpkgs/blob/master/pkgs/development/haskell-modules/lib/compose.nix>
                 '';
                 default = self: super: { };
+                defaultText = lib.literalExpression "self: super: { }";
               };
               buildTools = mkOption {
                 type = functionTo (types.attrsOf (types.nullOr types.package));
@@ -99,10 +102,16 @@ in
               hlsCheck = mkOption {
                 default = { };
                 type = hlsCheckSubmodule;
+                description = ''
+                  A [check](flake-parts.html#opt-perSystem.checks) to make sure that your IDE will work.
+                '';
               };
               hlintCheck = mkOption {
                 default = { };
                 type = hlintCheckSubmodule;
+                description = ''
+                  A [check](flake-parts.html#opt-perSystem.checks) that runs [`hlint`](https://github.com/ndmitchell/hlint).
+                '';
               };
               packages = mkOption {
                 type = types.lazyAttrsOf packageSubmodule;
@@ -115,6 +124,7 @@ in
                   lib.mapAttrs
                     (_: value: { root = value; })
                     (lib.filesystem.haskellPathsInDir self);
+                defaultText = lib.literalMD "autodiscovered by reading `self` files.";
               };
             };
           };
