@@ -39,7 +39,7 @@ To use `haskell-flake` in your Haskell projects, create a `flake.nix` containing
 }
 ```
 
-See [`flake-module.nix` -> `options`](flake-module.nix) for a list of options available. `haskell-flake` uses `callCabal2nix` and `shellFor` [under the hood](https://github.com/srid/haskell-multi-nix/blob/master/flake.nix).
+Check out the [list of options](https://flake.parts/options/haskell-flake.html). `haskell-flake` uses `callCabal2nix` and `shellFor` [under the hood](https://github.com/srid/haskell-multi-nix/blob/master/flake.nix).
 
 ## Template
 
