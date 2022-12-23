@@ -12,13 +12,36 @@ let
   inherit (types)
     functionTo
     raw;
+
+  # Like pkgs.runCommand but runs inside nix-shell with a mutable project directory.
+  #
+  # It currenty respects only the nativeBuildInputs (and no shellHook for
+  # instance), which seems sufficient for our purposes. We also set $HOME and
+  # make the project root mutable, because those are expected when running
+  # something in a project shell (it is indeed the case with HLS).
+  runCommandInSimulatedShell = pkgs: devShell: projectRoot: name: attrs: command:
+    pkgs.runCommand name (attrs // { nativeBuildInputs = devShell.nativeBuildInputs; })
+      ''
+        # Set pipefail option for safer bash
+        set -euo pipefail
+
+        # Copy project root to a mutable area
+        # We expect "command" to mutate it.
+        export HOME=$TMP
+        cp -R ${projectRoot} $HOME/project
+        chmod -R a+w $HOME/project
+        pushd $HOME/project
+
+        ${command}
+        touch $out
+      '';
 in
 {
   options = {
     perSystem = mkPerSystemOption
       ({ config, self', inputs', pkgs, system, ... }:
         let
-          hlsCheckSubmodule = types.submodule {
+          hlsCheckSubmodule = name: types.submodule {
             options = {
               enable = mkOption {
                 type = types.bool;
@@ -34,10 +57,21 @@ in
                 '';
                 default = false;
               };
-
+              drv = mkOption {
+                type = types.package;
+                description = ''
+                  The underlying derivation of the hlsCheck.
+                '';
+                default =
+                  let
+                    devShell = config.devShells.${name};
+                  in
+                  runCommandInSimulatedShell pkgs devShell self "${name}-hls-check" { } "haskell-language-server";
+                defaultText = "Default hlsCheck derivation";
+              };
             };
           };
-          hlintCheckSubmodule = types.submodule {
+          hlintCheckSubmodule = name: types.submodule {
             options = {
               enable = mkOption {
                 type = types.bool;
@@ -49,6 +83,21 @@ in
                 description = "Relative path strings from `root` to directories that should be checked with hlint";
                 default = [ "." ];
               };
+              drv = mkOption {
+                type = types.package;
+                description = ''
+                  The underlying derivation of the hlintCheck.
+                '';
+                default =
+                  let
+                    devShell = config.devShells.${name};
+                    dirs = config.haskellProjects.${name}.hlintCheck.dirs;
+                  in
+                  runCommandInSimulatedShell pkgs devShell self "${name}-hlint-check" { } ''
+                    hlint ${lib.concatStringsSep " " dirs}
+                  '';
+                defaultText = "Default hlsCheck derivation";
+              };
             };
           };
           packageSubmodule = with types; submodule {
@@ -59,7 +108,7 @@ in
               };
             };
           };
-          projectSubmodule = types.submodule {
+          projectSubmodule = types.submodule ({ name, ... }: {
             options = {
               haskellPackages = mkOption {
                 type = types.attrsOf raw;
@@ -101,14 +150,14 @@ in
               };
               hlsCheck = mkOption {
                 default = { };
-                type = hlsCheckSubmodule;
+                type = hlsCheckSubmodule name;
                 description = ''
                   A [check](flake-parts.html#opt-perSystem.checks) to make sure that your IDE will work.
                 '';
               };
               hlintCheck = mkOption {
                 default = { };
-                type = hlintCheckSubmodule;
+                type = hlintCheckSubmodule name;
                 description = ''
                   A [check](flake-parts.html#opt-perSystem.checks) that runs [`hlint`](https://github.com/ndmitchell/hlint).
                 '';
@@ -127,7 +176,7 @@ in
                 defaultText = lib.literalMD "autodiscovered by reading `self` files.";
               };
             };
-          };
+          });
         in
         {
           options.haskellProjects = mkOption {
@@ -139,28 +188,6 @@ in
   config = {
     perSystem = { config, self', inputs', pkgs, ... }:
       let
-        # Like pkgs.runCommand but runs inside nix-shell with a mutable project directory.
-        #
-        # It currenty respects only the nativeBuildInputs (and no shellHook for
-        # instance), which seems sufficient for our purposes. We also set $HOME and
-        # make the project root mutable, because those are expected when running
-        # something in a project shell (it is indeed the case with HLS).
-        runCommandInSimulatedShell = devShell: projectRoot: name: attrs: command:
-          pkgs.runCommand name (attrs // { nativeBuildInputs = devShell.nativeBuildInputs; })
-            ''
-              # Set pipefail option for safer bash
-              set -euo pipefail
-
-              # Copy project root to a mutable area
-              # We expect "command" to mutate it.
-              export HOME=$TMP
-              cp -R ${projectRoot} $HOME/project
-              chmod -R a+w $HOME/project
-              pushd $HOME/project
-
-              ${command}
-              touch $out
-            '';
         projects =
           lib.mapAttrs
             (projectKey: cfg:
@@ -203,10 +230,8 @@ in
                   withHoogle = true;
                   nativeBuildInputs = buildTools;
                 };
-                devShellCheck = name: command:
-                  runCommandInSimulatedShell devShell self "${projectKey}-${name}-check" { } command;
               in
-              rec {
+              {
                 inherit devShell;
                 packages =
                   lib.mapAttrs
@@ -216,13 +241,11 @@ in
                   {
                     "${projectKey}-hls" =
                       if cfg.hlsCheck.enable then
-                        devShellCheck "hls" "haskell-language-server"
+                        cfg.hlsCheck.drv
                       else null;
                     "${projectKey}-hlint" =
                       if cfg.hlintCheck.enable then
-                        devShellCheck "hlint" ''
-                          hlint ${lib.concatStringsSep " " cfg.hlintCheck.dirs}
-                        ''
+                        cfg.hlintCheck.drv
                       else null;
                   };
               }
