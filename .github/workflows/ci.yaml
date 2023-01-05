@@ -1,0 +1,24 @@
+name: "CI"
+on:
+  push:
+    branches:
+      - '*'
+  pull_request:
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: cachix/install-nix-action@v18
+        with:
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+            access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
+      - name: Test template
+        id: template
+        run: |
+          FLAKE=$(pwd)
+          TEMP_DIR=$(mktemp -d)
+          cd $TEMP_DIR
+          nix flake init -t $FLAKE
+          nix build --override-input haskell-flake path:${FLAKE}
