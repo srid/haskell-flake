@@ -5,10 +5,13 @@
   };
   outputs = { self, nixpkgs-lib, ... }: {
     flakeModule = ./flake-module.nix;
-    templates.default.path = (nixpkgs-lib.lib.cleanSourceWith {
-      src = ./example;
-      filter = path: type: baseNameOf path == "flake.nix";
-    }).outPath;
+    templates.default = {
+      description = "Example project using haskell-flake";
+      path = (nixpkgs-lib.lib.cleanSourceWith {
+        src = ./example;
+        filter = path: type: baseNameOf path == "flake.nix";
+      }).outPath;
+    };
     herculesCI.ciSystems = [ "x86_64-linux" "aarch64-darwin" ];
   };
 }
