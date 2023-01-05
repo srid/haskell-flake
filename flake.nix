@@ -9,7 +9,7 @@
       description = "Example project using haskell-flake";
       path = (nixpkgs-lib.lib.cleanSourceWith {
         src = ./example;
-        filter = path: type: baseNameOf path == "flake.nix";
+        filter = path: type: true; # baseNameOf path == "flake.nix";
       }).outPath;
     };
     herculesCI.ciSystems = [ "x86_64-linux" "aarch64-darwin" ];
