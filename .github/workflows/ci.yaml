@@ -21,4 +21,7 @@ jobs:
           TEMP_DIR=$(mktemp -d)
           cd $TEMP_DIR
           nix flake init -t $FLAKE
+          # Build haskell executable
           nix build --override-input haskell-flake path:${FLAKE}
+          # Test haskell devshell (via HLS check)
+          nix develop --override-input haskell-flake path:${FLAKE} -c haskell-language-server
