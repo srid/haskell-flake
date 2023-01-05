@@ -1,16 +1,10 @@
 {
   description = "A `flake-parts` module for Haskell development";
-  inputs = {
-    nixpkgs-lib.url = "github:nix-community/nixpkgs.lib";
-  };
-  outputs = { self, nixpkgs-lib, ... }: {
+  outputs = { self, ... }: {
     flakeModule = ./flake-module.nix;
     templates.default = {
       description = "Example project using haskell-flake";
-      path = (nixpkgs-lib.lib.cleanSourceWith {
-        src = ./example;
-        filter = path: type: true; # baseNameOf path == "flake.nix";
-      }).outPath;
+      path = ./example;
     };
     herculesCI.ciSystems = [ "x86_64-linux" "aarch64-darwin" ];
   };
