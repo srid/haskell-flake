@@ -8,36 +8,15 @@ To keep `flake.nix` smaller (see examples below) and declarative ([what](https:/
 
 ## Usage
 
-To use `haskell-flake` in your Haskell projects, create a `flake.nix` containing the following:
+To use `haskell-flake` in your Haskell projects, run:
 
-```nix
-{
-  inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
-    flake-parts.url = "github:hercules-ci/flake-parts";
-    haskell-flake.url = "github:srid/haskell-flake";
-  };
-  outputs = inputs@{ self, nixpkgs, flake-parts, ... }:
-    flake-parts.lib.mkFlake { inherit self; } {
-      systems = nixpkgs.lib.systems.flakeExposed;
-      imports = [ inputs.haskell-flake.flakeModule ];
-      perSystem = { self', pkgs, ... }: {
-        haskellProjects.default = {
-          packages = { 
-            # You can add more than one local package here.
-            my-package.root = ./.;  # Assumes ./my-package.cabal
-          };
-          # buildTools = hp: { fourmolu = hp.fourmolu; ghcid = null; };
-          # overrides = self: super: { };
-          # hlintCheck.enable = true;
-          # hlsCheck.enable = true;
-        };
-        # haskell-flake doesn't set the default package, but you can do it here.
-        packages.default = self'.packages.my-package;
-      };
-    };
-}
+``` nix
+nix flake init -t github:srid/haskell-flake
 ```
+
+This will generate a template Haskell project with a `flake.nix`. If you already have a Haskell project, copy over this `flake.nix` and adjust accordingly.
+
+## Documentation
 
 Check out the [list of options](https://flake.parts/options/haskell-flake.html). `haskell-flake` uses `callCabal2nix` and `shellFor` [under the hood](https://github.com/srid/haskell-multi-nix/blob/master/flake.nix).
 
