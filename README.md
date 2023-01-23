@@ -16,13 +16,13 @@ nix flake init -t github:srid/haskell-flake
 
 This will generate a template Haskell project with a `flake.nix`. If you already have a Haskell project, copy over this `flake.nix` and adjust accordingly.
 
+### Template
+
+If you are bootstrapping a *new* Haskell project, you may use https://github.com/srid/haskell-template which already uses `haskell-flake` along with other opinionated defaults.
+
 ## Documentation
 
 Check out the [list of options](https://flake.parts/options/haskell-flake.html). `haskell-flake` uses `callCabal2nix` and `shellFor` [under the hood](https://github.com/srid/haskell-multi-nix/blob/master/flake.nix).
-
-## Template
-
-If you are bootstrapping a *new* Haskell project, you may use https://github.com/srid/haskell-template which already uses `haskell-flake`.
 
 ## Examples
 
