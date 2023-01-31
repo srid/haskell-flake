@@ -12,7 +12,7 @@
         haskellProjects.default = {
           packages = {
             # You can add more than one local package here.
-            example.root = ./.; # Assumes ./example.cabal
+            haskell-flake-test.root = ./.; # Assumes ./haskell-flake-test.cabal
           };
           buildTools = hp: {
             # Some buildTools are included by default. If you do not want them,
@@ -26,7 +26,7 @@
           # hlsCheck.enable = true;
         };
         # haskell-flake doesn't set the default package, but you can do it here.
-        packages.default = self'.packages.example;
+        packages.default = self'.packages.haskell-flake-test;
       };
     };
 }

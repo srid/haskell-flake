@@ -1,5 +1,5 @@
 cabal-version:   3.0
-name:            example
+name:            haskell-flake-test
 version:         0.1.0.0
 license:         NONE
 author:          Joe
@@ -9,7 +9,7 @@ build-type:      Simple
 common warnings
     ghc-options: -Wall
 
-executable example
+executable haskell-flake-test
     import:           warnings
     main-is:          Main.hs
     build-depends:    base
