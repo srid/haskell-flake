@@ -32,11 +32,4 @@ jobs:
           cd ./test
           # Build haskell executable
           nix build --override-input haskell-flake path:${FLAKE}
-          # Test haskell devshell (via HLS check)
-          nix develop --override-input haskell-flake path:${FLAKE} -c haskell-language-server
-          # Test various features of haskell-flake:
-          #
-          # buildTools: = null
-          nix develop --override-input haskell-flake path:${FLAKE} -c sh -c "which ghcid && exit 2 || echo"
-          # buildTools: add 
-          nix develop --override-input haskell-flake path:${FLAKE} -c sh -c "which fzf"
+          nix develop --override-input haskell-flake path:${FLAKE} -c ./test.sh
