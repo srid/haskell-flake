@@ -22,7 +22,7 @@ If you are bootstrapping a *new* Haskell project, you may use https://github.com
 
 ## Documentation
 
-Check out the [list of options](https://flake.parts/options/haskell-flake.html). `haskell-flake` uses `callCabal2nix` and `shellFor` [under the hood](https://github.com/srid/haskell-multi-nix/blob/master/flake.nix).
+Check out the [list of options](https://flake.parts/options/haskell-flake.html). `haskell-flake` uses [`callCabal2nix` and `shellFor`](https://github.com/srid/haskell-multi-nix/blob/nixpkgs/flake.nix) under the hood.
 
 ## Examples
 
