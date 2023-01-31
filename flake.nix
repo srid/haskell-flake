@@ -4,7 +4,7 @@
     flakeModule = ./flake-module.nix;
     templates.default = {
       description = "Example project using haskell-flake";
-      path = ./example;
+      path = ./examples/simple;
     };
   };
 }
