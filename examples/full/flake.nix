@@ -18,6 +18,8 @@
             # Some buildTools are included by default. If you do not want them,
             # set them to 'null' here.
             ghcid = null;
+            # You can also add additional build tools.
+            fzf = pkgs.fzf;
           };
           # overrides = self: super: { };
           # hlintCheck.enable = true;
