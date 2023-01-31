@@ -14,7 +14,7 @@ jobs:
           extra_nix_config: |
             experimental-features = nix-command flakes
             access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
-      - name: Test template (examples/simple)
+      - name: Test template
         id: template
         run: |
           FLAKE=$(pwd)
@@ -25,11 +25,11 @@ jobs:
           nix build --override-input haskell-flake path:${FLAKE}
           # Test haskell devshell (via HLS check)
           nix develop --override-input haskell-flake path:${FLAKE} -c haskell-language-server
-      - name: Test examples/full
+      - name: Run tests
         id: example-fiull
         run: |
           FLAKE=$(pwd)
-          cd ./examples/full
+          cd ./test
           # Build haskell executable
           nix build --override-input haskell-flake path:${FLAKE}
           # Test haskell devshell (via HLS check)
