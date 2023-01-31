@@ -12,9 +12,13 @@
         haskellProjects.default = {
           packages = {
             # You can add more than one local package here.
-            example.root = ./.;  # Assumes ./example.cabal
+            example.root = ./.; # Assumes ./example.cabal
           };
-          # buildTools = hp: { fourmolu = hp.fourmolu; ghcid = null; };
+          buildTools = hp: {
+            # Some buildTools are included by default. If you do not want them,
+            # set them to 'null' here.
+            ghcid = null;
+          };
           # overrides = self: super: { };
           # hlintCheck.enable = true;
           # hlsCheck.enable = true;

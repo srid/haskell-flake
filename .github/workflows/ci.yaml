@@ -34,3 +34,4 @@ jobs:
           nix build --override-input haskell-flake path:${FLAKE}
           # Test haskell devshell (via HLS check)
           nix develop --override-input haskell-flake path:${FLAKE} -c haskell-language-server
+          nix develop --override-input haskell-flake path:${FLAKE} -c sh -- -c "which ghcid && exit 2 || echo"
