@@ -4,7 +4,7 @@
 #
 #  nix develop --override-input haskell-flake ../ -c ./test.sh
 #
-# Or, just run `runtests.sh` from project root.
+# Or, just run `runtest.sh` from project root.
 
 set -xe
 
@@ -16,7 +16,3 @@ which ghcid && exit 2 || echo
 
 # Adding a buildTool (fzf, here) should put it in devshell.
 which fzf
-
-# TODO
-# - checks 
-# - multi package
