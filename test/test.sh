@@ -19,6 +19,5 @@ which fzf
 
 # TODO
 # - overrides
-#    - Pin nixpkgs (needed to reliably test overrides): How? permanent flake.lock?
 # - checks 
 # - multi package
