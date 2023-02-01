@@ -27,9 +27,4 @@ jobs:
           nix develop --override-input haskell-flake path:${FLAKE} -c haskell-language-server
       - name: Run tests
         id: example-fiull
-        run: |
-          FLAKE=$(pwd)
-          cd ./test
-          # Build haskell executable
-          nix build --override-input haskell-flake path:${FLAKE}
-          nix develop --override-input haskell-flake path:${FLAKE} -c ./test.sh
+        run: ./runtest.sh
