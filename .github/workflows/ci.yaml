@@ -25,3 +25,6 @@ jobs:
           nix build --override-input haskell-flake path:${FLAKE}
           # Test haskell devshell (via HLS check)
           nix develop --override-input haskell-flake path:${FLAKE} -c haskell-language-server
+      - name: Run test
+        id: test
+        run: ./runtest.sh
