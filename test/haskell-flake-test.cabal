@@ -12,6 +12,8 @@ common warnings
 executable haskell-flake-test
     import:           warnings
     main-is:          Main.hs
-    build-depends:    base
+    build-depends:    
+        base,
+        foo
     hs-source-dirs:   src
     default-language: Haskell2010

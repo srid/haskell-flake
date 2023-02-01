@@ -18,6 +18,5 @@ which ghcid && exit 2 || echo
 which fzf
 
 # TODO
-# - overrides
 # - checks 
 # - multi package
