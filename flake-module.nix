@@ -59,6 +59,41 @@ in
               };
             };
           };
+          devShellSubmodule = types.submodule {
+            options = {
+              enable = mkOption {
+                type = types.bool;
+                description = ''
+                  Whether to enable a development shell for the project.
+                '';
+                default = true;
+              };
+              tools = mkOption {
+                type = functionTo (types.attrsOf (types.nullOr types.package));
+                description = ''
+                  Build tools for developing the Haskell project.
+                '';
+                default = hp: { };
+                defaultText = ''
+                  Build tools useful for Haskell development are included by default.
+                '';
+              };
+              hlsCheck = mkOption {
+                default = { };
+                type = hlsCheckSubmodule;
+                description = ''
+                  A [check](flake-parts.html#opt-perSystem.checks) to make sure that your IDE will work.
+                '';
+              };
+              hlintCheck = mkOption {
+                default = { };
+                type = hlintCheckSubmodule;
+                description = ''
+                  A [check](flake-parts.html#opt-perSystem.checks) that runs [`hlint`](https://github.com/ndmitchell/hlint).
+                '';
+              };
+            };
+          };
           projectSubmodule = types.submodule {
             options = {
               haskellPackages = mkOption {
@@ -92,26 +127,6 @@ in
                 '';
                 default = self: super: { };
                 defaultText = lib.literalExpression "self: super: { }";
-              };
-              buildTools = mkOption {
-                type = functionTo (types.attrsOf (types.nullOr types.package));
-                description = ''Build tools for your Haskell package (available only in nix shell).'';
-                default = hp: { };
-                defaultText = ''Build tools useful for Haskell development are included by default.'';
-              };
-              hlsCheck = mkOption {
-                default = { };
-                type = hlsCheckSubmodule;
-                description = ''
-                  A [check](flake-parts.html#opt-perSystem.checks) to make sure that your IDE will work.
-                '';
-              };
-              hlintCheck = mkOption {
-                default = { };
-                type = hlintCheckSubmodule;
-                description = ''
-                  A [check](flake-parts.html#opt-perSystem.checks) that runs [`hlint`](https://github.com/ndmitchell/hlint).
-                '';
               };
               packages = mkOption {
                 type = types.lazyAttrsOf packageSubmodule;
@@ -180,7 +195,8 @@ in
                         pkgFiltered = pkgs.haskell.lib.overrideSrc pkgProto {
                           src = filterSrc name value.root;
                         };
-                      in fromSdist pkgFiltered)
+                      in
+                      fromSdist pkgFiltered)
                     cfg.packages;
                 finalOverlay =
                   pkgs.lib.composeManyExtensions
