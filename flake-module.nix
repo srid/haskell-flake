@@ -141,6 +141,13 @@ in
                     (lib.filesystem.haskellPathsInDir self);
                 defaultText = lib.literalMD "autodiscovered by reading `self` files.";
               };
+              devShell = mkOption {
+                type = devShellSubmodule;
+                description = ''
+                  Development shell configuration
+                '';
+                default = { };
+              };
             };
           };
         in
@@ -219,37 +226,39 @@ in
                     ghcid
                     hlint;
                 };
-                buildTools = lib.attrValues (defaultBuildTools finalPackages // cfg.buildTools finalPackages);
+                nativeBuildInputs = lib.attrValues (defaultBuildTools finalPackages // cfg.devShell.tools finalPackages);
                 devShell = finalPackages.shellFor {
+                  inherit nativeBuildInputs;
                   packages = p:
                     map
                       (name: p."${name}")
                       (lib.attrNames cfg.packages);
                   withHoogle = true;
-                  nativeBuildInputs = buildTools;
                 };
                 devShellCheck = name: command:
                   runCommandInSimulatedShell devShell self "${projectKey}-${name}-check" { } command;
               in
-              rec {
-                inherit devShell;
+              {
                 packages =
                   lib.mapAttrs
                     (name: _: finalPackages."${name}")
                     cfg.packages;
-                checks = lib.filterAttrs (_: v: v != null)
+                devShells = lib.optionalAttrs cfg.devShell.enable {
+                  "${projectKey}" = devShell;
+                };
+                checks = lib.optionalAttrs cfg.devShell.enable (lib.filterAttrs (_: v: v != null)
                   {
                     "${projectKey}-hls" =
-                      if cfg.hlsCheck.enable then
+                      if cfg.devShell.hlsCheck.enable then
                         devShellCheck "hls" "haskell-language-server"
                       else null;
                     "${projectKey}-hlint" =
-                      if cfg.hlintCheck.enable then
+                      if cfg.devShell.hlintCheck.enable then
                         devShellCheck "hlint" ''
-                          hlint ${lib.concatStringsSep " " cfg.hlintCheck.dirs}
+                          hlint ${lib.concatStringsSep " " cfg.devShell.hlintCheck.dirs}
                         ''
                       else null;
-                  };
+                  });
               }
             )
             config.haskellProjects;
@@ -280,9 +289,10 @@ in
               (_: project: project.checks)
               projects);
         devShells =
-          lib.mapAttrs
-            (_: project: project.devShell)
-            projects;
+          lib.mkMerge
+            (lib.mapAttrsToList
+              (_: project: project.devShells)
+              projects);
       };
   };
 }
