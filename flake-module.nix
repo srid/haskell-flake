@@ -243,10 +243,9 @@ in
                   lib.mapAttrs
                     (name: _: finalPackages."${name}")
                     cfg.packages;
-                devShells = lib.optionalAttrs cfg.devShell.enable {
-                  "${projectKey}" = devShell;
-                };
-                checks = lib.optionalAttrs cfg.devShell.enable (lib.filterAttrs (_: v: v != null)
+              } // lib.optionalAttrs cfg.devShell.enable {
+                inherit devShell;
+                checks = lib.filterAttrs (_: v: v != null)
                   {
                     "${projectKey}-hls" =
                       if cfg.devShell.hlsCheck.enable then
@@ -258,7 +257,7 @@ in
                           hlint ${lib.concatStringsSep " " cfg.devShell.hlintCheck.dirs}
                         ''
                       else null;
-                  });
+                  };
               }
             )
             config.haskellProjects;
@@ -289,10 +288,9 @@ in
               (_: project: project.checks)
               projects);
         devShells =
-          lib.mkMerge
-            (lib.mapAttrsToList
-              (_: project: project.devShells)
-              projects);
+          lib.mapAttrs
+            (_: project: project.devShell)
+            projects;
       };
   };
 }
