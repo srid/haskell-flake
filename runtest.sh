@@ -1,3 +1,5 @@
+set -e
+
 FLAKE=$(pwd)
 cd ./test
 # First, build the flake.
