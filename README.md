@@ -33,3 +33,7 @@ Check out the [list of options](https://flake.parts/options/haskell-flake.html).
 - Complex: 
   - https://github.com/srid/emanote/blob/master/flake.nix
   - https://github.com/srid/ema/blob/master/flake.nix
+
+## Recommendations
+
+- Use [`treefmt-nix`](https://github.com/numtide/treefmt-nix#flake-parts) for providing linting features like auto-formatting and hlint checks. See [haskell-template](https://github.com/srid/haskell-template) for example.
