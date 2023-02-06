@@ -94,7 +94,7 @@ in
               };
             };
           };
-          projectSubmodule = types.submodule {
+          projectSubmodule = types.submodule (args@{ name, config, ... }: {
             options = {
               haskellPackages = mkOption {
                 type = types.attrsOf raw;
@@ -148,8 +148,132 @@ in
                 '';
                 default = { };
               };
+              outputs = mkOption {
+                type = types.attrsOf types.raw;
+                default = { };
+                description = ''
+                  The flake outputs for this project.
+                '';
+              };
             };
-          };
+            config = {
+              outputs =
+                let
+                  # Like pkgs.runCommand but runs inside nix-shell with a mutable project directory.
+                  #
+                  # It currenty respects only the nativeBuildInputs (and no shellHook for
+                  # instance), which seems sufficient for our purposes. We also set $HOME and
+                  # make the project root mutable, because those are expected when running
+                  # something in a project shell (it is indeed the case with HLS).
+                  runCommandInSimulatedShell = devShell: projectRoot: name: attrs: command:
+                    pkgs.runCommand name (attrs // { nativeBuildInputs = devShell.nativeBuildInputs; })
+                      ''
+                        # Set pipefail option for safer bash
+                        set -euo pipefail
+
+                        # Copy project root to a mutable area
+                        # We expect "command" to mutate it.
+                        export HOME=$TMP
+                        cp -R ${projectRoot} $HOME/project
+                        chmod -R a+w $HOME/project
+                        pushd $HOME/project
+
+                        ${command}
+                        touch $out
+                      '';
+                  projectKey = name;
+                  project =
+                    let
+                      localPackagesOverlay = self: _:
+                        let
+                          fromSdist = self.buildFromCabalSdist or (builtins.trace "Your version of Nixpkgs does not support hs.buildFromCabalSdist yet." (pkg: pkg));
+                          filterSrc = name: src: lib.cleanSourceWith { inherit src name; filter = path: type: true; };
+                        in
+                        lib.mapAttrs
+                          (name: value:
+                            let
+                              # callCabal2nix does not need a filtered source. It will
+                              # only pick out the cabal and/or hpack file.
+                              pkgProto = self.callCabal2nix name value.root { };
+                              pkgFiltered = pkgs.haskell.lib.overrideSrc pkgProto {
+                                src = filterSrc name value.root;
+                              };
+                            in
+                            fromSdist pkgFiltered)
+                          config.packages;
+                      finalOverlay =
+                        pkgs.lib.composeManyExtensions
+                          [
+                            # The order here matters.
+                            #
+                            # User's overrides (cfg.overrides) is applied **last** so
+                            # as to give them maximum control over the final package
+                            # set used.
+                            localPackagesOverlay
+                            (pkgs.haskell.lib.packageSourceOverrides config.source-overrides)
+                            config.overrides
+                          ];
+                      finalPackages = config.haskellPackages.extend finalOverlay;
+
+                      defaultBuildTools = hp: with hp; {
+                        inherit
+                          cabal-install
+                          haskell-language-server
+                          ghcid
+                          hlint;
+                      };
+                      nativeBuildInputs = lib.attrValues (defaultBuildTools finalPackages // config.devShell.tools finalPackages);
+                      devShell = finalPackages.shellFor {
+                        inherit nativeBuildInputs;
+                        packages = p:
+                          map
+                            (name: p."${name}")
+                            (lib.attrNames config.packages);
+                        withHoogle = true;
+                      };
+                      devShellCheck = name: command:
+                        runCommandInSimulatedShell devShell self "${projectKey}-${name}-check" { } command;
+                    in
+                    {
+                      packages =
+                        lib.mapAttrs
+                          (name: _: finalPackages."${name}")
+                          config.packages;
+                    } // lib.optionalAttrs config.devShell.enable {
+                      inherit devShell;
+                      checks = lib.filterAttrs (_: v: v != null)
+                        {
+                          "${projectKey}-hls" =
+                            if config.devShell.hlsCheck.enable then
+                              devShellCheck "hls" "haskell-language-server"
+                            else null;
+                          "${projectKey}-hlint" =
+                            if config.devShell.hlintCheck.enable then
+                              devShellCheck "hlint" ''
+                                hlint ${lib.concatStringsSep " " config.devShell.hlintCheck.dirs}
+                              ''
+                            else null;
+                        };
+                    };
+                in
+                {
+                  packages = with lib;
+                    mapAttrs'
+                      (packageName: package: {
+                        name =
+                          # Prefix package names with the project name (unless
+                          # project is named `default`)
+                          if projectKey == "default"
+                          then packageName
+                          else "${projectName}-${packageName}";
+                        value = package;
+                      })
+                      project.packages;
+                  checks = project.checks;
+                  devShells.${projectKey} = project.devShell;
+                };
+            };
+          });
         in
         {
           options.haskellProjects = mkOption {
@@ -158,139 +282,19 @@ in
           };
         });
   };
+
   config = {
-    perSystem = { config, self', inputs', pkgs, ... }:
-      let
-        # Like pkgs.runCommand but runs inside nix-shell with a mutable project directory.
-        #
-        # It currenty respects only the nativeBuildInputs (and no shellHook for
-        # instance), which seems sufficient for our purposes. We also set $HOME and
-        # make the project root mutable, because those are expected when running
-        # something in a project shell (it is indeed the case with HLS).
-        runCommandInSimulatedShell = devShell: projectRoot: name: attrs: command:
-          pkgs.runCommand name (attrs // { nativeBuildInputs = devShell.nativeBuildInputs; })
-            ''
-              # Set pipefail option for safer bash
-              set -euo pipefail
+    perSystem = { config, self', inputs', pkgs, ... }: {
+      packages =
+        lib.mkMerge
+          (
+            builtins.map
+              (haskellProject:
+                haskellProject.outputs.packages
+              )
+              (lib.attrValues config.haskellProjects)
+          );
+    };
 
-              # Copy project root to a mutable area
-              # We expect "command" to mutate it.
-              export HOME=$TMP
-              cp -R ${projectRoot} $HOME/project
-              chmod -R a+w $HOME/project
-              pushd $HOME/project
-
-              ${command}
-              touch $out
-            '';
-        projects =
-          lib.mapAttrs
-            (projectKey: cfg:
-              let
-                inherit (pkgs.lib.lists) optionals;
-                localPackagesOverlay = self: _:
-                  let
-                    fromSdist = self.buildFromCabalSdist or (builtins.trace "Your version of Nixpkgs does not support hs.buildFromCabalSdist yet." (pkg: pkg));
-                    filterSrc = name: src: lib.cleanSourceWith { inherit src name; filter = path: type: true; };
-                  in
-                  lib.mapAttrs
-                    (name: value:
-                      let
-                        # callCabal2nix does not need a filtered source. It will
-                        # only pick out the cabal and/or hpack file.
-                        pkgProto = self.callCabal2nix name value.root { };
-                        pkgFiltered = pkgs.haskell.lib.overrideSrc pkgProto {
-                          src = filterSrc name value.root;
-                        };
-                      in
-                      fromSdist pkgFiltered)
-                    cfg.packages;
-                finalOverlay =
-                  pkgs.lib.composeManyExtensions
-                    [
-                      # The order here matters.
-                      #
-                      # User's overrides (cfg.overrides) is applied **last** so
-                      # as to give them maximum control over the final package
-                      # set used.
-                      localPackagesOverlay
-                      (pkgs.haskell.lib.packageSourceOverrides cfg.source-overrides)
-                      cfg.overrides
-                    ];
-                finalPackages = cfg.haskellPackages.extend finalOverlay;
-
-                defaultBuildTools = hp: with hp; {
-                  inherit
-                    cabal-install
-                    haskell-language-server
-                    ghcid
-                    hlint;
-                };
-                nativeBuildInputs = lib.attrValues (defaultBuildTools finalPackages // cfg.devShell.tools finalPackages);
-                devShell = finalPackages.shellFor {
-                  inherit nativeBuildInputs;
-                  packages = p:
-                    map
-                      (name: p."${name}")
-                      (lib.attrNames cfg.packages);
-                  withHoogle = true;
-                };
-                devShellCheck = name: command:
-                  runCommandInSimulatedShell devShell self "${projectKey}-${name}-check" { } command;
-              in
-              {
-                packages =
-                  lib.mapAttrs
-                    (name: _: finalPackages."${name}")
-                    cfg.packages;
-              } // lib.optionalAttrs cfg.devShell.enable {
-                inherit devShell;
-                checks = lib.filterAttrs (_: v: v != null)
-                  {
-                    "${projectKey}-hls" =
-                      if cfg.devShell.hlsCheck.enable then
-                        devShellCheck "hls" "haskell-language-server"
-                      else null;
-                    "${projectKey}-hlint" =
-                      if cfg.devShell.hlintCheck.enable then
-                        devShellCheck "hlint" ''
-                          hlint ${lib.concatStringsSep " " cfg.devShell.hlintCheck.dirs}
-                        ''
-                      else null;
-                  };
-              }
-            )
-            config.haskellProjects;
-      in
-      {
-        packages = with lib;
-          mkMerge
-            (
-              mapAttrsToList
-                (projectName: project:
-                  mapAttrs'
-                    (packageName: package: {
-                      name =
-                        # Prefix package names with the project name (unless
-                        # project is named `default`)
-                        if projectName == "default"
-                        then packageName
-                        else "${projectName}-${packageName}";
-                      value = package;
-                    })
-                    project.packages
-                )
-                projects
-            );
-        checks =
-          lib.mkMerge
-            (lib.mapAttrsToList
-              (_: project: project.checks)
-              projects);
-        devShells =
-          lib.mapAttrs
-            (_: project: project.devShell)
-            projects;
-      };
   };
 }
