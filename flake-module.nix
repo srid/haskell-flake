@@ -35,20 +35,6 @@ in
 
             };
           };
-          hlintCheckSubmodule = types.submodule {
-            options = {
-              enable = mkOption {
-                type = types.bool;
-                description = "Whether to add a flake check to run hlint";
-                default = false;
-              };
-              dirs = mkOption {
-                type = types.listOf types.str;
-                description = "Relative path strings from `root` to directories that should be checked with hlint";
-                default = [ "." ];
-              };
-            };
-          };
           packageSubmodule = with types; submodule {
             options = {
               root = mkOption {
@@ -81,13 +67,6 @@ in
                 type = hlsCheckSubmodule;
                 description = ''
                   A [check](flake-parts.html#opt-perSystem.checks) to make sure that your IDE will work.
-                '';
-              };
-              hlintCheck = mkOption {
-                default = { };
-                type = hlintCheckSubmodule;
-                description = ''
-                  A [check](flake-parts.html#opt-perSystem.checks) that runs [`hlint`](https://github.com/ndmitchell/hlint).
                 '';
               };
             };
