@@ -18,7 +18,6 @@
           # devShell = {
           #  enable = true;  # Enabled by default
           #  tools = hp: { fourmolu = hp.fourmolu; ghcid = null; };
-          #  hlintCheck.enable = true;
           #  hlsCheck.enable = true;
           # };
         };

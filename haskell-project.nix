@@ -95,23 +95,12 @@ in
 
       devShells."${projectKey}" = devShell;
 
-      checks = lib.filterAttrs (_: v: v != null) {
-        "${projectKey}-hls" =
-          if config.devShell.hlsCheck.enable then
-            runCommandInSimulatedShell
-              devShell
-              self "${projectKey}-hls-check"
-              { } "haskell-language-server"
-          else null;
-        "${projectKey}-hlint" =
-          if config.devShell.hlintCheck.enable then
-            runCommandInSimulatedShell
-              devShell
-              self "${projectKey}-hlint-check"
-              { } ''
-              hlint ${lib.concatStringsSep " " config.devShell.hlintCheck.dirs}
-            ''
-          else null;
-      };
+    } // lib.optionalAttrs config.devShell.hlsCheck.enable {
+
+      checks."${projectKey}-hls" =
+        runCommandInSimulatedShell
+          devShell
+          self "${projectKey}-hls-check"
+          { } "haskell-language-server";
     };
 }

@@ -40,7 +40,6 @@
               # You can also add additional build tools.
               fzf = pkgs.fzf;
             };
-            hlintCheck.enable = true;
             hlsCheck.enable = true;
           };
         };
