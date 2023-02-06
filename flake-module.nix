@@ -247,11 +247,9 @@ in
                         (name: _: finalPackages."${name}")
                         config.packages);
 
-                  devShells = lib.optionalAttrs config.devShell.enable {
-                    "${projectKey}" = devShell;
-                  };
+                  devShells."${projectKey}" = devShell;
 
-                  checks = lib.optionalAttrs config.devShell.enable (lib.filterAttrs (_: v: v != null) {
+                  checks = lib.filterAttrs (_: v: v != null) {
                     "${projectKey}-hls" =
                       if config.devShell.hlsCheck.enable then
                         devShellCheck "hls" "haskell-language-server"
@@ -262,7 +260,7 @@ in
                           hlint ${lib.concatStringsSep " " config.devShell.hlintCheck.dirs}
                         ''
                       else null;
-                  });
+                  };
                 };
             };
           });
@@ -278,15 +276,21 @@ in
   config = {
     perSystem = { config, self', lib, inputs', pkgs, ... }:
       let
-        flatAttrMap = f: attrs: lib.mkMerge (builtins.map f (lib.attrValues attrs));
+        flatAttrMap = f: attrs: lib.mkMerge (lib.attrValues (lib.mapAttrs f attrs));
       in
       {
         packages =
-          flatAttrMap (haskellProject: haskellProject.outputs.packages) config.haskellProjects;
+          flatAttrMap (_: project: project.outputs.packages) config.haskellProjects;
         devShells =
-          flatAttrMap (haskellProject: haskellProject.outputs.devShells) config.haskellProjects;
+          flatAttrMap
+            (_: project:
+              lib.optionalAttrs project.devShell.enable project.outputs.devShells)
+            config.haskellProjects;
         checks =
-          flatAttrMap (haskellProject: haskellProject.outputs.checks) config.haskellProjects;
+          flatAttrMap
+            (_: project:
+              lib.optionalAttrs project.devShell.enable project.outputs.checks)
+            config.haskellProjects;
       };
 
   };
