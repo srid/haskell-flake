@@ -150,7 +150,6 @@ in
               };
               outputs = mkOption {
                 type = types.attrsOf types.raw;
-                default = { };
                 description = ''
                   The flake outputs for this project.
                 '';
@@ -284,17 +283,18 @@ in
   };
 
   config = {
-    perSystem = { config, self', inputs', pkgs, ... }: {
-      packages =
-        lib.mkMerge
-          (
-            builtins.map
-              (haskellProject:
-                haskellProject.outputs.packages
-              )
-              (lib.attrValues config.haskellProjects)
-          );
-    };
+    perSystem = { config, self', lib, inputs', pkgs, ... }:
+      let
+        flatAttrMap = f: attrs: lib.mkMerge (builtins.map f (lib.attrValues attrs));
+      in
+      {
+        packages =
+          flatAttrMap (haskellProject: haskellProject.outputs.packages) config.haskellProjects;
+        devShells =
+          flatAttrMap (haskellProject: haskellProject.outputs.devShells) config.haskellProjects;
+        checks =
+          flatAttrMap (haskellProject: haskellProject.outputs.checks) config.haskellProjects;
+      };
 
   };
 }
