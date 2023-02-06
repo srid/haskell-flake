@@ -151,7 +151,9 @@ in
               outputs = mkOption {
                 type = types.attrsOf types.raw;
                 description = ''
-                  The flake outputs for this project.
+                  The flake outputs generated for this project.
+
+                  This is an internal option, not meant to be set by the user.
                 '';
               };
             };
@@ -276,6 +278,7 @@ in
   config = {
     perSystem = { config, self', lib, inputs', pkgs, ... }:
       let
+        # Like mapAttrs, but merges the values (also attrsets) of the resulting attrset.
         flatAttrMap = f: attrs: lib.mkMerge (lib.attrValues (lib.mapAttrs f attrs));
       in
       {
@@ -292,6 +295,5 @@ in
               lib.optionalAttrs project.devShell.enable project.outputs.checks)
             config.haskellProjects;
       };
-
   };
 }
