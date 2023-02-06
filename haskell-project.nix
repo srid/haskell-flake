@@ -28,6 +28,7 @@ in
   outputs =
     let
       projectKey = name;
+
       localPackagesOverlay = self: _:
         let
           fromSdist = self.buildFromCabalSdist or (builtins.trace "Your version of Nixpkgs does not support hs.buildFromCabalSdist yet." (pkg: pkg));
@@ -75,9 +76,6 @@ in
             (lib.attrNames config.packages);
         withHoogle = true;
       };
-
-      devShellCheck = name: command:
-        runCommandInSimulatedShell devShell self "${projectKey}-${name}-check" { } command;
     in
     {
       packages =
@@ -100,11 +98,17 @@ in
       checks = lib.filterAttrs (_: v: v != null) {
         "${projectKey}-hls" =
           if config.devShell.hlsCheck.enable then
-            devShellCheck "hls" "haskell-language-server"
+            runCommandInSimulatedShell
+              devShell
+              self "${projectKey}-hls-check"
+              { } "haskell-language-server"
           else null;
         "${projectKey}-hlint" =
           if config.devShell.hlintCheck.enable then
-            devShellCheck "hlint" ''
+            runCommandInSimulatedShell
+              devShell
+              self "${projectKey}-hlint-check"
+              { } ''
               hlint ${lib.concatStringsSep " " config.devShell.hlintCheck.dirs}
             ''
           else null;
