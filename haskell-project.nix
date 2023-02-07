@@ -1,5 +1,5 @@
 # Definition of the `haskellProjects.${name}` submodule's `config`
-{ name, self, config, lib, pkgs, ... }:
+args@{ projectSubmoduleOptions, name, self, options, config, lib, pkgs, ... }:
 let
   # Like pkgs.runCommand but runs inside nix-shell with a mutable project directory.
   #
@@ -29,6 +29,37 @@ in
     let
       projectKey = name;
 
+      configFinal =
+        let
+          options' = lib.filterAttrs (k: _: k != "_module") options;
+          config' = lib.filterAttrs
+            (k: _: k != "_module"
+              && k != "imports"
+              && k != "outputs")
+            config;
+          defaults = {
+            devShell.enable = true;
+            devShell.tools = _: { };
+            devShell.hlsCheck.enable = false;
+          };
+          projectOptions = { options = projectSubmoduleOptions; };
+          x = lib.evalModules {
+            modules = [
+              projectOptions
+              defaults
+              /* {
+              _file = "haskell-project.nix -> configFinal options";
+              options = options';
+              } */
+            ]
+            ++ config.imports ++ [{
+              _file = "haskell-project.nix -> configFinal config";
+              config = config';
+            }];
+          };
+        in
+        builtins.trace (config') (x.config);
+
       localPackagesOverlay = self: _:
         let
           fromSdist = self.buildFromCabalSdist or (builtins.trace "Your version of Nixpkgs does not support hs.buildFromCabalSdist yet." (pkg: pkg));
@@ -45,7 +76,7 @@ in
               };
             in
             fromSdist pkgFiltered)
-          config.packages;
+          configFinal.packages;
       finalOverlay =
         lib.composeManyExtensions
           [
@@ -55,10 +86,10 @@ in
             # as to give them maximum control over the final package
             # set used.
             localPackagesOverlay
-            (pkgs.haskell.lib.packageSourceOverrides config.source-overrides)
-            config.overrides
+            (pkgs.haskell.lib.packageSourceOverrides configFinal.source-overrides)
+            configFinal.overrides
           ];
-      finalPackages = config.haskellPackages.extend finalOverlay;
+      finalPackages = configFinal.haskellPackages.extend finalOverlay;
 
       defaultBuildTools = hp: with hp; {
         inherit
@@ -67,13 +98,13 @@ in
           ghcid
           hlint;
       };
-      nativeBuildInputs = lib.attrValues (defaultBuildTools finalPackages // config.devShell.tools finalPackages);
+      nativeBuildInputs = lib.attrValues (defaultBuildTools finalPackages // configFinal.devShell.tools finalPackages);
       devShell = finalPackages.shellFor {
         inherit nativeBuildInputs;
         packages = p:
           map
             (name: p."${name}")
-            (lib.attrNames config.packages);
+            (lib.attrNames configFinal.packages);
         withHoogle = true;
       };
     in
@@ -91,11 +122,11 @@ in
         mapKeys dropDefaultPrefix
           (lib.mapAttrs
             (name: _: finalPackages."${name}")
-            config.packages);
+            configFinal.packages);
 
       devShells."${projectKey}" = devShell;
 
-    } // lib.optionalAttrs config.devShell.hlsCheck.enable {
+    } // lib.optionalAttrs configFinal.devShell.hlsCheck.enable {
 
       checks."${projectKey}-hls" =
         runCommandInSimulatedShell

@@ -22,8 +22,26 @@
         inputs.haskell-flake.flakeModule
         inputs.check-flake.flakeModule
       ];
-      perSystem = { self', pkgs, ... }: {
+      perSystem = { self', pkgs, lib, ... }: {
         haskellProjects.default = {
+          imports =
+            let
+              defaultSettings = {
+                devShell = {
+                  tools = hp: {
+                    # Some buildTools are included by default. If you do not want them,
+                    # set them to 'null' here.
+                    ghcid = null;
+                    # You can also add additional build tools.
+                    fzf = pkgs.fzf;
+                  };
+                  hlsCheck.enable = true;
+                };
+              };
+            in
+            [
+              defaultSettings
+            ];
           packages = {
             # You can add more than one local package here.
             haskell-flake-test.root = ./.; # Assumes ./haskell-flake-test.cabal
@@ -31,16 +49,6 @@
           overrides = self: super: {
             # Custom library overrides (here, "foo" comes from a flake input)
             foo = self.callCabal2nix "foo" (inputs.haskell-multi-nix + /foo) { };
-          };
-          devShell = {
-            tools = hp: {
-              # Some buildTools are included by default. If you do not want them,
-              # set them to 'null' here.
-              ghcid = null;
-              # You can also add additional build tools.
-              fzf = pkgs.fzf;
-            };
-            hlsCheck.enable = true;
           };
         };
         # haskell-flake doesn't set the default package, but you can do it here.
