@@ -8,7 +8,7 @@
     };
     templates.flake-only = {
       description = "Example flake using haskell-flake";
-      path = builtins.path {path=./example; filter = path: _: baseNameOf path == "flake.nix";};
+      path = builtins.path { path = ./example; filter = path: _: baseNameOf path == "flake.nix"; };
     };
   };
 }
