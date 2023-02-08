@@ -71,7 +71,7 @@ in
               };
             };
           };
-          projectSubmodule = types.submoduleWith { specialArgs = { inherit pkgs self; }; modules = [ ./haskell-project.nix (args@{ name, config, lib, ... }:
+          projectSubmodule = types.submoduleWith { specialArgs = { inherit pkgs self; }; modules = [ ./haskell-project.nix
           {
             options = {
               haskellPackages = mkOption {
@@ -151,7 +151,7 @@ in
                 internal = true;
               };
             };
-          }) ]; };
+          } ]; };
         in
         {
           options.haskellProjects = mkOption {
