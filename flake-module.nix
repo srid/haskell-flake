@@ -71,7 +71,7 @@ in
               };
             };
           };
-          projectSubmodule = types.submodule (args@{ name, config, lib, ... }:
+          projectSubmodule = types.submoduleWith { specialArgs = { inherit pkgs self; }; modules = [ ./haskell-project.nix (args@{ name, config, lib, ... }:
           let
             localPackagesOverlay = self: _:
               let
@@ -170,8 +170,7 @@ in
                 internal = true;
               };
             };
-            config = lib.mkMerge [
-              {
+            config = {
                 finalPackages = config.haskellPackages.extend config.finalOverlay;
 
                 finalOverlay = lib.composeManyExtensions [
@@ -184,10 +183,8 @@ in
                   (pkgs.haskell.lib.packageSourceOverrides config.source-overrides)
                   config.overrides
                 ];
-              }
-              (import ./haskell-project.nix (args // { inherit self pkgs; }))
-            ];
-          });
+              };
+          }) ]; };
         in
         {
           options.haskellProjects = mkOption {
