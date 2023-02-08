@@ -14,7 +14,14 @@ To use `haskell-flake` in your Haskell projects, run:
 nix flake init -t github:srid/haskell-flake
 ```
 
-This will generate a template Haskell project with a `flake.nix`. If you already have a Haskell project, copy over this `flake.nix` and adjust accordingly.
+This will generate a template Haskell project with a `flake.nix`. If you already have a Haskell project, run:
+
+
+``` nix
+nix flake init -t github:srid/haskell-flake#flake-only
+```
+
+and adjust accordingly.
 
 ### Template
 
