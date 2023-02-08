@@ -15,4 +15,10 @@ echo "\n||| Testing nix flake checks"
 nix --option sandbox false \
     build --override-input haskell-flake path:${FLAKE} -L .#check
 
+echo "\n||| Testing docs"
+nix --option sandbox false \
+    build --override-input haskell-flake path:${FLAKE} \
+    -L --show-trace \
+    github:hercules-ci/flake.parts-website#checks.x86_64-linux.linkcheck
+
 echo "\n||| All tests passed!"
