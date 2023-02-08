@@ -71,7 +71,27 @@ in
               };
             };
           };
-          projectSubmodule = types.submodule (args@{ name, config, lib, ... }: {
+          projectSubmodule = types.submodule (args@{ name, config, lib, ... }:
+          let
+            localPackagesOverlay = self: _:
+              let
+                fromSdist = self.buildFromCabalSdist or (builtins.trace "Your version of Nixpkgs does not support hs.buildFromCabalSdist yet." (pkg: pkg));
+                filterSrc = name: src: lib.cleanSourceWith { inherit src name; filter = path: type: true; };
+              in
+              lib.mapAttrs
+                (name: value:
+                  let
+                    # callCabal2nix does not need a filtered source. It will
+                    # only pick out the cabal and/or hpack file.
+                    pkgProto = self.callCabal2nix name value.root { };
+                    pkgFiltered = pkgs.haskell.lib.overrideSrc pkgProto {
+                      src = filterSrc name value.root;
+                    };
+                  in
+                  fromSdist pkgFiltered)
+                config.packages;
+          in
+          {
             options = {
               haskellPackages = mkOption {
                 type = types.attrsOf raw;
@@ -133,8 +153,40 @@ in
                   This is an internal option, not meant to be set by the user.
                 '';
               };
+
+              # Derived options
+
+              finalPackages = mkOption {
+                type = types.attrsOf raw;
+                readOnly = true;
+                description = ''
+                  The final package set, based `haskellPackages` plus
+                  the additions and overrides specified in the other options.
+                '';
+              };
+              finalOverlay = mkOption {
+                type = types.raw;
+                readOnly = true;
+                internal = true;
+              };
             };
-            config = import ./haskell-project.nix (args // { inherit self pkgs; });
+            config = lib.mkMerge [
+              {
+                finalPackages = config.haskellPackages.extend config.finalOverlay;
+
+                finalOverlay = lib.composeManyExtensions [
+                  # The order here matters.
+                  #
+                  # User's overrides (cfg.overrides) is applied **last** so
+                  # as to give them maximum control over the final package
+                  # set used.
+                  localPackagesOverlay
+                  (pkgs.haskell.lib.packageSourceOverrides config.source-overrides)
+                  config.overrides
+                ];
+              }
+              (import ./haskell-project.nix (args // { inherit self pkgs; }))
+            ];
           });
         in
         {
