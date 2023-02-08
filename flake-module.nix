@@ -191,28 +191,25 @@ in
             description = "Haskell projects";
             type = types.attrsOf projectSubmodule;
           };
-        });
-  };
 
-  config = {
-    perSystem = { config, self', lib, inputs', pkgs, ... }:
-      let
-        # Like mapAttrs, but merges the values (also attrsets) of the resulting attrset.
-        flatAttrMap = f: attrs: lib.mkMerge (lib.attrValues (lib.mapAttrs f attrs));
-      in
-      {
-        packages =
-          flatAttrMap (_: project: project.outputs.packages) config.haskellProjects;
-        devShells =
-          flatAttrMap
-            (_: project:
-              lib.optionalAttrs project.devShell.enable project.outputs.devShells)
-            config.haskellProjects;
-        checks =
-          flatAttrMap
-            (_: project:
-              lib.optionalAttrs project.devShell.enable project.outputs.checks)
-            config.haskellProjects;
-      };
+          config = let
+            # Like mapAttrs, but merges the values (also attrsets) of the resulting attrset.
+            mergeMapAttrs = f: attrs: lib.mkMerge (lib.mapAttrsToList f attrs);
+          in
+          {
+            packages =
+              mergeMapAttrs (_: project: project.outputs.packages) config.haskellProjects;
+            devShells =
+              mergeMapAttrs
+                (_: project:
+                  lib.optionalAttrs project.devShell.enable project.outputs.devShells)
+                config.haskellProjects;
+            checks =
+              mergeMapAttrs
+                (_: project:
+                  lib.optionalAttrs project.devShell.enable project.outputs.checks)
+                config.haskellProjects;
+          };
+        });
   };
 }
