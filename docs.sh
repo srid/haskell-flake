@@ -10,9 +10,14 @@ nix --option sandbox false \
     github:hercules-ci/flake.parts-website \
     "$@"
 
-echo "Docs rendered to $PWD/result/options/haskell-flake.html"
+DOCSHTML="$PWD/result/options/haskell-flake.html"
 
-# Works on linux
-if type xdg-open &>/dev/null; then
-  xdg-open result/options/haskell-flake.html
+echo "Docs rendered to $DOCSHTML"
+
+if [ "$(uname)" == "Darwin" ]; then
+  open $DOCSHTML
+else 
+  if type xdg-open &>/dev/null; then
+    xdg-open result/options/haskell-flake.html
+  fi
 fi
