@@ -1,5 +1,5 @@
 # A flake-parts module for Haskell cabal projects.
-{ self, config, lib, flake-parts-lib, pkgs, ... }:
+{ self, config, lib, flake-parts-lib, ... }:
 
 let
   inherit (flake-parts-lib)
@@ -10,8 +10,8 @@ let
   inherit (types)
     functionTo
     raw;
-  root-files = builtins.attrNames (builtins.readDir ./.);
-  currentCabalAttrs = builtins.listToAttrs (builtins.map (cabalFile : { name = pkgs.lib.strings.removeSuffix ".cabal" cabalFile; value = builtins.toString ./.;}) (builtins.filter (name: pkgs.lib.strings.hasSuffix ".cabal" name) root-files));
+  root-files = builtins.attrNames (builtins.readDir self);
+  currentCabalAttrs = builtins.listToAttrs (builtins.map (cabalFile : { name = lib.strings.removeSuffix ".cabal" cabalFile; value = self;}) (builtins.filter (name: lib.strings.hasSuffix ".cabal" name) root-files));
 in
 {
   options = {
@@ -121,7 +121,7 @@ in
                     default =
                       lib.mapAttrs
                         (_: value: { root = value; })
-                        (lib.mkMerge currentCabalAttrs (lib.filesystem.haskellPathsInDir self));
+                            (lib.mkMerge [currentCabalAttrs (lib.filesystem.haskellPathsInDir self)]);
                     defaultText = lib.literalMD "autodiscovered by reading `self` files.";
                   };
                   devShell = mkOption {
