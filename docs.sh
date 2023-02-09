@@ -18,6 +18,6 @@ if [ "$(uname)" == "Darwin" ]; then
   open $DOCSHTML
 else 
   if type xdg-open &>/dev/null; then
-    xdg-open result/options/haskell-flake.html
+    xdg-open $DOCSHTML
   fi
 fi
