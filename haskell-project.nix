@@ -28,6 +28,8 @@ in
 
   config =
     let
+      inherit (config) finalPackages;
+
       projectKey = name;
 
       localPackagesOverlay = self: _:
@@ -47,19 +49,6 @@ in
             in
             fromSdist pkgFiltered)
           config.packages;
-      finalOverlay =
-        lib.composeManyExtensions
-          [
-            # The order here matters.
-            #
-            # User's overrides (cfg.overrides) is applied **last** so
-            # as to give them maximum control over the final package
-            # set used.
-            localPackagesOverlay
-            (pkgs.haskell.lib.packageSourceOverrides config.source-overrides)
-            config.overrides
-          ];
-      finalPackages = config.haskellPackages.extend finalOverlay;
 
       defaultBuildTools = hp: with hp; {
         inherit
