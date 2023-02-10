@@ -28,6 +28,7 @@ jobs:
             nix develop --override-input haskell-flake path:${FLAKE} -c haskell-language-server
           }
 
+          set -x
           #### Test "#example" template
           nix flake init -t $FLAKE#example
           templateTest
