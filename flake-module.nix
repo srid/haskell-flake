@@ -114,9 +114,14 @@ in
                     description = ''
                       Attrset of local packages in the project repository.
 
-                      Autodetected by default by looking for `.cabal` files in sub-directories.
+                      Autodiscovered by default by looking for `.cabal` files in
+                      top-level or sub-directories.
                     '';
                     default =
+                      # We look for a single *.cabal in project root. Otherwise,
+                      # look for multiple */*.cabal. Otherwise, error out.
+                      #
+                      # In future, we could just read `cabal.project`. See #76.
                       let
                         toplevel-cabal-paths =
                           lib.concatMapAttrs
