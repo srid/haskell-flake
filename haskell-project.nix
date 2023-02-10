@@ -25,8 +25,11 @@ let
       '';
 in
 {
-  outputs =
+
+  config =
     let
+      inherit (config) finalPackages;
+
       projectKey = name;
 
       localPackagesOverlay = self: _:
@@ -46,19 +49,6 @@ in
             in
             fromSdist pkgFiltered)
           config.packages;
-      finalOverlay =
-        lib.composeManyExtensions
-          [
-            # The order here matters.
-            #
-            # User's overrides (cfg.overrides) is applied **last** so
-            # as to give them maximum control over the final package
-            # set used.
-            localPackagesOverlay
-            (pkgs.haskell.lib.packageSourceOverrides config.source-overrides)
-            config.overrides
-          ];
-      finalPackages = config.haskellPackages.extend finalOverlay;
 
       defaultBuildTools = hp: with hp; {
         inherit
@@ -78,29 +68,44 @@ in
       };
     in
     {
-      packages =
-        let
-          mapKeys = f: attrs: lib.mapAttrs' (n: v: { name = f n; value = v; }) attrs;
-          # Prefix package names with the project name (unless
-          # project is named `default`)
-          dropDefaultPrefix = packageName:
-            if projectKey == "default"
-            then packageName
-            else "${projectKey}-${packageName}";
-        in
-        mapKeys dropDefaultPrefix
-          (lib.mapAttrs
-            (name: _: finalPackages."${name}")
-            config.packages);
+      finalPackages = config.basePackages.extend config.finalOverlay;
 
-      devShells."${projectKey}" = devShell;
+      finalOverlay = lib.composeManyExtensions [
+        # The order here matters.
+        #
+        # User's overrides (cfg.overrides) is applied **last** so
+        # as to give them maximum control over the final package
+        # set used.
+        localPackagesOverlay
+        (pkgs.haskell.lib.packageSourceOverrides config.source-overrides)
+        config.overrides
+      ];
 
-    } // lib.optionalAttrs config.devShell.hlsCheck.enable {
+      outputs = {
+        packages =
+          let
+            mapKeys = f: attrs: lib.mapAttrs' (n: v: { name = f n; value = v; }) attrs;
+            # Prefix package names with the project name (unless
+            # project is named `default`)
+            dropDefaultPrefix = packageName:
+              if projectKey == "default"
+              then packageName
+              else "${projectKey}-${packageName}";
+          in
+          mapKeys dropDefaultPrefix
+            (lib.mapAttrs
+              (name: _: finalPackages."${name}")
+              config.packages);
 
-      checks."${projectKey}-hls" =
-        runCommandInSimulatedShell
-          devShell
-          self "${projectKey}-hls-check"
-          { } "haskell-language-server";
+        devShells."${projectKey}" = devShell;
+
+      } // lib.optionalAttrs config.devShell.hlsCheck.enable {
+
+        checks."${projectKey}-hls" =
+          runCommandInSimulatedShell
+            devShell
+            self "${projectKey}-hls-check"
+            { } "haskell-language-server";
+      };
     };
 }
