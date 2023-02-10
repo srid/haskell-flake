@@ -99,16 +99,28 @@ in
                     description = ''Package overrides given new source path'';
                     default = { };
                   };
-                  overrides = mkOption {
-                    type = functionTo (functionTo (types.lazyAttrsOf raw));
-                    description = ''
-                      Overrides for the Cabal project
+                  overrides =
+                    let
+                      haskellOverlay = types.mkOptionType {
+                        name = "haskellOverlay";
+                        description = "Haskell overlay function";
+                        descriptionClass = "noun";
+                        check = lib.isFunction;
+                        merge = loc: defs:
+                          # TODO: What to do with loc?
+                          lib.composeManyExtensions (map (x: x.value) defs);
+                      };
+                    in
+                    mkOption {
+                      type = haskellOverlay;
+                      description = ''
+                        Overrides for the Cabal project
                 
-                      For handy functions, see <https://github.com/NixOS/nixpkgs/blob/master/pkgs/development/haskell-modules/lib/compose.nix>
-                    '';
-                    default = self: super: { };
-                    defaultText = lib.literalExpression "self: super: { }";
-                  };
+                        For handy functions, see <https://github.com/NixOS/nixpkgs/blob/master/pkgs/development/haskell-modules/lib/compose.nix>
+                      '';
+                      default = self: super: { };
+                      defaultText = lib.literalExpression "self: super: { }";
+                    };
                   packages = mkOption {
                     type = types.lazyAttrsOf packageSubmodule;
                     description = ''
