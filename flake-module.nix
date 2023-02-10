@@ -119,11 +119,13 @@ in
                     default =
                       let
                         toplevel-cabal-paths =
-                          let
-                            root-files = builtins.attrNames (builtins.readDir self);
-                            only-cabal-files = builtins.filter (name: lib.strings.hasSuffix ".cabal" name) root-files;
-                          in
-                          builtins.listToAttrs (builtins.map (f: { name = lib.strings.removeSuffix ".cabal" f; value = self; }) only-cabal-files);
+                          lib.concatMapAttrs
+                            (f: _:
+                              if lib.strings.hasSuffix ".cabal" f
+                              then { "${lib.strings.removeSuffix ''.cabal'' f}" = self; }
+                              else { }
+                            )
+                            (builtins.readDir self);
                         subdir-cabal-paths = lib.filesystem.haskellPathsInDir self;
                         cabal-paths =
                           if toplevel-cabal-paths != { }
