@@ -117,20 +117,24 @@ in
                       Autodetected by default by looking for `.cabal` files in sub-directories.
                     '';
                     default =
-                      let toplevel-cabal-paths =
-                            let root-files = builtins.attrNames (builtins.readDir self);
-                                only-cabal-files = builtins.filter (name: lib.strings.hasSuffix ".cabal" name) root-files;
-                              in builtins.listToAttrs (builtins.map (f : { name = lib.strings.removeSuffix ".cabal" f; value = self;}) only-cabal-files);
-                          subdir-cabal-paths = lib.filesystem.haskellPathsInDir self;
-                          cabal-paths =
-                            if toplevel-cabal-paths != {}
-                              then toplevel-cabal-paths
-                              else if subdir-cabal-paths != {}
-                                then subdir-cabal-paths
-                                else lib.asserts.assertMsg false "no cabal file found in either top level or sub directories.";
-                        in lib.mapAttrs
-                          (_: value: { root = value; })
-                          cabal-paths;
+                      let
+                        toplevel-cabal-paths =
+                          let
+                            root-files = builtins.attrNames (builtins.readDir self);
+                            only-cabal-files = builtins.filter (name: lib.strings.hasSuffix ".cabal" name) root-files;
+                          in
+                          builtins.listToAttrs (builtins.map (f: { name = lib.strings.removeSuffix ".cabal" f; value = self; }) only-cabal-files);
+                        subdir-cabal-paths = lib.filesystem.haskellPathsInDir self;
+                        cabal-paths =
+                          if toplevel-cabal-paths != { }
+                          then toplevel-cabal-paths
+                          else if subdir-cabal-paths != { }
+                          then subdir-cabal-paths
+                          else lib.asserts.assertMsg false "no cabal file found in either top level or sub directories.";
+                      in
+                      lib.mapAttrs
+                        (_: value: { root = value; })
+                        cabal-paths;
                     defaultText = lib.literalMD "autodiscovered by reading `self` files.";
                   };
                   devShell = mkOption {
