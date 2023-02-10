@@ -268,6 +268,5 @@ in
                   config.haskellProjects;
             };
         });
-
   };
 }

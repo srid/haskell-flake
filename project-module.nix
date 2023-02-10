@@ -14,6 +14,8 @@ mkTransposedPerSystemModule {
     type = types.lazyAttrsOf types.deferredModule;
     default = { };
     description = ''
+      An attrset of `haskellProjects.<name>` modules that can be imported in
+      other flakes.
     '';
   };
   file = ./project-module.nix;
