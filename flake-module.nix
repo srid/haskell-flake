@@ -101,22 +101,38 @@ in
                   };
                   overrides =
                     let
-                      haskellOverlay = types.mkOptionType {
+                      # WARNING: While the deterministic, it is not determined
+                      # by the user. Thus overlays may be applied in unexpected
+                      # order.
+                      # We need: https://github.com/NixOS/nixpkgs/issues/215486
+                      haskellOverlayType = types.mkOptionType {
                         name = "haskellOverlay";
-                        description = "Haskell overlay function";
+                        description = "An Haskell overlay function";
                         descriptionClass = "noun";
+                        # NOTE: This check is not exhaustive, as there is no way
+                        # to check that the function takes two arguments, and
+                        # returns an attrset.
                         check = lib.isFunction;
-                        merge = loc: defs:
-                          # TODO: What to do with loc?
+                        merge = _loc: defs:
                           lib.composeManyExtensions (map (x: x.value) defs);
                       };
                     in
                     mkOption {
-                      type = haskellOverlay;
+                      type = haskellOverlayType;
                       description = ''
-                        Overrides for the Cabal project
+                        Cabal package overrides for this Haskell project
                 
-                        For handy functions, see <https://github.com/NixOS/nixpkgs/blob/master/pkgs/development/haskell-modules/lib/compose.nix>
+                        For handy functions, see 
+                        <https://github.com/NixOS/nixpkgs/blob/master/pkgs/development/haskell-modules/lib/compose.nix>
+
+                        **WARNING**: When using `imports`, multiple overlays
+                        *will be merged using `lib.composeManyExtensions`.
+                        *However the order the overlays are applied can be
+                        *arbitrary (albeit deterministic, based on module system
+                        *implementation).  Thus, the use of `overrides` via
+                        *`imports` is not officiallly supported. If you'd like
+                        *to see proper support, add your thumbs up to
+                        <https://github.com/NixOS/nixpkgs/issues/215486>.
                       '';
                       default = self: super: { };
                       defaultText = lib.literalExpression "self: super: { }";
