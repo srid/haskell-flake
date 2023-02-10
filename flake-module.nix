@@ -127,12 +127,31 @@ in
                             )
                             (builtins.readDir self);
                         subdir-cabal-paths = lib.filesystem.haskellPathsInDir self;
+                        errorNoDefault = msg:
+                          lib.asserts.assertMsg false '' 
+                              A default value for `packages` cannot be auto-detected:
+
+                                ${msg}
+                              You must manually specify the `packages` option.
+                            '';
                         cabal-paths =
                           if toplevel-cabal-paths != { }
-                          then toplevel-cabal-paths
+                          then
+                            let cabalNames = lib.attrNames toplevel-cabal-paths;
+                            in if builtins.length cabalNames > 1
+                            then
+                              errorNoDefault ''
+                                More than one .cabal file found in project root:
+
+                                  - ${lib.concatStringsSep ".cabal\n  - " cabalNames}.cabal
+                              ''
+                            else
+                              toplevel-cabal-paths
                           else if subdir-cabal-paths != { }
-                          then subdir-cabal-paths
-                          else lib.asserts.assertMsg false "no cabal file found in either top level or sub directories.";
+                          then
+                            subdir-cabal-paths
+                          else
+                            errorNoDefault "No .cabal file found.";
                       in
                       lib.mapAttrs
                         (_: value: { root = value; })
