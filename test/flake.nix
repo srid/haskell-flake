@@ -28,6 +28,11 @@
           imports =
             let
               defaults = {
+                overrides = self: super: {
+                  # This is purposefully incorrect (pointing to ./.) because we
+                  # expect it to be overriden below.
+                  foo = self.callCabal2nix "foo" ./. { };
+                };
                 devShell = {
                   tools = hp: {
                     # Setting to null should remove this tool from defaults.
@@ -39,7 +44,9 @@
             in
             [ defaults ];
           overrides = self: super: {
-            # Custom library overrides (here, "foo" comes from a flake input)
+            # This overrides the overlay above (in `defaults`), because the
+            # module system merges them in such order. cf. the WARNING in option
+            # docs.
             foo = self.callCabal2nix "foo" (inputs.haskell-multi-nix + /foo) { };
           };
           devShell.tools = hp: {
