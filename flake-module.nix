@@ -77,7 +77,7 @@ in
               ./haskell-project.nix
               {
                 options = {
-                  haskellPackages = mkOption {
+                  basePackages = mkOption {
                     type = types.attrsOf raw;
                     description = ''
                       Which Haskell package set / compiler to use.
@@ -144,7 +144,7 @@ in
                     type = types.attrsOf raw;
                     readOnly = true;
                     description = ''
-                      The final package set, based `haskellPackages` plus
+                      The final package set, based on `basePackages` plus
                       the additions and overrides specified in the other options.
                     '';
                   };

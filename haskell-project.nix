@@ -68,7 +68,7 @@ in
       };
     in
     {
-      finalPackages = config.haskellPackages.extend config.finalOverlay;
+      finalPackages = config.basePackages.extend config.finalOverlay;
 
       finalOverlay = lib.composeManyExtensions [
         # The order here matters.
