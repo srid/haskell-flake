@@ -20,11 +20,23 @@ jobs:
           FLAKE=$(pwd)
           TEMP_DIR=$(mktemp -d)
           cd $TEMP_DIR
+
+          function templateTest () {
+            # Build haskell executable
+            nix build --override-input haskell-flake path:${FLAKE}
+            # Test haskell devshell (via HLS check)
+            nix develop --override-input haskell-flake path:${FLAKE} -c haskell-language-server
+          }
+
+          #### Test "#example" template
           nix flake init -t $FLAKE#example
-          # Build haskell executable
-          nix build --override-input haskell-flake path:${FLAKE}
-          # Test haskell devshell (via HLS check)
-          nix develop --override-input haskell-flake path:${FLAKE} -c haskell-language-server
+          templateTest
+
+          ### Test "#default" template
+          rm -f flake.nix
+          nix flake init -t $FLAKE
+          templateTest
+
       - name: Run test
         id: test
         run: ./runtest.sh
