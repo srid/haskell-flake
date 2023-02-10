@@ -24,10 +24,6 @@
       ];
       perSystem = { self', pkgs, ... }: {
         haskellProjects.default = {
-          packages = {
-            # You can add more than one local package here.
-            haskell-flake-test.root = ./.; # Assumes ./haskell-flake-test.cabal
-          };
           overrides = self: super: {
             # Custom library overrides (here, "foo" comes from a flake input)
             foo = self.callCabal2nix "foo" (inputs.haskell-multi-nix + /foo) { };
