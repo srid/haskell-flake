@@ -114,7 +114,18 @@ in
                         # returns an attrset.
                         check = lib.isFunction;
                         merge = _loc: defs:
-                          lib.composeManyExtensions (map (x: x.value) defs);
+                          let
+                            logWarning =
+                              if builtins.length defs > 1
+                              then builtins.trace "WARNING[haskel-flake]: Multiple haskell overlays are applied in arbitrary order." null
+                              else null;
+                            overlays =
+                              map (x: x.value)
+                                (builtins.seq
+                                  logWarning
+                                  defs);
+                          in
+                          lib.composeManyExtensions overlays;
                       };
                     in
                     mkOption {
