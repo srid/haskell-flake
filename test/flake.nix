@@ -24,19 +24,25 @@
       ];
       perSystem = { self', pkgs, ... }: {
         haskellProjects.default = {
+          imports =
+            let
+              defaults = {
+                devShell = {
+                  tools = hp: {
+                    # Some buildTools are included by default. If you do not want them,
+                    # set them to 'null' here.
+                    ghcid = null;
+                    # You can also add additional build tools.
+                    fzf = pkgs.fzf;
+                  };
+                  hlsCheck.enable = true;
+                };
+              };
+            in
+            [ defaults ];
           overrides = self: super: {
             # Custom library overrides (here, "foo" comes from a flake input)
             foo = self.callCabal2nix "foo" (inputs.haskell-multi-nix + /foo) { };
-          };
-          devShell = {
-            tools = hp: {
-              # Some buildTools are included by default. If you do not want them,
-              # set them to 'null' here.
-              ghcid = null;
-              # You can also add additional build tools.
-              fzf = pkgs.fzf;
-            };
-            hlsCheck.enable = true;
           };
         };
         # haskell-flake doesn't set the default package, but you can do it here.
