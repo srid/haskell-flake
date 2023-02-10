@@ -101,9 +101,9 @@ in
                   };
                   overrides =
                     let
-                      # WARNING: While the deterministic, it is not determined
-                      # by the user. Thus overlays may be applied in unexpected
-                      # order.
+                      # WARNING: While the order is deterministic, it is not
+                      # determined by the user. Thus overlays may be applied in
+                      # an unexpected order.
                       # We need: https://github.com/NixOS/nixpkgs/issues/215486
                       haskellOverlayType = types.mkOptionType {
                         name = "haskellOverlay";
@@ -117,7 +117,7 @@ in
                           let
                             logWarning =
                               if builtins.length defs > 1
-                              then builtins.trace "WARNING[haskel-flake]: Multiple haskell overlays are applied in arbitrary order." null
+                              then builtins.trace "WARNING[haskell-flake]: Multiple haskell overlays are applied in arbitrary order." null
                               else null;
                             overlays =
                               map (x: x.value)
@@ -137,12 +137,12 @@ in
                         <https://github.com/NixOS/nixpkgs/blob/master/pkgs/development/haskell-modules/lib/compose.nix>
 
                         **WARNING**: When using `imports`, multiple overlays
-                        *will be merged using `lib.composeManyExtensions`.
-                        *However the order the overlays are applied can be
-                        *arbitrary (albeit deterministic, based on module system
-                        *implementation).  Thus, the use of `overrides` via
-                        *`imports` is not officiallly supported. If you'd like
-                        *to see proper support, add your thumbs up to
+                        will be merged using `lib.composeManyExtensions`.
+                        However the order the overlays are applied can be
+                        arbitrary (albeit deterministic, based on module system
+                        implementation).  Thus, the use of `overrides` via
+                        `imports` is not officiallly supported. If you'd like
+                        to see proper support, add your thumbs up to
                         <https://github.com/NixOS/nixpkgs/issues/215486>.
                       '';
                       default = self: super: { };
