@@ -8,17 +8,21 @@ To keep `flake.nix` smaller (see examples below) and declarative ([what](https:/
 
 ## Usage
 
-To use `haskell-flake` in your Haskell projects, run:
+To use `haskell-flake` in your *existing* Haskell projects, run:
 
 ``` nix
 nix flake init -t github:srid/haskell-flake
 ```
 
-This will generate a template Haskell project with a `flake.nix`. If you already have a Haskell project, copy over this `flake.nix` and adjust accordingly.
+To create a *new* Haskell project, run:
+
+``` nix
+nix flake init -t github:srid/haskell-flake#example
+```
 
 ### Template
 
-If you are bootstrapping a *new* Haskell project, you may use https://github.com/srid/haskell-template which already uses `haskell-flake` along with other opinionated defaults.
+You may also use https://github.com/srid/haskell-template which already uses `haskell-flake` along with other opinionated defaults.
 
 ## Documentation
 
