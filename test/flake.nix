@@ -24,16 +24,14 @@
       ];
       perSystem = { self', pkgs, ... }: {
         haskellProjects.default = {
+          # Multiple modules should be merged correctly.
           imports =
             let
               defaults = {
                 devShell = {
                   tools = hp: {
-                    # Some buildTools are included by default. If you do not want them,
-                    # set them to 'null' here.
+                    # Setting to null should remove this tool from defaults.
                     ghcid = null;
-                    # You can also add additional build tools.
-                    fzf = pkgs.fzf;
                   };
                   hlsCheck.enable = true;
                 };
@@ -43,6 +41,10 @@
           overrides = self: super: {
             # Custom library overrides (here, "foo" comes from a flake input)
             foo = self.callCabal2nix "foo" (inputs.haskell-multi-nix + /foo) { };
+          };
+          devShell.tools = hp: {
+            # Adding a tool should make it available in devshell.
+            fzf = pkgs.fzf;
           };
         };
         # haskell-flake doesn't set the default package, but you can do it here.
