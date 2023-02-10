@@ -13,9 +13,17 @@ else
 fi
 
 FLAKE=$(pwd)
-cd ./test
 
-# First, build the flake.
+# A Nix bug causes incorrect self when in a sub-flake.
+# https://github.com/NixOS/nix/issues/7263
+# Workaround: copy ./test somewhere outside of this Git repo.
+TESTDIR=$(mktemp -d)
+trap 'rm -fr "$TESTDIR"' EXIT
+cp -r ./test/* "$TESTDIR"
+cd "$TESTDIR"
+pwd
+
+# First, build the flake
 logHeader "Testing nix build"
 nix build --override-input haskell-flake path:${FLAKE}
 # Run the devshell test script in a nix develop shell.
