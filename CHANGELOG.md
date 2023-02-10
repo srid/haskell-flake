@@ -11,6 +11,7 @@
     - #64: Remove hlintCheck (use [treefmt-nix](https://github.com/numtide/treefmt-nix#flake-parts) instead)
     - #52: Expose the final package set as `finalPackages`. Rename `haskellPackages`, accordingly, to `basePackages`. Overlays are applied on top of `basePackage` -- using `source-overrides`, `overrides`, `packages` in that order -- to produce `finalPackages`.
     - #68: You can now use `imports` inside of `haskellProjects.<name>` to modularize your Haskell project configuration.
+      - ??: `flake.haskellFlakeProjectModules.<name>` can be used to set and expose your Haskell project modules to other flakes.
       - #67: `overrides` will be combined using `composeManyExtensions`, however their order is arbitrary. This is an experimental feature, and a warning will be logged.
 
 ## 0.1.0

@@ -3,6 +3,7 @@
 
 let
   inherit (flake-parts-lib)
+    mkSubmoduleOptions
     mkPerSystemOption;
   inherit (lib)
     mkOption
@@ -264,5 +265,14 @@ in
                   config.haskellProjects;
             };
         });
+    flake = mkSubmoduleOptions {
+      haskellFlakeProjectModules = mkOption {
+        type = types.attrsOf types.deferredModule;
+        description = ''
+          An attrset of `haskellProject.<name>` submodules.
+        '';
+        default = [ ];
+      };
+    };
   };
 }
