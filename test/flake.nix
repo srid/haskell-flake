@@ -22,25 +22,24 @@
         inputs.haskell-flake.flakeModule
         inputs.check-flake.flakeModule
       ];
-      flake.haskellFlakeProjectModules.default = {
-        overrides = self: super: {
-          # This is purposefully incorrect (pointing to ./.) because we
-          # expect it to be overriden below.
-          foo = self.callCabal2nix "foo" ./. { };
-        };
-        devShell = {
-          tools = hp: {
-            # Setting to null should remove this tool from defaults.
-            ghcid = null;
-          };
-          hlsCheck.enable = true;
-        };
-      };
-
       perSystem = { self', pkgs, ... }: {
+        haskellFlakeProjectModules.default = {
+          overrides = self: super: {
+            # This is purposefully incorrect (pointing to ./.) because we
+            # expect it to be overriden below.
+            foo = self.callCabal2nix "foo" ./. { };
+          };
+          devShell = {
+            tools = hp: {
+              # Setting to null should remove this tool from defaults.
+              ghcid = null;
+            };
+            hlsCheck.enable = true;
+          };
+        };
         haskellProjects.default = {
           # Multiple modules should be merged correctly.
-          imports = [ self.haskellFlakeProjectModules.default ];
+          imports = [ self'.haskellFlakeProjectModules.default ];
           overrides = self: super: {
             # This overrides the overlay above (in `defaults`), because the
             # module system merges them in such order. cf. the WARNING in option
