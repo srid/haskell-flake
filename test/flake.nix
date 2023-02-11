@@ -23,7 +23,7 @@
         inputs.check-flake.flakeModule
       ];
       perSystem = { self', pkgs, ... }: {
-        haskellFlakeProjectModules.default = {
+        haskellFlakeProjectModules.default = { pkgs, ... }: {
           overrides = self: super: {
             # This is purposefully incorrect (pointing to ./.) because we
             # expect it to be overriden below.
