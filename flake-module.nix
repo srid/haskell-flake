@@ -239,9 +239,20 @@ in
           };
         in
         {
-          options.haskellProjects = mkOption {
-            description = "Haskell projects";
-            type = types.attrsOf projectSubmodule;
+          options = {
+            haskellProjects = mkOption {
+              description = "Haskell projects";
+              type = types.attrsOf projectSubmodule;
+            };
+
+            haskellFlakeProjectModules = mkOption {
+              type = types.lazyAttrsOf types.deferredModule;
+              default = { };
+              description = ''
+                An attrset of `haskellProjects.<name>` modules that can be imported in
+                other flakes.
+              '';
+            };
           };
 
           config =
