@@ -260,7 +260,7 @@ in
               checks =
                 mergeMapAttrs
                   (_: project:
-                    lib.optionalAttrs project.devShell.enable project.outputs.checks)
+                    lib.optionalAttrs project.devShell.hlsCheck.enable project.outputs.checks)
                   config.haskellProjects;
             };
         });
