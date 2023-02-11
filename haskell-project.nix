@@ -99,13 +99,13 @@ in
 
         devShells."${projectKey}" = devShell;
 
-      } // lib.optionalAttrs config.devShell.hlsCheck.enable {
-
-        checks."${projectKey}-hls" =
-          runCommandInSimulatedShell
-            devShell
-            self "${projectKey}-hls-check"
-            { } "haskell-language-server";
+        checks = lib.optionalAttrs config.devShell.hlsCheck.enable {
+          "${projectKey}-hls" =
+            runCommandInSimulatedShell
+              devShell
+              self "${projectKey}-hls-check"
+              { } "haskell-language-server";
+        };
       };
     };
 }
