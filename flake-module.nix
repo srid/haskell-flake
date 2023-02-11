@@ -240,7 +240,6 @@ in
               }
             ];
           };
-
         in
         {
           options.haskellProjects = mkOption {
