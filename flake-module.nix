@@ -69,6 +69,13 @@ in
                   A [check](flake-parts.html#opt-perSystem.checks) to make sure that your IDE will work.
                 '';
               };
+              shellHook = mkOption {
+                default = "";
+                type = types.str;
+                description = ''
+                  Bash statements that are executed by nix develop.
+                '';
+              };
             };
           };
           projectSubmodule = types.submoduleWith {

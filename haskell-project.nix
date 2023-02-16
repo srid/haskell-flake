@@ -65,6 +65,7 @@ in
             (name: p."${name}")
             (lib.attrNames config.packages);
         withHoogle = true;
+        shellHook = config.devShell.shellHook;
       };
     in
     {
