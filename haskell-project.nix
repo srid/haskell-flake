@@ -47,7 +47,7 @@ in
                 src = filterSrc name value.root;
               };
             in
-            fromSdist pkgFiltered)
+            pkgProto)
           config.packages;
 
       defaultBuildTools = hp: with hp; {
