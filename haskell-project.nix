@@ -90,7 +90,8 @@ in
             doCheck = ! value.disableTests;
             enableLibraryProfiling = value.profiling;
             enableExecutableProfiling = value.profiling;
-          }
+            jailbreak = value.doJailbreak;
+          } // (if value.unmarkBroken then { broken = false; } else { })
           )
           s.${name};
       createoverlay = self: super: lib.mapAttrs (modifyoverrides super) config.easy-overrides;

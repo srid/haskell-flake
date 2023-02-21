@@ -120,9 +120,19 @@ in
                       options = {
                         profiling = mkOption {
                           type = bool;
+                          default = false;
                         };
                         disableTests = mkOption {
                           type = bool;
+                          default = false;
+                        };
+                        doJailbreak = mkOption {
+                          type = bool;
+                          default = false;
+                        };
+                        unmarkBroken = mkOption {
+                          type = bool;
+                          default = false;
                         };
                       };
                     });
