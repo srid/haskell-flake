@@ -86,12 +86,7 @@ in
       });
       modifyoverrides = s: name: value:
         pkgs.haskell.lib.compose.overrideCabal
-          (drv: {
-            doCheck = ! value.disableTests;
-            enableLibraryProfiling = value.profiling;
-            enableExecutableProfiling = value.profiling;
-            jailbreak = value.doJailbreak;
-          } // (if value.unmarkBroken then { broken = false; } else { })
+          (drv: value
           )
           s.${name};
       createoverlay = self: super: lib.mapAttrs (modifyoverrides super) config.easy-overrides;

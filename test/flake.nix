@@ -56,7 +56,11 @@
               export FOO=bar
             '';
           };
-          easy-overrides = {};
+          easy-overrides = {
+            aeson = {
+              enableLibraryProfiling = true;
+            };
+          };
         };
         # haskell-flake doesn't set the default package, but you can do it here.
         packages.default = self'.packages.haskell-flake-test;

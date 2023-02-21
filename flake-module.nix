@@ -114,29 +114,16 @@ in
                     description = ''Package overrides given new source path'';
                     default = { };
                   };
-                  easy-overrides = mkOption {
-                    description = " An attribute set with haskell packages and the options.";
-                    type = with types; attrsOf (submodule {
-                      options = {
-                        profiling = mkOption {
-                          type = bool;
-                          default = false;
-                        };
-                        disableTests = mkOption {
-                          type = bool;
-                          default = false;
-                        };
-                        doJailbreak = mkOption {
-                          type = bool;
-                          default = false;
-                        };
-                        unmarkBroken = mkOption {
-                          type = bool;
-                          default = false;
-                        };
+                  easy-overrides =
+                    let settingsFormat = pkgs.formats.json { };
+                    in
+                    mkOption {
+                      description = " An attribute set with haskell packages and the options.";
+                      type = with types; submodule {
+                        freeformType = settingsFormat.type;
                       };
-                    });
-                  };
+                      default = { };
+                    };
                   overrides =
                     let
                       # WARNING: While the order is deterministic, it is not
