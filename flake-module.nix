@@ -114,6 +114,19 @@ in
                     description = ''Package overrides given new source path'';
                     default = { };
                   };
+                  easy-overrides = mkOption {
+                    description = " An attribute set with haskell packages and the options.";
+                    type = with types; attrsOf (submodule {
+                      options = {
+                        profiling = mkOption {
+                          type = bool;
+                        };
+                        disableTests = mkOption {
+                          type = bool;
+                        };
+                      };
+                    });
+                  };
                   overrides =
                     let
                       # WARNING: While the order is deterministic, it is not

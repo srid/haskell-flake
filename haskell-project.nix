@@ -84,6 +84,16 @@ in
             (lib.attrNames config.packages);
         withHoogle = true;
       });
+      modifyoverrides = s: name: value:
+        pkgs.haskell.lib.compose.overrideCabal
+          (drv: {
+            doCheck = ! value.disableTests;
+            enableLibraryProfiling = value.profiling;
+            enableExecutableProfiling = value.profiling;
+          }
+          )
+          s.${name};
+      createoverlay = self: super: lib.mapAttrs (modifyoverrides super) config.easy-overrides;
     in
     {
       finalPackages = config.basePackages.extend config.finalOverlay;
@@ -96,6 +106,7 @@ in
         # set used.
         localPackagesOverlay
         (pkgs.haskell.lib.packageSourceOverrides config.source-overrides)
+        createoverlay
         config.overrides
       ];
 
