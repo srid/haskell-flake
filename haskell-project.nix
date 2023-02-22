@@ -34,7 +34,6 @@ in
 
       localPackagesOverlay = self: _:
         let
-          fromSdist = self.buildFromCabalSdist or (builtins.trace "Your version of Nixpkgs does not support hs.buildFromCabalSdist yet." (pkg: pkg));
           filterSrc = name: src: lib.cleanSourceWith { inherit src name; filter = path: type: true; };
         in
         lib.mapAttrs
@@ -47,7 +46,7 @@ in
                 src = filterSrc name value.root;
               };
             in
-            fromSdist pkgFiltered)
+            pkgFiltered)
           config.packages;
 
       defaultBuildTools = hp: with hp; {
