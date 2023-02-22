@@ -35,10 +35,34 @@ in
       localPackagesOverlay = self: _:
         let
           fromSdist = self.buildFromCabalSdist or (builtins.trace "Your version of Nixpkgs does not support hs.buildFromCabalSdist yet." (pkg: pkg));
+          # If `root` has package.yaml, but no cabal file, generate the cabal
+          # file and return the new source tree.
+          realiseHpack = name: root:
+            let
+              contents = lib.attrNames (builtins.readDir root);
+              hasCabal = lib.any (lib.strings.hasSuffix ".cabal") contents;
+              hasHpack = builtins.elem ("package.yaml") contents;
+            in
+            if (!hasCabal && hasHpack)
+            then
+              pkgs.runCommand
+                "${name}-hpack"
+                { nativeBuildInputs = [ pkgs.hpack ]; }
+                ''
+                  cp -r ${root} $out
+                  chmod u+w $out
+                  cd $out
+                  hpack
+                ''
+            else root;
         in
         lib.mapAttrs
           (name: value:
-            fromSdist (self.callCabal2nix name value.root { })
+            # NOTE: Even though cabal2nix does run hpack automatically,
+            # buildFromCabalSdist does not. So we must run hpack ourselves at
+            # the original source level.
+            let root = realiseHpack name value.root;
+            in fromSdist (self.callCabal2nix name root { })
           )
           config.packages;
 
