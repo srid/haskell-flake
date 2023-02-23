@@ -75,6 +75,12 @@ in
                   Extra arguments to pass to `mkShell`.
                 '';
                 default = { };
+                example = {
+                  shellHook = ''
+                    # Re-generate .cabal files so HLS will work (per hie.yaml)
+                    ${pkgs.findutils}/bin/find -name package.yaml -exec hpack {} \;
+                  '';
+                };
               };
             };
           };
