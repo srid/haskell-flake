@@ -46,9 +46,15 @@
             # docs.
             foo = self.callCabal2nix "foo" (inputs.haskell-multi-nix + /foo) { };
           };
-          devShell.tools = hp: {
-            # Adding a tool should make it available in devshell.
-            fzf = pkgs.fzf;
+          devShell = {
+            tools = hp: {
+              # Adding a tool should make it available in devshell.
+              fzf = pkgs.fzf;
+            };
+            mkShellArgs.shellHook = ''
+              echo "Hello from devshell!"
+              export FOO=bar
+            '';
           };
         };
         # haskell-flake doesn't set the default package, but you can do it here.

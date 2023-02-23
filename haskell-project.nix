@@ -74,14 +74,14 @@ in
           hlint;
       };
       nativeBuildInputs = lib.attrValues (defaultBuildTools finalPackages // config.devShell.tools finalPackages);
-      devShell = finalPackages.shellFor {
+      devShell = finalPackages.shellFor (config.devShell.mkShellArgs // {
         inherit nativeBuildInputs;
         packages = p:
           map
             (name: p."${name}")
             (lib.attrNames config.packages);
         withHoogle = true;
-      };
+      });
     in
     {
       finalPackages = config.basePackages.extend config.finalOverlay;
