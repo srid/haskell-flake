@@ -74,8 +74,10 @@ in
           hlint;
       };
       nativeBuildInputs = lib.attrValues (defaultBuildTools finalPackages // config.devShell.tools finalPackages);
-      devShell = finalPackages.shellFor (config.devShell.mkShellArgs // {
-        inherit nativeBuildInputs;
+      mkShellArgs = config.devShell.mkShellArgs // {
+        nativeBuildInputs = (config.devShell.mkShellArgs.nativeBuildInputs or [ ]) ++ nativeBuildInputs;
+      };
+      devShell = finalPackages.shellFor (mkShellArgs // {
         packages = p:
           map
             (name: p."${name}")
