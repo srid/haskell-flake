@@ -72,15 +72,17 @@ in
               mkShellArgs = mkOption {
                 type = types.attrsOf types.raw;
                 description = ''
-                  Extra arguments to pass to `mkShell`.
+                  Extra arguments to pass to `pkgs.mkShell`.
                 '';
                 default = { };
-                example = {
-                  shellHook = ''
-                    # Re-generate .cabal files so HLS will work (per hie.yaml)
-                    ${pkgs.findutils}/bin/find -name package.yaml -exec hpack {} \;
-                  '';
-                };
+                example = ''
+                  {
+                    shellHook = \'\'
+                      # Re-generate .cabal files so HLS will work (per hie.yaml)
+                      ''${pkgs.findutils}/bin/find -name package.yaml -exec hpack {} \;
+                    \'\';
+                  };
+                '';
               };
             };
           };
