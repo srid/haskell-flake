@@ -16,3 +16,11 @@ which ghcid && exit 2 || echo
 
 # Adding a buildTool (fzf, here) should put it in devshell.
 which fzf
+
+# mkShellArgs works
+if [[ "$FOO" == "bar" ]]; then 
+    echo "$FOO"
+else 
+    echo "FOO is not bar" 
+    exit 2
+fi

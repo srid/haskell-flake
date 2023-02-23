@@ -69,6 +69,21 @@ in
                   A [check](flake-parts.html#opt-perSystem.checks) to make sure that your IDE will work.
                 '';
               };
+              mkShellArgs = mkOption {
+                type = types.attrsOf types.raw;
+                description = ''
+                  Extra arguments to pass to `pkgs.mkShell`.
+                '';
+                default = { };
+                example = ''
+                  {
+                    shellHook = \'\'
+                      # Re-generate .cabal files so HLS will work (per hie.yaml)
+                      ''${pkgs.findutils}/bin/find -name package.yaml -exec hpack {} \;
+                    \'\';
+                  };
+                '';
+              };
             };
           };
           projectSubmodule = types.submoduleWith {
