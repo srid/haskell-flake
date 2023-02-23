@@ -162,44 +162,39 @@ in
                       #
                       # In future, we could just read `cabal.project`. See #76.
                       let
-                        toplevel-cabal-paths =
-                          lib.concatMapAttrs
-                            (f: _:
-                              if lib.strings.hasSuffix ".cabal" f
-                              then { "${lib.strings.removeSuffix ''.cabal'' f}" = self; }
-                              else { }
+                        # Like pkgs.haskell.lib.haskellPathsInDir' but with a few differences
+                        # - Allows top-level .cabal files
+                        haskellPathsInDir' = path:
+                          lib.filterAttrs (k: v: v != null) (lib.mapAttrs'
+                            (k: v:
+                              if v == "regular" && lib.strings.hasSuffix ".cabal" k
+                              then lib.nameValuePair (lib.strings.removeSuffix ".cabal" k) path
+                              else
+                                if v == "directory" && builtins.pathExists (path + "/${k}/${k}.cabal")
+                                then lib.nameValuePair k (path + "/${k}")
+                                else lib.nameValuePair k null
                             )
-                            (builtins.readDir self);
-                        subdir-cabal-paths = lib.filesystem.haskellPathsInDir self;
+                            (builtins.readDir path));
                         errorNoDefault = msg:
-                          lib.asserts.assertMsg false '' 
+                          builtins.throw '' 
                               A default value for `packages` cannot be auto-detected:
 
-                                ${msg}
+                              ${msg}
+
                               You must manually specify the `packages` option.
                             '';
-                        cabal-paths =
-                          if toplevel-cabal-paths != { }
+                        cabalPaths =
+                          let
+                            cabalPaths = haskellPathsInDir' self;
+                          in
+                          if cabalPaths == { }
                           then
-                            let cabalNames = lib.attrNames toplevel-cabal-paths;
-                            in if builtins.length cabalNames > 1
-                            then
-                              errorNoDefault ''
-                                More than one .cabal file found in project root:
-
-                                  - ${lib.concatStringsSep ".cabal\n  - " cabalNames}.cabal
-                              ''
-                            else
-                              toplevel-cabal-paths
-                          else if subdir-cabal-paths != { }
-                          then
-                            subdir-cabal-paths
-                          else
-                            errorNoDefault "No .cabal file found.";
+                            errorNoDefault ''
+                              No .cabal file found in project root or its sub-directories.
+                            ''
+                          else cabalPaths;
                       in
-                      lib.mapAttrs
-                        (_: value: { root = value; })
-                        cabal-paths;
+                      lib.mapAttrs (_: value: { root = value; }) cabalPaths;
                     defaultText = lib.literalMD "autodiscovered by reading `self` files.";
                   };
                   devShell = mkOption {
