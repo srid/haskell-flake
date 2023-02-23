@@ -157,8 +157,8 @@ in
                       top-level or sub-directories.
                     '';
                     default =
-                      # We look for a single *.cabal in project root. Otherwise,
-                      # look for multiple */*.cabal. Otherwise, error out.
+                      # We look for a single *.cabal in project root as well as
+                      # multiple */*.cabal. Otherwise, error out.
                       #
                       # In future, we could just read `cabal.project`. See #76.
                       let
