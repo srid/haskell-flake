@@ -177,10 +177,9 @@ in
                             (builtins.readDir path));
                         errorNoDefault = msg:
                           builtins.throw '' 
-                              A default value for `packages` cannot be auto-detected:
+                              haskell-flake: A default value for `packages` cannot be auto-detected:
 
-                              ${msg}
-
+                                ${msg}
                               You must manually specify the `packages` option.
                             '';
                         cabalPaths =
