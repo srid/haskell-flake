@@ -120,10 +120,13 @@ in
                       type = with types; functionTo (functionTo (attrsOf (submodule {
                         options.overrides = mkOption {
                           type = oneOf [ (attrsOf raw) (functionTo (attrsOf raw)) ];
+                          description = "cabal overrides of the package.";
+                          default = { };
                         };
                         options.input = mkOption {
                           type = nullOr package;
                           default = null;
+                          description = "derivation of the package.";
                         };
                       })));
                       default = _: _: { };
