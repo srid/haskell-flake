@@ -4,7 +4,7 @@ slug: dependency
 
 # Overriding dependencies
 
-There are several libraries from [Hackage](https://hackage.haskell.org/) that you can use in your Haskell project nixified using haskell-flake. The general steps to do this are:
+There are several libraries from [Hackage](https://hackage.haskell.org/) that you can use in your Haskell project nixified using haskell-flake. nixpkgs already provides [many of these](https://nixpkgs.haskell.page/), but you can also override them or specify your own library. The general steps to do this are:
 
 1. Identify the package name from Hackage. Let's say you want to use [`ema`](https://hackage.haskell.org/package/ema)
 2. Add the package, `ema`, to the `.cabal` file under [the `build-depends` section](https://cabal.readthedocs.io/en/3.4/cabal-package.html#pkg-field-build-depends).
