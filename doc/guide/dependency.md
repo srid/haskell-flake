@@ -2,9 +2,9 @@
 slug: dependency
 ---
 
-# Adding dependencies
+# Overriding dependencies
 
-There are several libraries from [Hackage](https://hackage.haskell.org/) that you can use in your Haskell project nixified using haskell-flakea. The general steps to do this are:
+There are several libraries from [Hackage](https://hackage.haskell.org/) that you can use in your Haskell project nixified using haskell-flake. The general steps to do this are:
 
 1. Identify the package name from Hackage. Let's say you want to use [`ema`](https://hackage.haskell.org/package/ema)
 2. Add the package, `ema`, to the `.cabal` file under [the `build-depends` section](https://cabal.readthedocs.io/en/3.4/cabal-package.html#pkg-field-build-depends).
@@ -20,10 +20,8 @@ In Nix, it is possible to use an exact package built from an arbitrary source (G
     ```nix
     {
       inputs = {
-        ema = {
-          url = "github:EmaApps/ema";
-          flake = false;
-        };
+        ema.url = "github:srid/ema";
+        ema.flake = false;
       };
     }
     ```
@@ -39,12 +37,16 @@ In Nix, it is possible to use an exact package built from an arbitrary source (G
       };
     }
     ```
-    We use `dontCheck` here to disable running tests. You can also use `source-overrides` instead of `overrides`.
+    We use `dontCheck` here to disable running tests.
 1. Re-run the nix shell (`nix develop`).
 
-## `pkgs.haskell.lib` functions
+## nixpkgs functions
 
-- [ ] Write about https://github.com/NixOS/nixpkgs/blob/master/pkgs/development/haskell-modules/lib/compose.nix
+The `pkgs.haskell.lib` module provides various utility functions (like `dontCheck` above, to disable running tests) that you can use to override Haskell packages. The canonical place to find documentation on these is [the source](https://github.com/NixOS/nixpkgs/blob/master/pkgs/development/haskell-modules/lib/compose.nix).
+
+## Other ways of specifying dependencies
+
+- `self.callHackage` - Build a library from Hackage given its version.
 
 ## See also
 
