@@ -14,6 +14,9 @@ jobs:
           extra_nix_config: |
             experimental-features = nix-command flakes
             access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
+      - uses: cachix/cachix-action@v11
+        with:
+          name: srid
       - name: Test flake templates
         id: template
         run: |
@@ -46,3 +49,13 @@ jobs:
       - name: Run test
         id: test
         run: ./runtest.sh
+
+      - name: Build the website
+        run: |
+          nix run github:srid/emanote -- -L ./doc -o ./www
+      - name: Deploy to gh-pages 🚀
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./www/
+          cname: flake.haskell.page
