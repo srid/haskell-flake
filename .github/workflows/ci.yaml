@@ -68,4 +68,4 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./www/
-          cname: flake.haskell.page
+          cname: haskell.flake.page
