@@ -1,5 +1,5 @@
 
-# HOWTO
+# Guide
 
 ```query
 path:./*
