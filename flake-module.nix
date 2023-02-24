@@ -126,7 +126,7 @@ in
                           default = null;
                         };
                       })));
-                      default = { };
+                      default = _: _: { };
                     };
                   overrides =
                     let
