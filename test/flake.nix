@@ -56,10 +56,15 @@
               export FOO=bar
             '';
           };
-          easy-overrides = {
+          easy-overrides = self: super: {
             aeson = {
-              enableLibraryProfiling = true;
+              overrides = old: {
+                broken = false;
+                libraryHaskellDepends = old.libraryHaskellDepends ++ [];
+              };
+              input = super.aeson;
             };
+            relude.overrides.doCheck = false;
           };
         };
         # haskell-flake doesn't set the default package, but you can do it here.
