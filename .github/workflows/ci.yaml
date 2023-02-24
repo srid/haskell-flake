@@ -62,7 +62,7 @@ jobs:
           name: srid
       - name: Build the website
         run: |
-          nix --accept-flake-config run github:srid/emanote -- gen -L ./doc -o ./www
+          nix --accept-flake-config run github:srid/emanote -- -L ./doc gen -o ./www
       - name: Deploy to gh-pages 🚀
         uses: peaceiris/actions-gh-pages@v3
         with:
