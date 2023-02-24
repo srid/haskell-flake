@@ -46,3 +46,27 @@ jobs:
       - name: Run test
         id: test
         run: ./runtest.sh
+
+  www:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
+    steps:
+      - uses: actions/checkout@v2
+      - uses: cachix/install-nix-action@v18
+        with:
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+            access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
+      - uses: cachix/cachix-action@v11
+        with:
+          name: srid
+      - name: Build the website
+        run: |
+          mkdir ./www
+          nix --accept-flake-config run github:srid/emanote -- -L ./doc gen ./www
+      - name: Deploy to gh-pages 🚀
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./www/
+          cname: haskell.flake.page
