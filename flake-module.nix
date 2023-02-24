@@ -115,13 +115,17 @@ in
                     default = { };
                   };
                   easy-overrides =
-                    let settingsFormat = pkgs.formats.json { };
-                    in
                     mkOption {
                       description = " An attribute set with haskell packages and the options.";
-                      type = with types; submodule {
-                        freeformType = settingsFormat.type;
-                      };
+                      type = with types; functionTo (functionTo (attrsOf (submodule {
+                        options.overrides = mkOption {
+                          type = oneOf [ (attrsOf raw) (functionTo (attrsOf raw)) ];
+                        };
+                        options.input = mkOption {
+                          type = nullOr package;
+                          default = null;
+                        };
+                      })));
                       default = { };
                     };
                   overrides =
