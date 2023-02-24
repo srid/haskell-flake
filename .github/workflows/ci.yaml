@@ -14,9 +14,6 @@ jobs:
           extra_nix_config: |
             experimental-features = nix-command flakes
             access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
-      - uses: cachix/cachix-action@v11
-        with:
-          name: srid
       - name: Test flake templates
         id: template
         run: |
@@ -50,6 +47,19 @@ jobs:
         id: test
         run: ./runtest.sh
 
+  www:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/doc'
+    steps:
+      - uses: actions/checkout@v2
+      - uses: cachix/install-nix-action@v18
+        with:
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+            access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
+      - uses: cachix/cachix-action@v11
+        with:
+          name: srid
       - name: Build the website
         run: |
           nix run github:srid/emanote -- -L ./doc -o ./www
