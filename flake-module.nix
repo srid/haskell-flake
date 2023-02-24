@@ -177,19 +177,7 @@ in
                       #
                       # In future, we could just read `cabal.project`. See #76.
                       let
-                        # Like pkgs.haskell.lib.haskellPathsInDir' but with a few differences
-                        # - Allows top-level .cabal files
-                        haskellPathsInDir' = path:
-                          lib.filterAttrs (k: v: v != null) (lib.mapAttrs'
-                            (k: v:
-                              if v == "regular" && lib.strings.hasSuffix ".cabal" k
-                              then lib.nameValuePair (lib.strings.removeSuffix ".cabal" k) path
-                              else
-                                if v == "directory" && builtins.pathExists (path + "/${k}/${k}.cabal")
-                                then lib.nameValuePair k (path + "/${k}")
-                                else lib.nameValuePair k null
-                            )
-                            (builtins.readDir path));
+
                         errorNoDefault = msg:
                           builtins.throw '' 
                               haskell-flake: A default value for `packages` cannot be auto-detected:
@@ -199,7 +187,8 @@ in
                             '';
                         cabalPaths =
                           let
-                            cabalPaths = haskellPathsInDir' self;
+                            haskellPathsInDir = import ./nix/haskellPathsInDir.nix { inherit lib; };
+                            cabalPaths = haskellPathsInDir self;
                           in
                           if cabalPaths == { }
                           then
