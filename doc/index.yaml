@@ -10,7 +10,7 @@ template:
   theme: purple
   # iconUrl: static/favicon.jpeg
   sidebar:
-    collapsed: true
+    collapsed: false
   urlStrategy: pretty
 
 pandoc:
