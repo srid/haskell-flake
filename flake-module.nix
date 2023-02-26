@@ -109,6 +109,15 @@ in
                     default = self: super: { };
                     defaultText = lib.literalExpression "self: super: { }";
                   };
+                  packageSettings = mkOption {
+                    type = types.lazyAttrsOf (types.deferredModuleWith {
+                      staticModules = [ ./package-settings.nix ];
+                    });
+                    description = ''
+                      Allows Haskell overrides to be set in modular form.
+                    '';
+                    default = {};
+                  };
                   packages = mkOption {
                     type = types.lazyAttrsOf packageSubmodule;
                     description = ''

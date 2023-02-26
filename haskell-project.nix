@@ -66,6 +66,21 @@ in
             (lib.attrNames config.packages);
         withHoogle = true;
       };
+
+      modularOverrides = self: super: lib.mapAttrs 
+        (packageName: module:
+          let old = super.${packageName};
+              overrides = (lib.evalModules {
+                modules = [ module ];
+                specialArgs = {
+                  inherit old;
+                };
+              }).config;
+          in
+          pkgs.haskell.lib.overrideCabal old overrides
+        )
+        config.packageSettings;
+
     in
     {
       finalPackages = config.haskellPackages.extend config.finalOverlay;
@@ -78,6 +93,7 @@ in
         # set used.
         localPackagesOverlay
         (pkgs.haskell.lib.packageSourceOverrides config.source-overrides)
+        modularOverrides
         config.overrides
       ];
 

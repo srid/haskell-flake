@@ -32,6 +32,9 @@
             # Custom library overrides (here, "foo" comes from a flake input)
             foo = self.callCabal2nix "foo" (inputs.haskell-multi-nix + /foo) { };
           };
+          packageSettings = {
+            haskell-flake-test.broken = true;
+          };
           devShell = {
             tools = hp: {
               # Some buildTools are included by default. If you do not want them,
