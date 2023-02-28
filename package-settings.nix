@@ -14,7 +14,7 @@
    options = {
      enableLibraryProfiling = mkOption {
        type = types.bool;
-       default = old.enableLibraryProfiling or false;
+       default = old.enableLibraryProfiling or true;
        inherit defaultText;
        description = ''
          Whether or not to compile the library with profiling enabled, in addition to the regular compilation. This allows packages that depend on the library to be built with profiling enabled, but takes a bit more time to build.
