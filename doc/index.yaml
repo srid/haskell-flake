@@ -1,0 +1,20 @@
+page:
+  siteTitle: haskell-flake
+  siteName: haskell-flake
+  headHtml: |
+    <snippet var="js.highlightjs" />
+
+template:
+  name: /templates/layouts/book
+
+  theme: purple
+  # iconUrl: static/favicon.jpeg
+  sidebar:
+    collapsed: false
+  urlStrategy: pretty
+
+pandoc:
+  rewriteClass:
+    prose: max-w-prose mx-auto
+    page-note: text-sm text-gray-600 flex items-center justify-center my-4 italic
+    editor-note: text-gray-500 text-sm
