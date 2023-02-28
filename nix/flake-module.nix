@@ -114,55 +114,26 @@ in
                     description = ''Package overrides given new source path'';
                     default = { };
                   };
-                  overrides =
-                    let
-                      # WARNING: While the order is deterministic, it is not
-                      # determined by the user. Thus overlays may be applied in
-                      # an unexpected order.
-                      # We need: https://github.com/NixOS/nixpkgs/issues/215486
-                      haskellOverlayType = types.mkOptionType {
-                        name = "haskellOverlay";
-                        description = "An Haskell overlay function";
-                        descriptionClass = "noun";
-                        # NOTE: This check is not exhaustive, as there is no way
-                        # to check that the function takes two arguments, and
-                        # returns an attrset.
-                        check = lib.isFunction;
-                        merge = _loc: defs:
-                          let
-                            logWarning =
-                              if builtins.length defs > 1
-                              then builtins.trace "WARNING[haskell-flake]: Multiple haskell overlays are applied in arbitrary order." null
-                              else null;
-                            overlays =
-                              map (x: x.value)
-                                (builtins.seq
-                                  logWarning
-                                  defs);
-                          in
-                          lib.composeManyExtensions overlays;
-                      };
-                    in
-                    mkOption {
-                      type = haskellOverlayType;
-                      description = ''
-                        Cabal package overrides for this Haskell project
+                  overrides = mkOption {
+                    type = import ./haskell-overlay-type.nix { inherit lib; };
+                    description = ''
+                      Cabal package overrides for this Haskell project
                 
-                        For handy functions, see 
-                        <https://github.com/NixOS/nixpkgs/blob/master/pkgs/development/haskell-modules/lib/compose.nix>
+                      For handy functions, see 
+                      <https://github.com/NixOS/nixpkgs/blob/master/pkgs/development/haskell-modules/lib/compose.nix>
 
-                        **WARNING**: When using `imports`, multiple overlays
-                        will be merged using `lib.composeManyExtensions`.
-                        However the order the overlays are applied can be
-                        arbitrary (albeit deterministic, based on module system
-                        implementation).  Thus, the use of `overrides` via
-                        `imports` is not officiallly supported. If you'd like
-                        to see proper support, add your thumbs up to
-                        <https://github.com/NixOS/nixpkgs/issues/215486>.
-                      '';
-                      default = self: super: { };
-                      defaultText = lib.literalExpression "self: super: { }";
-                    };
+                      **WARNING**: When using `imports`, multiple overlays
+                      will be merged using `lib.composeManyExtensions`.
+                      However the order the overlays are applied can be
+                      arbitrary (albeit deterministic, based on module system
+                      implementation).  Thus, the use of `overrides` via
+                      `imports` is not officiallly supported. If you'd like
+                      to see proper support, add your thumbs up to
+                      <https://github.com/NixOS/nixpkgs/issues/215486>.
+                    '';
+                    default = self: super: { };
+                    defaultText = lib.literalExpression "self: super: { }";
+                  };
                   packages = mkOption {
                     type = types.lazyAttrsOf packageSubmodule;
                     description = ''
@@ -172,43 +143,11 @@ in
                       top-level or sub-directories.
                     '';
                     default =
-                      # We look for a single *.cabal in project root as well as
-                      # multiple */*.cabal. Otherwise, error out.
-                      #
-                      # In future, we could just read `cabal.project`. See #76.
-                      let
-                        # Like pkgs.haskell.lib.haskellPathsInDir' but with a few differences
-                        # - Allows top-level .cabal files
-                        haskellPathsInDir' = path:
-                          lib.filterAttrs (k: v: v != null) (lib.mapAttrs'
-                            (k: v:
-                              if v == "regular" && lib.strings.hasSuffix ".cabal" k
-                              then lib.nameValuePair (lib.strings.removeSuffix ".cabal" k) path
-                              else
-                                if v == "directory" && builtins.pathExists (path + "/${k}/${k}.cabal")
-                                then lib.nameValuePair k (path + "/${k}")
-                                else lib.nameValuePair k null
-                            )
-                            (builtins.readDir path));
-                        errorNoDefault = msg:
-                          builtins.throw '' 
-                              haskell-flake: A default value for `packages` cannot be auto-detected:
-
-                                ${msg}
-                              You must manually specify the `packages` option.
-                            '';
-                        cabalPaths =
-                          let
-                            cabalPaths = haskellPathsInDir' self;
-                          in
-                          if cabalPaths == { }
-                          then
-                            errorNoDefault ''
-                              No .cabal file found in project root or its sub-directories.
-                            ''
-                          else cabalPaths;
+                      let find-cabal-paths = import ./find-cabal-paths.nix { inherit lib; };
                       in
-                      lib.mapAttrs (_: value: { root = value; }) cabalPaths;
+                      lib.mapAttrs
+                        (_: value: { root = value; })
+                        (find-cabal-paths self);
                     defaultText = lib.literalMD "autodiscovered by reading `self` files.";
                   };
                   devShell = mkOption {
