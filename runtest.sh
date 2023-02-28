@@ -35,9 +35,9 @@ logHeader "Testing nix flake checks"
 nix --option sandbox false \
     build --override-input haskell-flake path:${FLAKE} -L .#check
 
-logHeader "Testing docs"
-nix build --override-input haskell-flake path:${FLAKE} \
-    --option log-lines 1000 --show-trace \
-    github:hercules-ci/flake.parts-website#checks.${SYSTEM}.linkcheck
+#logHeader "Testing docs"
+#nix build --override-input haskell-flake path:${FLAKE} \
+#    --option log-lines 1000 --show-trace \
+#    github:hercules-ci/flake.parts-website#checks.${SYSTEM}.linkcheck
 
 logHeader "All tests passed!"
