@@ -14,7 +14,7 @@ in
   options = {
     enableLibraryProfiling = mkOption {
       type = types.bool;
-      default = old.enableLibraryProfiling or true;
+      default = old.enableLibraryProfiling or false;
       inherit defaultText;
       description = ''
         Whether or not to compile the library with profiling enabled, in addition to the regular compilation. This allows packages that depend on the library to be built with profiling enabled, but takes a bit more time to build.
@@ -32,7 +32,7 @@ in
     };
     doCheck = mkOption {
       type = types.bool;
-      default = old.doCheck or false;
+      default = old.doCheck or true;
       description = ''
         Whether to execute the package's test suite if it has one.
       '';
