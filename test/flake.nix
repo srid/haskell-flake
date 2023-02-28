@@ -46,6 +46,15 @@
             # docs.
             foo = self.callCabal2nix "foo" (inputs.haskell-multi-nix + /foo) { };
           };
+          # WIP test
+          packageSettings = {
+            bar.input = { self, super, ... }: {
+              # path = inputs.haskell-multi-nix + /foo;
+              # hackageVer = "1.2.3";
+              drv = self.aeson;
+            };
+            foo.overrides = { old, ... }: { doCheck = false; };
+          };
           devShell = {
             tools = hp: {
               # Adding a tool should make it available in devshell.

@@ -90,6 +90,7 @@ in
             specialArgs = { inherit pkgs self; };
             modules = [
               ./haskell-project.nix
+              ./package-settings.nix
               {
                 options = {
                   basePackages = mkOption {
