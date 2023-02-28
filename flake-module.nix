@@ -119,7 +119,9 @@ in
                       description = " An attribute set with haskell packages and the options.";
                       type = with types; functionTo (functionTo (attrsOf (submodule {
                         options.overrides = mkOption {
-                          type = oneOf [ (attrsOf raw) (functionTo (attrsOf raw)) ];
+                          type = deferredModuleWith {
+                            staticModules = [ ./package-settings.nix ];
+                          };
                           description = "cabal overrides of the package.";
                           default = { };
                         };

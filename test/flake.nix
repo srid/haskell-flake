@@ -11,7 +11,7 @@
     haskell-multi-nix.flake = false;
 
     # We do not specify a value for this input, because it is explicitly
-    # specified using --override-input to point to ../. For example, 
+    # specified using --override-input to point to ../. For example,
     #   `nix build --override-input haskell-flake ..`
     haskell-flake = { };
   };
@@ -58,9 +58,9 @@
           };
           easy-overrides = self: super: {
             aeson = {
-              overrides = old: {
+              overrides = {old, ...}: {
                 broken = false;
-                libraryHaskellDepends = old.libraryHaskellDepends ++ [];
+                #libraryHaskellDepends = old.libraryHaskellDepends ++ [];
               };
               input = super.aeson;
             };

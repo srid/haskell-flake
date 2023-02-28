@@ -85,12 +85,11 @@ in
         withHoogle = true;
       });
       modifyoverrides = s: name: value:
-        let overrides = value.overrides;
+        let
+          old = if value.input == null then s.${name} else value.input;
+          overrides = (lib.evalModules { modules = [ value.overrides ]; specialArgs = { inherit old; }; }).config;
         in
-        pkgs.haskell.lib.compose.overrideCabal
-          (drv: if builtins.typeOf overrides == "lambda" then overrides drv else overrides
-          )
-          (if value.input == null then s.${name} else value.input);
+        pkgs.haskell.lib.overrideCabal old overrides;
       createoverlay = self: super: lib.mapAttrs (modifyoverrides super) (config.easy-overrides self super);
     in
     {
