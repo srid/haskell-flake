@@ -47,7 +47,7 @@
                       default = null;
                       description = "Whether to run tests";
                     };
-                    doJailbreak = lib.mkOption {
+                    jailbreak = lib.mkOption {
                       type = lib.types.nullOr lib.types.bool;
                       default = null;
                       description = "Whether to disable version bounds";
