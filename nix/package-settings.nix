@@ -57,6 +57,11 @@
                       default = null;
                       description = "Whether to generate documentation";
                     };
+                    patches = lib.mkOption {
+                      type = lib.types.nullOr (lib.types.listOf lib.types.path);
+                      default = null;
+                      description = "Patches to apply";
+                    };
                   };
                 })
               ];
