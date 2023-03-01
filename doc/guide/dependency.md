@@ -4,13 +4,13 @@ slug: dependency
 
 # Overriding dependencies
 
-There are several libraries from [Hackage](https://hackage.haskell.org/) that you can use in your Haskell project [[start|nixified]] using haskell-flake. nixpkgs already provides [many of these](https://nixpkgs.haskell.page/), but you can also override them or specify your own library. The general steps to do this are:
+Haskell libraries ultimately come from [Hackage](https://hackage.haskell.org/), and [nixpkgs] contains [most of these](https://nixpkgs.haskell.page/). Adding a library to your project is done as follows (requiring no change to Nix!):
 
 1. Identify the package name from Hackage. Let's say you want to use [`ema`](https://hackage.haskell.org/package/ema)
 2. Add the package, `ema`, to the `.cabal` file under [the `build-depends` section](https://cabal.readthedocs.io/en/3.4/cabal-package.html#pkg-field-build-depends).
 3. Exit and restart the nix shell (`nix develop`). 
 
-Step (3) above will try to fetch the package from the Haskell package set in [nixpkgs](https://github.com/NixOS/nixpkgs) (the one that is pinned in `flake.lock`), and this package set (which is ultimately derived from Stackage sets) sometimes may not have the package you are looking for. A common reason is that it is marked as "broken" or it simply doesn't exist. In such cases, you will have to override the package in the `overrides` argument (see the next section).
+Step (3) above will try to fetch the package from the Haskell package set in [nixpkgs] (the one that is pinned in `flake.lock`). For various reasons, this package may be either broken or does not exist. In such cases, you will have to override the package in the `overrides` argument (see the next section).
 
 ## Overriding a Haskell package in Nix
 
@@ -40,14 +40,44 @@ In Nix, it is possible to use an exact package built from an arbitrary source (G
     We use `dontCheck` here to disable running tests.
 1. Re-run the nix shell (`nix develop`).
 
-## nixpkgs functions
+### [nixpkgs] functions
 
-The `pkgs.haskell.lib` module provides various utility functions (like `dontCheck` above, to disable running tests) that you can use to override Haskell packages. The canonical place to find documentation on these is [the source](https://github.com/NixOS/nixpkgs/blob/master/pkgs/development/haskell-modules/lib/compose.nix).
-
-## Other ways of specifying dependencies
-
-- `self.callHackage` - Build a library from Hackage given its version.
-
-## See also
-
+- The `pkgs.haskell.lib` module provides various utility functions (like `dontCheck` above, to disable running tests) that you can use to override Haskell packages. The canonical place to find documentation on these is [the source](https://github.com/NixOS/nixpkgs/blob/master/pkgs/development/haskell-modules/lib/compose.nix).
+- `self.callHackage` - Build a library from Hackage given its version. You can also do this with `source-overrides` (see below).
 - [Artyom's tutorial](https://tek.brick.do/how-to-override-dependency-versions-when-building-a-haskell-project-with-nix-K3VXJd8mEKO7) 
+
+## Using `source-overrides`
+
+If you are only specifying the source of the Haskell package, but are not overriding anything else, you may use the simpler `source-overrides` option instead. The above example would look like:
+
+```nix
+{
+  perSystem = { self', config, pkgs, ... }: {
+    haskellProjects.default = {
+      source-overrides = {
+        ema = inputs.ema;
+      };
+    };
+  };
+}
+```
+
+`source-overrides` also supports specifying referring directly to a Hackage version. So the following works to pull [ema 0.8.2.0](https://hackage.haskell.org/package/ema-0.8.2.0):
+
+```nix
+{
+  perSystem = { self', config, pkgs, ... }: {
+    haskellProjects.default = {
+      source-overrides = {
+        ema = "0.8.2.0";
+      };
+    };
+  };
+}
+```
+
+If you are using both the options, `overrides` take priority over `source-overrides`.
+
+
+
+[nixpkgs]: https://zero-to-nix.com/concepts/nixpkgs
