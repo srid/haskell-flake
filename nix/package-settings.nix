@@ -67,6 +67,11 @@
                       default = null;
                       description = "Patches to apply";
                     };
+                    enableSeparateBinOutput = lib.mkOption {
+                      type = lib.types.nullOr lib.types.bool;
+                      default = null;
+                      description = "Whether to enable separate bin output";
+                    };
                   };
                 })
               ];
