@@ -84,34 +84,4 @@
       description = "Package settings";
     };
   };
-  config = {
-    overrides = self: super:
-      lib.mapAttrs
-        (name: settings:
-          let
-            evalModSimple = mod: specialArgs:
-              (lib.evalModules { modules = [ mod ]; inherit specialArgs; }).config;
-          in
-          let
-            input = evalModSimple settings.input { inherit lib self super; };
-            drv =
-              # NOTE: See the corresponding TODO on the option type.
-              if input.drv != null
-              then input.drv
-              else if input.hackageVersion != null
-              then self.callHackage name input.hackageVersion { }
-              else if input.path != null
-              then self.callCabal2nix name input.path { }
-              else super.${name};
-            overrideCabal =
-              pkgs.haskell.lib.compose.overrideCabal
-                (old:
-                  let mod = evalModSimple settings.overrides { inherit lib old; };
-                  in lib.filterAttrs (n: v: v != null) mod
-                );
-          in
-          overrideCabal drv
-        )
-        config.packageSettings;
-  };
 }
