@@ -1,3 +1,6 @@
+---
+slug: nix
+---
 
 # Install Nix
 
