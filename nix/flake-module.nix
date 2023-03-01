@@ -110,8 +110,13 @@ in
                     defaultText = lib.literalExpression "pkgs.haskellPackages";
                   };
                   source-overrides = mkOption {
-                    type = types.attrsOf types.path;
-                    description = ''Package overrides given new source path'';
+                    type = types.attrsOf (types.oneOf [ types.path types.str ]);
+                    description = ''
+                      Source overrides for Haskell packages
+
+                      You can either assign a path to the source, or Hackage
+                      version string.
+                    '';
                     default = { };
                   };
                   overrides = mkOption {
