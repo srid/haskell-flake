@@ -4,7 +4,7 @@ order: -10
 
 # Getting Started
 
-Before using `haskell-flake` you must first [install Nix](https://nixos.org/download.html) and [enable flakes](https://nixos.wiki/wiki/Flakes#Enable_flakes).
+Before using `haskell-flake` you must first [[nix|install Nix with Flakes enabled]].
 
 ## Existing projects
 
