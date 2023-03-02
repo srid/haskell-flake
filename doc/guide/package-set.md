@@ -20,7 +20,7 @@ A "project" in haskell-flake primarily serves the purpose of developing Haskell 
 }
 ```
 
-You can access this package set as `config.haskellProjects.ghc810.finalPackages`. But this is not terribly interesting, because it is the exact same as the package set `pkgs.haskell.packages.ghc8107` from nixpkgs. So let's add and override some packages in this set:
+You can access this package set as `config.haskellProjects.ghc810.outputs.finalPackages`. But this is not terribly interesting, because it is the exact same as the package set `pkgs.haskell.packages.ghc8107` from nixpkgs. So let's add and override some packages in this set:
 
 ```nix
 {
@@ -46,14 +46,14 @@ You can access this package set as `config.haskellProjects.ghc810.finalPackages`
 
 This will create a package set that overrides the `aeson` and `dhall` packages using the specified versions from Hackage, but with the `aeson` package having the `doJailbreak` flag set (which relaxes its Cabal constraints).  It also adds the `mylib` package which exists neither in nixpkgs nor in Hackage, but comes from somewhere arbitrary and specified as flake input.
 
-In your *actual* haskell project, you can use this package set (`config.haskellProjects.ghc810.finalPackages`) as its base package set:
+In your *actual* haskell project, you can use this package set (`config.haskellProjects.ghc810.outputs.finalPackages`) as its base package set:
 
 ```nix
 {
   haskellProjects.myproject = {
     packages.mypackage = ./.;
 
-    basePackages = config.haskellProjects.ghc810.finalPackages;
+    basePackages = config.haskellProjects.ghc810.outputs.finalPackages;
   };
 }
 ```
