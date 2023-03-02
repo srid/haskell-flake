@@ -6,7 +6,7 @@ slug: nix
 
 To install Nix, follow the instructions at https://github.com/DeterminateSystems/nix-installer#the-determinate-nix-installer
 
-This installer automatically [enable flakes](https://nixos.wiki/wiki/Flakes#Enable_flakes). If you are macOS, make sure to use the native (not rosetta) terminal.[^so]
+This installer automatically [enable flakes](https://nixos.wiki/wiki/Flakes#Enable_flakes). If you are on macOS, make sure to use the native (not rosetta) terminal.[^so]
 
 To test your Nix install, run:
 

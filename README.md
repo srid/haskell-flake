@@ -1,6 +1,6 @@
 # haskell-flake
 
-A [`flake-parts`](https://flake.parts/) module to make Haskell development easier with Nix.
+A [`flake-parts`](https://flake.parts/) module to make Haskell development simpler with Nix.
 
 ## Why?
 
