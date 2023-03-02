@@ -2,7 +2,7 @@
 
 A [`flake-parts`](https://flake.parts/) module to make Haskell development simpler with Nix.
 
-![logo](./doc/logo.webp)
+<img src="./doc/logo.webp" width=100 />
 
 ## Why?
 
