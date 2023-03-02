@@ -43,6 +43,15 @@ This module can then be imported in multiple projects, such as the `myapp` proje
 
 This way your `app` project knows how to find "mylib" library as well as includes the default tools you want to use in the dev shell.
 
+## Module arguments
+
+A haskell-flake project module takes the following arguments:
+
+| Argument | Description |
+| --- | --- |
+| `pkgs` | The `pkgs` argument passed to `mkFlake` |
+| `self` | The flake's `self` |
+
 ## Examples
 
 - https://github.com/srid/nixpkgs-140774-workaround
