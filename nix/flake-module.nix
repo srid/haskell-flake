@@ -86,6 +86,48 @@ in
               };
             };
           };
+          outputsSubmodule = types.submodule {
+            options = {
+              finalOverlay = mkOption {
+                type = types.raw;
+                readOnly = true;
+                internal = true;
+              };
+              finalPackages = mkOption {
+                # This must be raw because the Haskell package set also contains functions.
+                type = types.attrsOf types.raw;
+                readOnly = true;
+                description = ''
+                  The final Haskell package set including local packages and any
+                  overrides, on top of `basePackages`.
+                '';
+              };
+              localPackages = mkOption {
+                type = types.attrsOf types.package;
+                readOnly = true;
+                description = ''
+                  The local Haskell packages in the project.
+
+                  This is a subset of `finalPackages` containing only local
+                  packages excluding everything else.
+                '';
+              };
+              devShell = mkOption {
+                type = types.package;
+                readOnly = true;
+                description = ''
+                  The development shell derivation generated for this project.
+                '';
+              };
+              hlsCheck = mkOption {
+                type = types.package;
+                readOnly = true;
+                description = ''
+                  The `hlsCheck` derivation generated for this project.
+                '';
+              };
+            };
+          };
           projectSubmodule = types.submoduleWith {
             specialArgs = { inherit pkgs self; };
             modules = [
@@ -163,7 +205,7 @@ in
                     default = { };
                   };
                   outputs = mkOption {
-                    type = types.attrsOf types.raw;
+                    type = outputsSubmodule;
                     description = ''
                       The flake outputs generated for this project.
 
@@ -171,21 +213,7 @@ in
                     '';
                   };
 
-                  # Derived options
 
-                  finalPackages = mkOption {
-                    type = types.attrsOf raw;
-                    readOnly = true;
-                    description = ''
-                      The final package set, based on `basePackages` plus
-                      the additions and overrides specified in the other options.
-                    '';
-                  };
-                  finalOverlay = mkOption {
-                    type = types.raw;
-                    readOnly = true;
-                    internal = true;
-                  };
                 };
               }
             ];
@@ -215,16 +243,32 @@ in
             in
             {
               packages =
-                mergeMapAttrs (_: project: project.outputs.packages) config.haskellProjects;
+                mergeMapAttrs
+                  (name: project:
+                    let
+                      mapKeys = f: attrs: lib.mapAttrs' (n: v: { name = f n; value = v; }) attrs;
+                      # Prefix package names with the project name (unless
+                      # project is named `default`)
+                      dropDefaultPrefix = packageName:
+                        if name == "default"
+                        then packageName
+                        else "${name}-${packageName}";
+                    in
+                    mapKeys dropDefaultPrefix project.outputs.localPackages)
+                  config.haskellProjects;
               devShells =
                 mergeMapAttrs
-                  (_: project:
-                    lib.optionalAttrs project.devShell.enable project.outputs.devShells)
+                  (name: project:
+                    lib.optionalAttrs project.devShell.enable {
+                      "${name}" = project.outputs.devShell;
+                    })
                   config.haskellProjects;
               checks =
                 mergeMapAttrs
-                  (_: project:
-                    lib.optionalAttrs project.devShell.enable project.outputs.checks)
+                  (name: project:
+                    lib.optionalAttrs (project.devShell.enable && project.devShell.hlsCheck.enable) {
+                      "${name}-hls" = project.outputs.hlsCheck;
+                    })
                   config.haskellProjects;
             };
         });
