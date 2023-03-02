@@ -8,7 +8,7 @@ template:
   name: /templates/layouts/book
 
   theme: purple
-  # iconUrl: static/favicon.jpeg
+  iconUrl: logo.webp
   sidebar:
     collapsed: false
   urlStrategy: pretty
