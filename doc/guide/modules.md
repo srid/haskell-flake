@@ -49,7 +49,7 @@ A haskell-flake project module takes the following arguments:
 
 | Argument | Description |
 | --- | --- |
-| `pkgs` | The `pkgs` argument passed to `mkFlake` |
+| `pkgs` | The perSystem's `pkgs` argument |
 | `self` | The flake's `self` |
 
 ## Examples
