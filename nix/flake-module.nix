@@ -14,7 +14,7 @@ in
 {
   options = {
     perSystem = mkPerSystemOption
-      ({ config, self', inputs', pkgs, system, ... }:
+      (perSystem@{ config, self', inputs', pkgs, system, ... }:
         let
           hlsCheckSubmodule = types.submodule {
             options = {
@@ -87,7 +87,7 @@ in
             };
           };
           projectSubmodule = types.submoduleWith {
-            specialArgs = { inherit pkgs self; };
+            specialArgs = { inherit pkgs self perSystem; };
             modules = [
               ./haskell-project.nix
               {
