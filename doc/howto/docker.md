@@ -82,7 +82,7 @@ Several times one would also like to tag their images with the commit id of the 
   };
 }
 ```
-`builtins.substring 0 9 self.rev` is the same as `git rev-parse --short HEAD`. `self.rev` is non-null only on a clean working copy and hence the tag is set to `dev` when the working copy is dirty.
+[`builtins.substring 0 9 self.rev`](https://nixos.org/manual/nix/stable/language/builtins.html#builtins-substring) is the same as `git rev-parse --short HEAD`. `self.rev` is non-null only on a clean working copy and hence the tag is set to `dev` when the working copy is dirty.
 
 
 ## Example
