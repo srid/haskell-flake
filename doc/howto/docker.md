@@ -53,7 +53,7 @@ Finally, add your flake-parts module to your `flake.nix`.
 {
   # Inside flake-parts' `mkFlake`:
   imports = [
-      ./nix/docker.nix
+    ./nix/docker.nix
   ];
 }
 ```
