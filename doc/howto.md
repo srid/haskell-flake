@@ -1,0 +1,5 @@
+# HOWTO
+
+```query
+path:./*
+```
