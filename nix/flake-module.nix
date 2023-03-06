@@ -274,9 +274,8 @@ in
           other flakes.
         '';
         defaultText = ''
-          `flake.haskellFlakeProjectModules` modules for this project,
-          for reuse in another flake, when using this project as a
-          Haskell dependency.
+          Package and dependency information for this project exposed for reuse
+          in another flake, when using this project as a Haskell dependency.
 
           Typically the consumer of this flake will want to use one of the
           following modules:
