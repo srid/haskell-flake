@@ -227,7 +227,6 @@ in
               type = types.attrsOf projectSubmodule;
             };
 
-
           };
 
           config =
