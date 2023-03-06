@@ -1,5 +1,5 @@
 # Definition of the `haskellProjects.${name}` submodule's `config`
-{ name, self, config, lib, pkgs, withSystem, ... }:
+{ name, self, config, lib, pkgs, ... }:
 let
   # Like pkgs.runCommand but runs inside nix-shell with a mutable project directory.
   #
@@ -110,7 +110,6 @@ in
           devShell
           self "${projectKey}-hls-check"
           { } "haskell-language-server";
-
 
       };
     };
