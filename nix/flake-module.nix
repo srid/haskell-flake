@@ -126,6 +126,22 @@ in
                   The `hlsCheck` derivation generated for this project.
                 '';
               };
+              projectModules = mkOption {
+                type = types.lazyAttrsOf types.deferredModule;
+                readOnly = true;
+                description = ''
+                  `flake.haskellFlakeProjectModules` modules for this project,
+                  for reuse in another flake, when using this project as a
+                  Haskell dependency.
+
+                  Typically the consumer of this flake will want to use one of the
+                  following modules:
+
+                    - output: provides both local package and dependency overrides.
+                    - local: provides only local package overrides (ignores dependency
+                      overrides in this flake)
+                '';
+              };
             };
           };
           projectSubmodule = types.submoduleWith {
