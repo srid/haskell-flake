@@ -61,7 +61,7 @@ nix build .#dockerImage
 To load this image into your local docker image registry, run:
 
 ```bash
-docker load -i $(nix build .#dockerImage --print-out-link)
+docker load -i $(nix build .#dockerImage --print-out-paths)
 ```
 
 ## Tips
