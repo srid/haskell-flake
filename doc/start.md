@@ -10,17 +10,18 @@ Before using `haskell-flake` you must first [[nix|install Nix with Flakes enable
 
 To use `haskell-flake` in an *existing* Haskell project, run:
 
-``` nix
+```sh
 nix flake init -t github:srid/haskell-flake
 ```
 
-Open the generated `flake.nix` and change `self'.packages.example` to use your package name. For example, if your package is named `my-package` (with a `my-package.cabal` file), change `example` to `my-package`.
+Open the generated `flake.nix` and change `self'.packages.example` to use your package name. For example, if your package is named `my-package` (with a `my-package.cabal` file), change `example` to `my-package`. Follow the comments along the `flake.nix` to make any necessary changes to the project configuration.
 
 ## New projects
 
 To create a *new* Haskell project, instead, run:
 
-``` nix
+```sh
+mkdir example && cd ./example
 nix flake init -t github:srid/haskell-flake#example
 ```
 
