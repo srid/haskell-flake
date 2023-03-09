@@ -1,3 +1,4 @@
+# Sufficiently basic parsers for `cabal.project` and `package.yaml` formats
 { pkgs, lib, ... }:
 
 let
@@ -11,6 +12,8 @@ let
 in
 {
   # Extract the "packages" list from a cabal.project file.
+  #
+  # Globs are not supported yet. Values must be refer to a directory, not file.
   parseCabalProjectPackages = cabalProjectFile:
     let
       spaces1 = parsec.skipWhile1 (c: c == " " || c == "\t");
