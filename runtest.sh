@@ -12,6 +12,11 @@ else
     }
 fi
 
+# Before all, run the main haskell-flake tests
+logHeader "Testing parser.nix"
+nix eval --impure --expr 'import ./nix/parser_tests.nix {}'
+
+
 FLAKE=$(pwd)
 
 # A Nix bug causes incorrect self when in a sub-flake.
@@ -22,11 +27,6 @@ trap 'rm -fr "$TESTDIR"' EXIT
 cp -r ./test/* "$TESTDIR"
 cd "$TESTDIR"
 pwd
-
-# Before all, run the main haskell-flake tests
-logHeader "Testing parser.nix"
-nix build --override-input haskell-flake path:${FLAKE} \
-    .#parser_tests
 
 # First, build the flake
 logHeader "Testing nix build"

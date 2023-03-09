@@ -1,36 +1,22 @@
-{ pkgs, ... }:
+{ pkgs ? import <nixpkgs> { }, lib ? pkgs.lib, ... }:
 
 let
   parser = pkgs.callPackage ./parser.nix { };
-  cabalProjectTests = [
-    {
-      desc = "Simple";
-      s = ''
-        packages:
-          foo
-          bar
-      '';
-      r = [ "foo" "bar" ];
-    }
-  ];
-  runParserTests = fn: spec: map
-    (t:
-      let
-        parsed = fn t.s;
-        logPrefix = "[TEST] ";
-      in
-      if t.r == parsed.value
-      then builtins.trace (logPrefix + "[✅] " + t.desc) parsed
-      else
-        builtins.trace (logPrefix + "[❌] " + t.desc) (
-          builtins.throw (builtins.toJSON parsed)))
-    spec;
-in
-pkgs.writeTextFile {
-  name = "parser_tests.log";
-  text =
+  cabalProjectTests =
     let
-      res = runParserTests parser.parseCabalProjectPackages cabalProjectTests;
+      eval = s:
+        let res = parser.parseCabalProjectPackages s; in
+        if res.type == "success" then res.value else res;
     in
-    "${builtins.toJSON res}";
-}
+    {
+      testSimple = {
+        expr = eval ''
+          packages:
+            foo
+            bar
+        '';
+        expected = [ "foo" "bar" ];
+      };
+    };
+in
+lib.runTests cabalProjectTests
