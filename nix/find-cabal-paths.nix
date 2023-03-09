@@ -20,7 +20,7 @@ let
       lib.strings.removeSuffix ".cabal" cabalFile;
     getPackageYamlName = fp:
       let
-        name = parser.parsePackageYamlName fp;
+        name = parser.parsePackageYamlName (builtins.readFile fp);
       in
       if name.type == "success"
       then name.value

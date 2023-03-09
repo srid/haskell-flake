@@ -37,5 +37,5 @@ in
         (parsec.skipThen h spaces1)
         name;
     in
-    parsec.runParser b (builtins.readFile packageYamlFile);
+    parsec.runParser b packageYamlFile;
 }

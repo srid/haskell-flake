@@ -18,5 +18,22 @@ let
         expected = [ "foo" "bar" ];
       };
     };
+  packageYamlTests =
+    let
+      eval = s:
+        let res = parser.parsePackageYamlName s; in
+        if res.type == "success" then res.value else res;
+    in
+    {
+      testSimple = {
+        expr = eval ''
+          name: foo
+        '';
+        expected = "foo";
+      };
+    };
 in
-lib.runTests cabalProjectTests
+{
+  "cabal.project" = lib.runTests cabalProjectTests;
+  "package.yaml" = lib.runTests packageYamlTests;
+}
