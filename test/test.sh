@@ -24,3 +24,6 @@ else
     echo "FOO is not bar" 
     exit 2
 fi
+
+# extraLibraries works
+runghc ./script | grep -F 'TOML-flavored boolean: Bool True'

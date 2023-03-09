@@ -83,6 +83,12 @@ in
             (name: p."${name}")
             (lib.attrNames config.packages);
         withHoogle = true;
+        extraDependencies = p:
+          let o = mkShellArgs.extraDependencies or (_: { }) p;
+          in o // {
+            libraryHaskellDepends = o.libraryHaskellDepends or []
+              ++ builtins.attrValues (config.devShell.extraLibraries p);
+          };
       });
     in
     {

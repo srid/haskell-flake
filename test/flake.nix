@@ -51,6 +51,9 @@
               # Adding a tool should make it available in devshell.
               fzf = pkgs.fzf;
             };
+            extraLibraries = hp: {
+              inherit (hp) tomland;
+            };
             mkShellArgs.shellHook = ''
               echo "Hello from devshell!"
               export FOO=bar
