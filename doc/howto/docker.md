@@ -66,11 +66,16 @@ docker load -i $(nix build .#dockerImage --print-out-paths)
 
 ## Tips
 
-Packages in `self'.packages` are shipped with symlinks to other store paths, like `$out/lib`, `$out/nix-support` and `$out/share/doc`. Along with these, enabling profiling or haddock can also increase the size of the package that you ship. Following can be used to reduce the size of the docker image that you ship:
+### Size
+
+Packages in `self'.packages` are shipped with symlinks to other store paths, like `$out/lib`, `$out/nix-support` and `$out/share/doc`. Along with these, enabling profiling or haddock can also increase the size of the package that you ship. Thus, you will want to strip all but the executables before copying the package to the docker image. This can be achieved using `justStaticExecutables`:
+
 ```nix
   # Inside perSystem
   packages.default = pkgs.haskell.lib.justStaticExecutables self'.packages.foo;
 ```
+
+### Time
 
 If you don't want `docker images` showing that the image was created several decades ago, use the following:
 ```nix
@@ -82,6 +87,8 @@ If you don't want `docker images` showing that the image was created several dec
   };
 }
 ```
+
+### Tag
 
 If you want to tag the images with the commit id of the working copy:
 
