@@ -1,7 +1,7 @@
-{ pkgs, lib, parsec, ... }:
+{ pkgs, lib, ... }:
 
 let
-  parser = import ./parser.nix { inherit pkgs lib parsec; };
+  parser = import ./parser.nix { inherit pkgs lib; };
   traversal = rec {
     findSingleCabalFile = path:
       let

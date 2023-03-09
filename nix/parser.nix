@@ -1,5 +1,14 @@
-{ pkgs, lib, parsec, ... }:
+{ pkgs, lib, ... }:
 
+let
+  nix-parsec = builtins.fetchGit {
+    url = "https://github.com/kanwren/nix-parsec.git";
+    ref = "master";
+    rev = "1bf25dd9c5de1257a1c67de3c81c96d05e8beb5e";
+    shallow = true;
+  };
+  inherit (import nix-parsec) parsec;
+in
 {
   # Extract the "packages" list from a cabal.project file.
   parseCabalProjectPackages = cabalProjectFile:

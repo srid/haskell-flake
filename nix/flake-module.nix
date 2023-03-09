@@ -1,5 +1,3 @@
-{ nix-parsec }:
-
 # A flake-parts module for Haskell cabal projects.
 { self, config, lib, flake-parts-lib, withSystem, ... }:
 
@@ -15,7 +13,6 @@ let
     raw;
 in
 {
-  _file = __curPos.file;
   options = {
     perSystem = mkPerSystemOption
       ({ config, self', inputs', pkgs, system, ... }:
@@ -199,16 +196,17 @@ in
                   packages = mkOption {
                     type = types.lazyAttrsOf packageSubmodule;
                     description = ''
-                      Attrset of local packages in the project repository.
+                      Set of local packages in the project repository.
 
-                      Autodiscovered by default by looking for `.cabal` files in
-                      top-level or sub-directories.
+                      If you have a `cabal.project` file (under `projectRoot`),
+                      those packages are automatically discovered. Otherwise, a
+                      top-level .cabal or package.yaml file is used to discover
+                      the single local project.
                     '';
                     default =
                       let
                         find-cabal-paths = import ./find-cabal-paths.nix {
                           inherit pkgs lib;
-                          inherit (nix-parsec.lib) parsec;
                         };
                       in
                       lib.mapAttrs
