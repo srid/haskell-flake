@@ -9,10 +9,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      # We are using @master because we need Nix > 2.12 (@21 doesn't have it)
-      - uses: nixbuild/nix-quick-install-action@master
+      - uses: nixbuild/nix-quick-install-action@21
         with:
-          nix_version: 2.13.3
           nix_conf: |
             experimental-features = nix-command flakes
             access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
