@@ -14,7 +14,8 @@ fi
 
 # Before all, run the main haskell-flake tests
 logHeader "Testing parser.nix"
-NIX_PATH=nixpkgs=flake:nixpkgs nix eval --impure --expr 'import ./nix/parser_tests.nix {}'
+nix eval -I nixpkgs=flake:github:nixos/nixpkgs/bb31220cca6d044baa6dc2715b07497a2a7c4bc7 \
+    --impure --expr 'import ./nix/parser_tests.nix {}'
 
 
 FLAKE=$(pwd)

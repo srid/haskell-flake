@@ -32,7 +32,7 @@ let
         expected = "foo";
       };
     };
-  # Like runTests, but actually fails if any test fails.
+  # Like lib.runTests, but actually fails if any test fails.
   runTestsFailing = tests:
     let
       res = lib.runTests tests;
