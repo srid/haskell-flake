@@ -1,4 +1,7 @@
 # Sufficiently basic parsers for `cabal.project` and `package.yaml` formats
+#
+# "sufficiently" because we care only about 'packages' from `cabal.project` and
+# 'name' from `package.yaml`.
 { pkgs, lib, ... }:
 
 let

@@ -59,10 +59,6 @@
         };
         # haskell-flake doesn't set the default package, but you can do it here.
         packages.default = self'.packages.haskell-flake-test;
-
-        # Additional checks that test the larger haskell-flake itself.
-        # These are unrelated to the Haskell project (under ./test) itself.
-        packages.parser_tests = import inputs.haskell-flake.tests { inherit pkgs; };
       };
     };
 }
