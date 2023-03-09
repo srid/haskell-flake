@@ -136,8 +136,19 @@ in
             specialArgs = { inherit pkgs self; };
             modules = [
               ./haskell-project.nix
-              {
+              ({ config, ... }: {
                 options = {
+                  projectRoot = mkOption {
+                    type = types.path;
+                    description = ''
+                      Path to the root of the project directory.
+
+                      Chaning this affects certain functionality, like where to
+                      look for the 'cabal.project' file.
+                    '';
+                    default = self;
+                    defaultText = "Top-level directory of the flake";
+                  };
                   basePackages = mkOption {
                     type = types.attrsOf raw;
                     description = ''
@@ -202,7 +213,7 @@ in
                       in
                       lib.mapAttrs
                         (_: value: { root = value; })
-                        (find-cabal-paths self);
+                        (find-cabal-paths config.projectRoot);
                     defaultText = lib.literalMD "autodiscovered by reading `self` files.";
                   };
                   devShell = mkOption {
@@ -223,7 +234,7 @@ in
 
 
                 };
-              }
+              })
             ];
           };
         in
