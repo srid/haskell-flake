@@ -1,0 +1,26 @@
+{
+  "nodes": {
+    "nix-parsec": {
+      "locked": {
+        "lastModified": 1635533376,
+        "narHash": "sha256-/HrG0UPGnI5VdkhrNrpDiM2+nhdL6lD/bqyGtYv0QDE=",
+        "owner": "kanwren",
+        "repo": "nix-parsec",
+        "rev": "1bf25dd9c5de1257a1c67de3c81c96d05e8beb5e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "kanwren",
+        "repo": "nix-parsec",
+        "type": "github"
+      }
+    },
+    "root": {
+      "inputs": {
+        "nix-parsec": "nix-parsec"
+      }
+    }
+  },
+  "root": "root",
+  "version": 7
+}

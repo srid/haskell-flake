@@ -1,3 +1,5 @@
+{ nix-parsec }:
+
 # A flake-parts module for Haskell cabal projects.
 { self, config, lib, flake-parts-lib, withSystem, ... }:
 
@@ -13,6 +15,7 @@ let
     raw;
 in
 {
+  _file = __curPos.file;
   options = {
     perSystem = mkPerSystemOption
       ({ config, self', inputs', pkgs, system, ... }:
@@ -191,7 +194,11 @@ in
                       top-level or sub-directories.
                     '';
                     default =
-                      let find-cabal-paths = import ./find-cabal-paths.nix { inherit lib; };
+                      let
+                        find-cabal-paths = import ./find-cabal-paths.nix {
+                          inherit pkgs lib;
+                          inherit (nix-parsec.lib) parsec;
+                        };
                       in
                       lib.mapAttrs
                         (_: value: { root = value; })

@@ -1,41 +1,64 @@
-{ lib, ... }:
+{ pkgs, lib, parsec, ... }:
 
-self:
-# We look for a single *.cabal in project root as well as
-# multiple */*.cabal. Otherwise, error out.
-#
-# In future, we could just read `cabal.project`. See #76.
 let
-  # Like pkgs.haskell.lib.haskellPathsInDir' but with a few differences
-  # - Allows top-level .cabal files
-  haskellPathsInDir' = path:
-    lib.filterAttrs (k: v: v != null) (lib.mapAttrs'
-      (k: v:
-        if v == "regular" && lib.strings.hasSuffix ".cabal" k
-        then lib.nameValuePair (lib.strings.removeSuffix ".cabal" k) path
-        else
-          if v == "directory" && builtins.pathExists (path + "/${k}/${k}.cabal")
-          then lib.nameValuePair k (path + "/${k}")
-          else lib.nameValuePair k null
-      )
-      (builtins.readDir path));
-  errorNoDefault = msg:
-    builtins.throw '' 
-      haskell-flake: A default value for `packages` cannot be auto-detected:
-
-        ${msg}
-      You must manually specify the `packages` option.
-    '';
-  cabalPaths =
-    let
-      cabalPaths = haskellPathsInDir' self;
-    in
-    if cabalPaths == { }
-    then
-      errorNoDefault ''
-        No .cabal file found in project root or its sub-directories.
-      ''
-    else cabalPaths;
+  parser = import ./parser.nix { inherit pkgs lib parsec; };
+  traversal = rec {
+    findSingleCabalFile = path:
+      let
+        cabalFiles = lib.filter (lib.strings.hasSuffix ".cabal") (builtins.attrNames (builtins.readDir path));
+        num = builtins.length cabalFiles;
+      in
+      if num == 0
+      then null
+      else if num == 1
+      then builtins.head cabalFiles
+      else builtins.throw "Multiple cabal files found";
+    findSinglePackageYamlFile = path:
+      let f = path + "/package.yaml";
+      in if builtins.pathExists f then f else null;
+    getCabalName = cabalFile:
+      lib.strings.removeSuffix ".cabal" cabalFile;
+    getPackageYamlName = fp:
+      let
+        name = parser.parsePackageYamlName fp;
+      in
+      if name.type == "success"
+      then name.value
+      else builtins.throw (builtins.toJSON name);
+    findHaskellPackageNameOfDirectory = path:
+      let
+        cabalFile = findSingleCabalFile path;
+        packageYamlFile = findSinglePackageYamlFile path;
+      in
+      if cabalFile != null
+      then
+        getCabalName cabalFile
+      else if packageYamlFile != null
+      then
+        getPackageYamlName packageYamlFile
+      else
+        builtins.throw "Neither a .cabal file nor a package.yaml found under ${path}";
+  };
 in
-cabalPaths
-
+self:
+let
+  cabalProjectFile = self + "/cabal.project";
+  packageDirs =
+    if builtins.pathExists cabalProjectFile
+    then
+      let
+        res = parser.parseCabalProjectPackages (builtins.readFile cabalProjectFile);
+        isSelfPath = path:
+          path == "." || path == "./" || path == "./.";
+      in
+      if res.type == "success"
+      then map (path: if isSelfPath path then self else "${self}/${path}") res.value
+      else builtins.throw (builtins.toJSON res)
+    else
+      [ self ];
+in
+lib.listToAttrs
+  (map
+    (path:
+    lib.nameValuePair (traversal.findHaskellPackageNameOfDirectory path) path)
+    packageDirs)

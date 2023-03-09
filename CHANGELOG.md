@@ -5,7 +5,7 @@
 - New features
   - #63: Add `config.haskellProjects.${name}.outputs` containing all flake outputs for that project.
     - #102 In addition, `outputs` contains `finalPackages` and `localPackages`.
-  - #49 & #91: The `packages` option now autodiscovers the top-level `.cabal` file (in addition to looking inside sub-directories) as its default value.
+  - #49 & #91 & #??: The `packages` option now autodiscovers the top-level `.cabal` file, `package.yaml` or it discovers multiple packages if they are specified in the `cabal.project` file.
   - #69: The default flake template creates `flake.nix` only, while the `#example` one creates the full Haskell project template.
   - #92: Add `devShell.mkShellArgs` to pass custom arguments to `mkShell`
   - #100: `source-overrides` option now supports specifying Hackage versions.
