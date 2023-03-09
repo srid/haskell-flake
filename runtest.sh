@@ -23,6 +23,11 @@ cp -r ./test/* "$TESTDIR"
 cd "$TESTDIR"
 pwd
 
+# Before all, run the main haskell-flake tests
+logHeader "Testing parser.nix"
+nix build --override-input haskell-flake path:${FLAKE} \
+    .#parser_tests
+
 # First, build the flake
 logHeader "Testing nix build"
 nix build --override-input haskell-flake path:${FLAKE}
