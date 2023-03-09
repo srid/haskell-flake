@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: nixbuild/nix-quick-install-action@21
+      - uses: nixbuild/nix-quick-install-action@v21
         with:
           nix_conf: |
             experimental-features = nix-command flakes
