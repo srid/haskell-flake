@@ -14,8 +14,9 @@ fi
 
 # Before all, run the main haskell-flake tests
 logHeader "Testing parser.nix"
-nix --version
-nix eval -I nixpkgs=flake:github:nixos/nixpkgs/bb31220cca6d044baa6dc2715b07497a2a7c4bc7 \
+# Waiting on github.com/nixbuild/nix-quick-install-action to support 2.13+
+nix run github:nixos/nix/2.14.1 -- --version
+nix run github:nixos/nix/2.14.1 -- eval -I nixpkgs=flake:github:nixos/nixpkgs/bb31220cca6d044baa6dc2715b07497a2a7c4bc7 \
     --impure --expr 'import ./nix/parser_tests.nix {}'
 
 
