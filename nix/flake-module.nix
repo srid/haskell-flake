@@ -40,7 +40,10 @@ in
             options = {
               root = mkOption {
                 type = path;
-                description = "Path to Haskell package where the `.cabal` file lives";
+                description = ''
+                  The directory path under which the Haskell package's `.cabal`
+                  file or `package.yaml` resides.
+                '';
               };
             };
           };
@@ -216,6 +219,10 @@ in
                       those packages are automatically discovered. Otherwise, a
                       top-level .cabal or package.yaml file is used to discover
                       the single local project.
+
+                      haskell-flake currently supports a limited range of syntax
+                      for `cabal.project`. Specifically it requires an explicit
+                      list of package directories under the "packages" option.
                     '';
                     default =
                       let
@@ -226,7 +233,7 @@ in
 
                               ${msg}
 
-                            Please specify the `packages` option manually or fix your project configuration.
+                            Please specify the `packages` option manually or change your project configuration.
                           '';
                         };
                       in
