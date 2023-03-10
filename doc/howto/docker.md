@@ -103,6 +103,19 @@ If you want to tag the images with the commit id of the working copy:
 ```
 [`builtins.substring 0 9 self.rev`](https://nixos.org/manual/nix/stable/language/builtins.html#builtins-substring) is the same as `git rev-parse --short HEAD`. `self.rev` is non-null only on a clean working copy and hence the tag is set to `dev` when the working copy is dirty.
 
+### SSL certs
+
+In order to be able to make https connections from inside of the docker image, you must expose the cacert Nix package via an environment variable:
+
+```nix
+{
+  # Inside dockerTools.buildImage
+  config = {
+    Env = [ "SSL_CERT_FILE=${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt" ];
+  };
+}
+```
+
 
 ## Example
 
