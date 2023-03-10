@@ -221,6 +221,13 @@ in
                       let
                         find-haskell-paths = import ./find-haskell-paths {
                           inherit pkgs lib;
+                          throwError = msg: builtins.throw ''
+                            haskell-flake: A default value for `packages` cannot be auto-determined:
+
+                              ${msg}
+
+                            Please specify the `packages` option manually or fix your project configuration.
+                          '';
                         };
                       in
                       lib.mapAttrs

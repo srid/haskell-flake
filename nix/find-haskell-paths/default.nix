@@ -1,4 +1,8 @@
-{ pkgs, lib, ... }:
+{ pkgs
+, lib
+, throwError ? msg: builtins.throw msg
+, ...
+}:
 
 let
   parser = import ./parser.nix { inherit pkgs lib; };
@@ -12,7 +16,7 @@ let
       then null
       else if num == 1
       then builtins.head cabalFiles
-      else builtins.throw "Multiple cabal files found";
+      else throwError "Expected a single .cabal file, but found multiple: ${builtins.toJSON cabalFiles}";
     findSinglePackageYamlFile = path:
       let f = path + "/package.yaml";
       in if builtins.pathExists f then f else null;
@@ -24,7 +28,7 @@ let
       in
       if name.type == "success"
       then name.value
-      else builtins.throw (builtins.toJSON name);
+      else throwError ("Failed to parse ${fp}: ${builtins.toJSON name}");
     findHaskellPackageNameOfDirectory = path:
       let
         cabalFile = findSingleCabalFile path;
@@ -37,7 +41,7 @@ let
       then
         getPackageYamlName packageYamlFile
       else
-        builtins.throw "Neither a .cabal file nor a package.yaml found under ${path}";
+        throwError "Neither a .cabal file nor a package.yaml found under ${path}";
   };
 in
 projectRoot:
@@ -53,7 +57,7 @@ let
       in
       if res.type == "success"
       then map (path: if isSelfPath path then projectRoot else "${projectRoot}/${path}") res.value
-      else builtins.throw (builtins.toJSON res)
+      else throwError ("Failed to parse ${cabalProjectFile}: ${builtins.toJSON res}")
     else
       [ projectRoot ];
 in
