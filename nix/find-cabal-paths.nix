@@ -40,9 +40,9 @@ let
         builtins.throw "Neither a .cabal file nor a package.yaml found under ${path}";
   };
 in
-self:
+projectRoot:
 let
-  cabalProjectFile = self + "/cabal.project";
+  cabalProjectFile = projectRoot + "/cabal.project";
   packageDirs =
     if builtins.pathExists cabalProjectFile
     then
@@ -52,10 +52,10 @@ let
           path == "." || path == "./" || path == "./.";
       in
       if res.type == "success"
-      then map (path: if isSelfPath path then self else "${self}/${path}") res.value
+      then map (path: if isSelfPath path then projectRoot else "${projectRoot}/${path}") res.value
       else builtins.throw (builtins.toJSON res)
     else
-      [ self ];
+      [ projectRoot ];
 in
 lib.listToAttrs
   (map

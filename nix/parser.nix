@@ -22,26 +22,26 @@ in
       spaces1 = parsec.skipWhile1 (c: c == " " || c == "\t");
       newline = parsec.string "\n";
       path = parsec.fmap lib.concatStrings (parsec.many1 (parsec.anyCharBut "\n"));
-      h = parsec.string "packages:\n";
-      b =
+      key = parsec.string "packages:\n";
+      val =
         (parsec.many1
           (parsec.between spaces1 newline path)
         );
-      p = parsec.skipThen
-        h
-        b;
+      parser = parsec.skipThen
+        key
+        val;
     in
-    parsec.runParser p cabalProjectFile;
+    parsec.runParser parser cabalProjectFile;
 
   # Extract the "name" field from a package.yaml file.
   parsePackageYamlName = packageYamlFile:
     let
       spaces1 = parsec.skipWhile1 (c: c == " " || c == "\t");
-      name = parsec.fmap lib.concatStrings (parsec.many1 (parsec.anyCharBut "\n"));
-      h = parsec.string "name:";
-      b = parsec.skipThen
-        (parsec.skipThen h spaces1)
-        name;
+      key = parsec.string "name:";
+      val = parsec.fmap lib.concatStrings (parsec.many1 (parsec.anyCharBut "\n"));
+      parser = parsec.skipThen
+        (parsec.skipThen key spaces1)
+        val;
     in
-    parsec.runParser b packageYamlFile;
+    parsec.runParser parser packageYamlFile;
 }
