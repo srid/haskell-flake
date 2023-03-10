@@ -1,13 +1,8 @@
 # haskell-flake
 
-A [`flake-parts`](https://flake.parts/) module to make Haskell development simpler with Nix.
+A [`flake-parts`](https://flake.parts/) module to make Haskell development [simpler](https://haskell.flake.page/start#under-the-hood) with Nix.
 
 <img src="./doc/logo.webp" width=100 />
-
-## Why?
-
-To keep `flake.nix` smaller (see examples below) and declarative ([what](https://github.com/srid/emanote-template/blob/c955a08fa685adb2fb81c4d8cefac6e20f417fee/flake.nix#L19-L26) vs [how](https://github.com/srid/emanote-template/blob/78d64b6e1e3497e3bd97012d8bf6f8bd6ec9cdd3/flake.nix#L19-L57)) by bringing a NixOS-like [module system](https://nixos.org/manual/nixos/stable/index.html#sec-writing-modules) to flakes. 
- `haskell-flake` simply uses [`callCabal2nix` and `shellFor`](https://github.com/srid/haskell-multi-nix/blob/nixpkgs/flake.nix) under the hood.
 
 ## Documentation
 

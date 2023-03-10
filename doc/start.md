@@ -29,6 +29,16 @@ nix flake init -t github:srid/haskell-flake#example
 
 You may also use https://github.com/srid/haskell-template which already uses `haskell-flake` along with other opinionated defaults.
 
+## Under the hood
+
+When nixifying a Haskell project without flake-parts (thus without haskell-flake) you would generally use two functions, called [`callCabal2nix` and `shellFor`](https://github.com/srid/haskell-multi-nix/blob/nixpkgs/flake.nix), from nixpkgs. For composing overlays, there are `pkgs.haskellPackages.extend` and `composeManyExtensions`. haskell-flake uses these functions, while exposing a simple modular API on top: your `flake.nix` becomes more [declarative](https://github.com/srid/haskell-template/blob/304fb5a1adfb25c7691febc15911b588a364a5f7/flake.nix#L27-L39) and less [imperative](https://github.com/srid/haskell-template/blob/3fc6858830ecee3d2fe1dfe9a8bfa2047cf561ac/flake.nix#L20-L79).
+
+In addition, haskell-flake supports:
+
+- Auto-detection of local packages based on `cabal.project` file (via [find-haskell-paths](https://github.com/srid/haskell-flake/tree/master/nix/find-haskell-paths))
+- Support for hpack's `package.yaml`
+- Composition of dependency overrides, and other project settings, via [[modules]]
+
 ## Next steps
 
 Visit [[guide]] for more details, and [[ref]] for module options.
