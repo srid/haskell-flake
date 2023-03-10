@@ -63,6 +63,8 @@ let
             then projectRoot
             else if lib.strings.hasInfix "*" path
             then throwError "Found a path with glob (${path}) in ${cabalProjectFile}, which is not supported"
+            else if lib.strings.hasSuffix ".cabal" path
+            then throwError "Expected a directory but ${path} (in ${cabalProjectFile}) is a .cabal filepath"
             else "${projectRoot}/${path}"
           )
           res.value
