@@ -56,7 +56,16 @@ let
           path == "." || path == "./" || path == "./.";
       in
       if res.type == "success"
-      then map (path: if isSelfPath path then projectRoot else "${projectRoot}/${path}") res.value
+      then
+        map
+          (path:
+            if isSelfPath path
+            then projectRoot
+            else if lib.strings.hasInfix "*" path
+            then throwError "Found a path with glob (${path}) in ${cabalProjectFile}, which is not supported"
+            else "${projectRoot}/${path}"
+          )
+          res.value
       else throwError ("Failed to parse ${cabalProjectFile}: ${builtins.toJSON res}")
     else
       [ projectRoot ];
