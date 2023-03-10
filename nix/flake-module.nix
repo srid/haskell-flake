@@ -40,7 +40,10 @@ in
             options = {
               root = mkOption {
                 type = path;
-                description = "Path to Haskell package where the `.cabal` file lives";
+                description = ''
+                  The directory path under which the Haskell package's `.cabal`
+                  file or `package.yaml` resides.
+                '';
               };
             };
           };
@@ -147,8 +150,19 @@ in
             specialArgs = { inherit pkgs self; };
             modules = [
               ./haskell-project.nix
-              {
+              ({ config, ... }: {
                 options = {
+                  projectRoot = mkOption {
+                    type = types.path;
+                    description = ''
+                      Path to the root of the project directory.
+
+                      Chaning this affects certain functionality, like where to
+                      look for the 'cabal.project' file.
+                    '';
+                    default = self;
+                    defaultText = "Top-level directory of the flake";
+                  };
                   basePackages = mkOption {
                     type = types.attrsOf raw;
                     description = ''
@@ -199,17 +213,33 @@ in
                   packages = mkOption {
                     type = types.lazyAttrsOf packageSubmodule;
                     description = ''
-                      Attrset of local packages in the project repository.
+                      Set of local packages in the project repository.
 
-                      Autodiscovered by default by looking for `.cabal` files in
-                      top-level or sub-directories.
+                      If you have a `cabal.project` file (under `projectRoot`),
+                      those packages are automatically discovered. Otherwise, a
+                      top-level .cabal or package.yaml file is used to discover
+                      the single local project.
+
+                      haskell-flake currently supports a limited range of syntax
+                      for `cabal.project`. Specifically it requires an explicit
+                      list of package directories under the "packages" option.
                     '';
                     default =
-                      let find-cabal-paths = import ./find-cabal-paths.nix { inherit lib; };
+                      let
+                        find-haskell-paths = import ./find-haskell-paths {
+                          inherit pkgs lib;
+                          throwError = msg: builtins.throw ''
+                            haskell-flake: A default value for `packages` cannot be auto-determined:
+
+                              ${msg}
+
+                            Please specify the `packages` option manually or change your project configuration.
+                          '';
+                        };
                       in
                       lib.mapAttrs
                         (_: value: { root = value; })
-                        (find-cabal-paths self);
+                        (find-haskell-paths config.projectRoot);
                     defaultText = lib.literalMD "autodiscovered by reading `self` files.";
                   };
                   devShell = mkOption {
@@ -230,7 +260,7 @@ in
 
 
                 };
-              }
+              })
             ];
           };
         in

@@ -12,32 +12,41 @@ else
     }
 fi
 
+
+# Waiting on github.com/nixbuild/nix-quick-install-action to support 2.13+
+# We use newer Nix for:
+# - https://github.com/NixOS/nix/issues/7263
+# - https://github.com/NixOS/nix/issues/7026
+NIX="nix run github:nixos/nix/2.14.1 --"
+${NIX} --version
+
+# Before anything, run the main haskell-flake tests
+logHeader "Testing find-haskell-paths' parser"
+${NIX} eval -I nixpkgs=flake:github:nixos/nixpkgs/bb31220cca6d044baa6dc2715b07497a2a7c4bc7 \
+    --impure --expr 'import ./nix/find-haskell-paths/parser_tests.nix {}'
+
+
 FLAKE=$(pwd)
 
-# A Nix bug causes incorrect self when in a sub-flake.
-# https://github.com/NixOS/nix/issues/7263
-# Workaround: copy ./test somewhere outside of this Git repo.
-TESTDIR=$(mktemp -d)
-trap 'rm -fr "$TESTDIR"' EXIT
-cp -r ./test/* "$TESTDIR"
-cd "$TESTDIR"
-pwd
+pushd ./test
 
 # First, build the flake
 logHeader "Testing nix build"
-nix build --override-input haskell-flake path:${FLAKE}
+${NIX} build --override-input haskell-flake path:${FLAKE}
 # Run the devshell test script in a nix develop shell.
 logHeader "Testing nix devshell"
-nix develop --override-input haskell-flake path:${FLAKE} -c ./test.sh
+${NIX} develop --override-input haskell-flake path:${FLAKE} -c ./test.sh
 # Test non-devshell features:
 # Checks
 logHeader "Testing nix flake checks"
-nix --option sandbox false \
+${NIX} --option sandbox false \
     build --override-input haskell-flake path:${FLAKE} -L .#check
+
+popd 
 
 logHeader "Testing docs"
 nix build --override-input haskell-flake path:${FLAKE} \
     --option log-lines 1000 --show-trace \
-    github:hercules-ci/flake.parts-website#checks.${SYSTEM}.linkcheck
+    "github:hercules-ci/flake.parts-website#checks.${SYSTEM}.linkcheck"
 
 logHeader "All tests passed!"
