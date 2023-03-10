@@ -219,13 +219,13 @@ in
                     '';
                     default =
                       let
-                        find-cabal-paths = import ./find-cabal-paths.nix {
+                        find-haskell-paths = import ./find-haskell-paths {
                           inherit pkgs lib;
                         };
                       in
                       lib.mapAttrs
                         (_: value: { root = value; })
-                        (find-cabal-paths config.projectRoot);
+                        (find-haskell-paths config.projectRoot);
                     defaultText = lib.literalMD "autodiscovered by reading `self` files.";
                   };
                   devShell = mkOption {

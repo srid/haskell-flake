@@ -23,7 +23,7 @@ ${NIX} --version
 # Before anything, run the main haskell-flake tests
 logHeader "Testing parser.nix"
 ${NIX} eval -I nixpkgs=flake:github:nixos/nixpkgs/bb31220cca6d044baa6dc2715b07497a2a7c4bc7 \
-    --impure --expr 'import ./nix/parser_tests.nix {}'
+    --impure --expr 'import ./nix/find-haskell-paths/parser_tests.nix {}'
 
 
 FLAKE=$(pwd)
