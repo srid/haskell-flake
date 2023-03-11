@@ -23,6 +23,9 @@ let
         ${command}
         touch $out
       '';
+
+  hlib = pkgs.haskell.lib.compose;
+
 in
 {
 
@@ -102,7 +105,7 @@ in
           # as to give them maximum control over the final package
           # set used.
           localPackagesOverlay
-          (pkgs.haskell.lib.packageSourceOverrides config.source-overrides)
+          (hlib.packageSourceOverrides config.source-overrides)
           config.overrides
         ];
 
