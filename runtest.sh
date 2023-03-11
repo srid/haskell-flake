@@ -28,7 +28,7 @@ ${NIX} eval -I nixpkgs=flake:github:nixos/nixpkgs/bb31220cca6d044baa6dc2715b0749
 
 FLAKE=$(pwd)
 
-pushd ./test
+pushd ./test/simple
 
 # First, build the flake
 logHeader "Testing nix build"
