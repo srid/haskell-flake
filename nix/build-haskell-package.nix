@@ -1,6 +1,6 @@
 # Like callCabal2nix, but does more:
-# - Recognizes projects with only package.yaml
 # - Source filtering (to prevent parent content changes causing rebuilds)
+# - Always build from cabal's sdist for release-worthiness
 { pkgs, lib, self, ... }:
 
 let
