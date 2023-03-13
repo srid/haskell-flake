@@ -109,6 +109,56 @@ From inside of `nix develop` shell, launch your pre-configured text editor (for 
 
 ## Example
 
-- [haskell-multi-nix's older flake.nix](https://github.com/srid/haskell-multi-nix/blob/nixpkgs/flake.nix) demonstrates that concepts introduced in this tutorial
+The flake for [haskell-multi-nix](https://github.com/srid/haskell-multi-nix) is presented below. This project has two Haskell packages "foo" and "bar".
+
+```nix
+{
+  inputs = {
+    nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
+  };
+  outputs = { self, nixpkgs, ... }:
+    let
+      # TODO: Change this to your current system, or use flake-utils/flake-parts.
+      system = "aarch64-darwin";
+      pkgs = nixpkgs.legacyPackages.${system};
+      overlay = self: super: {
+        # Local packages in the repository
+        foo = self.callCabal2nix "foo" ./foo { };
+        bar = self.callCabal2nix "bar" ./bar { };
+        # TODO: Put any library dependency overrides here
+      };
+      # Extend the `pkgs.haskellPackages` attrset using an overlay.
+      #
+      # Note that we can also extend the package set using more than one
+      # overlay. To do that we can either chain the `extend` calls or use
+      # the `composeExtensions` (or `composeManyExtensions`) function to
+      # merge the overlays.
+      haskellPackages' = pkgs.haskellPackages.extend overlay;
+    in
+    {
+      packages.${system} = {
+        inherit (haskellPackages') foo bar;
+        default = haskellPackages'.bar;
+      };
+      # This is how we provide a multi-package dev shell in Haskell.
+      # By using the `shellFor` function.
+      devShells.${system}.default = haskellPackages'.shellFor {
+        packages = p: [
+          p.foo
+          p.bar
+        ];
+        buildInputs = with haskellPackages'; [
+          ghcid
+          cabal-install
+          haskell-language-server
+        ];
+      };
+    };
+}
+```
+
+You can confirm that the package builds by running either `nix build .#foo` or `nix build .#bar`, as well as that IDE support is configured correctly by running `nix develop -c haskell-language-server`.
+
+A variation of this flake supporting multiple systems (via use of flake-parts) can be found [here](https://github.com/srid/haskell-multi-nix/blob/nixpkgs/flake.nix).
 
 [nixpkgs]: https://zero-to-nix.com/concepts/nixpkgs
