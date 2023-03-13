@@ -311,6 +311,7 @@ in
 
     flake = mkOption {
       type = types.submoduleWith {
+        specialArgs = { inherit withSystem; };
         modules = [
           ./default-project-modules.nix
           {
