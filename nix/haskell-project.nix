@@ -63,23 +63,24 @@ in
               src =
                 lib.cleanSourceWith {
                   name = "source-${name}-${pkg.version}";
-                  src =
-                    # NOTE: Even though cabal2nix does run hpack automatically,
-                    # buildFromCabalSdist does not. So we must run hpack ourselves at
-                    # the original source level.
-                    realiseHpack name root;
+                  src = root;
                 };
             }
             pkg;
         in
         lib.mapAttrs
           (name: pkgCfg:
-            lib.pipe pkgCfg
+            let
+              # NOTE: Even though cabal2nix does run hpack automatically,
+              # buildFromCabalSdist does not. So we must run hpack ourselves at
+              # the original source level.
+              root = realiseHpack name pkgCfg.root;
+              pkg = self.callCabal2nix name root { };
+            in
+            lib.pipe pkg
               [
-                (pkgCfg: self.callCabal2nix name pkgCfg.root { })
-
                 # Avoid rebuilding because of changes in parent directories
-                (setSrc name pkgCfg.root)
+                (setSrc name root)
 
                 # Make sure all files we use are included in the sdist, as a check
                 # for release-worthiness.
