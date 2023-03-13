@@ -1,0 +1,41 @@
+name: "CI"
+on:
+  # Run only when pushing to master branch, and making PRs
+  push:
+    branches:
+      - master
+  pull_request:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: cachix/install-nix-action@v17
+        with:
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+            access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
+            # Srid's cache; leaving disabled for template use.
+            # trusted-public-keys = cache.srid.ca:8sQkbPrOIoXktIwI0OucQBXod2e9fDjjoEZWn8OXbdo=
+            # substituters = https://cache.srid.ca
+      - name: Cache Nix dependencies
+        run: |
+          nix develop -j 4 -c echo
+      - name: Build 🔨
+        id: build
+        run: |
+          nix build -j auto -L
+      - name: Flake checks 🧪
+        run: |
+          # Because 'nix flake check' is not system-aware
+          # See https://srid.ca/haskell-template/checks
+          nix run nixpkgs#sd \
+            'systems = nixpkgs.lib.systems.flakeExposed' \
+            'systems = [ "x86_64-linux" ]' \
+            flake.nix
+
+          # Sandbox must be disabed for:
+          # https://github.com/srid/haskell-flake/issues/21
+          nix \
+            --option sandbox false \
+            flake check -L
