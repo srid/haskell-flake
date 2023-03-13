@@ -23,7 +23,7 @@
         # The "main" project. You can have multiple projects, but this template
         # has only one.
         haskellProjects.main = {
-          # packages.haskell-flake-test.root = ./.;  # Auto-discovered by haskell-flake
+          packages.haskell-flake-test.root = ./.;
           overrides = self: super: { };
           devShell = {
             tools = hp: {
@@ -43,6 +43,7 @@
           programs.nixpkgs-fmt.enable = true;
           programs.cabal-fmt.enable = true;
           programs.hlint.enable = true;
+
 
           # We use fourmolu
           programs.ormolu.package = pkgs.haskellPackages.fourmolu;
