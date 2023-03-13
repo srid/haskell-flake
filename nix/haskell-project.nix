@@ -58,31 +58,33 @@ in
                   hpack
                 ''
             else root;
-          setSrc = name: root: pkg: hlib.overrideSrc {
-                src =
-                  lib.cleanSourceWith {
-                    name = "source-${name}-${pkg.version}";
-                    src =
-                      # NOTE: Even though cabal2nix does run hpack automatically,
-                      # buildFromCabalSdist does not. So we must run hpack ourselves at
-                      # the original source level.
-                      realiseHpack name root;
-                  };
-              } pkg;
+          setSrc = name: root: pkg: hlib.overrideSrc
+            {
+              src =
+                lib.cleanSourceWith {
+                  name = "source-${name}-${pkg.version}";
+                  src =
+                    # NOTE: Even though cabal2nix does run hpack automatically,
+                    # buildFromCabalSdist does not. So we must run hpack ourselves at
+                    # the original source level.
+                    realiseHpack name root;
+                };
+            }
+            pkg;
         in
         lib.mapAttrs
           (name: pkgCfg:
             lib.pipe pkgCfg
-            [
-              (pkgCfg: self.callCabal2nix name pkgCfg.root { })
+              [
+                (pkgCfg: self.callCabal2nix name pkgCfg.root { })
 
-              # Avoid rebuilding because of changes in parent directories
-              (setSrc name pkgCfg.root)
+                # Avoid rebuilding because of changes in parent directories
+                (setSrc name pkgCfg.root)
 
-              # Make sure all files we use are included in the sdist, as a check
-              # for release-worthiness.
-              fromSdist
-            ]
+                # Make sure all files we use are included in the sdist, as a check
+                # for release-worthiness.
+                fromSdist
+              ]
           )
           config.packages;
 
@@ -106,7 +108,7 @@ in
         extraDependencies = p:
           let o = mkShellArgs.extraDependencies or (_: { }) p;
           in o // {
-            libraryHaskellDepends = o.libraryHaskellDepends or []
+            libraryHaskellDepends = o.libraryHaskellDepends or [ ]
               ++ builtins.attrValues (config.devShell.extraLibraries p);
           };
       });
