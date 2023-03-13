@@ -1,3 +1,5 @@
+#! /usr/bin/env nix-shell
+#! nix-shell -i bash -p bash
 set -e
 
 if [ "$(uname)" == "Darwin" ]; then

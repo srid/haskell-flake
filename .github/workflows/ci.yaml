@@ -45,7 +45,8 @@ jobs:
 
       - name: Run test
         id: test
-        run: ./runtest.sh
+        run: |
+          nix run nixpkgs#bash runtest.sh
 
   www:
     runs-on: ubuntu-latest
