@@ -1,25 +1,24 @@
 # Revision history for haskell-flake
 
-## `master` branch
+## 0.2.0 (Mar 13, 2023)
 
 - New features
-  - #63: Add `config.haskellProjects.${name}.outputs` containing all flake outputs for that project.
-    - #102 In addition, `outputs` contains `finalPackages` and `localPackages`.
-  - #49 & #91 & #110: The `packages` option now autodiscovers the top-level `.cabal` file, `package.yaml` or it discovers multiple packages if they are specified in the `cabal.project` file.
-  - #69: The default flake template creates `flake.nix` only, while the `#example` one creates the full Haskell project template.
-  - #92: Add `devShell.mkShellArgs` to pass custom arguments to `mkShell`
-  - #111: Add `devShell.extraLibraries` to add custom Haskell libraries to the devshell.
-  - #100: `source-overrides` option now supports specifying Hackage versions.
-  - #114: Prevent Nix rebuilds of packages in sub-directories when parent contents change.
+  - #68, #79, #106: Add support for project modules that can be imported in `imports`. Export them in `flake.haskellFlakeProjectModules`. Default modules are exported by default, to reuse overrides and local packages from external flakes. For details, see https://haskell.flake.page/modules
+    - #67: `overrides` will be combined using `composeManyExtensions`, however their order is arbitrary. This is an experimental feature, and a warning will be logged.
+  - Dev shell
+    - #37: Devshell can now be disabled using `devShell.enable = false;` (useful if you want haskell-flake to produce just the package outputs)
+    - #92: Add `devShell.mkShellArgs` to pass custom arguments to `mkShell`
+    - #111: Add `devShell.extraLibraries` to add custom Haskell libraries to the devshell.
+  - #63, #52: Add `config.haskellProjects.${name}.outputs` containing all flake outputs for that project; as well as (#102) `finalPackages` and `localPackages`.
+  - #49 & #91 & #110: The default value for the `packages` option is now determined from the `cabal.project` file. If it doesn't exist, it looks for top-level `.cabal` file or `package.yaml`. Better hpack support throughout.
+  - #100: `source-overrides` option now supports specifying Hackage versions as string.
+  - #114: Prevent unnecessary Nix rebuilds of packages in sub-directories when parent contents change.
 - API changes
-    - #37: Group `buildTools` (renamed to `tools`), `hlsCheck` and `hlintCheck` under the `devShell` submodule option; and allow disabling them all using `devShell.enable = false;` (useful if you want haskell-flake to produce just the package outputs).
-    - #64: Remove hlintCheck (use [treefmt-nix](https://github.com/numtide/treefmt-nix#flake-parts) instead)
-    - #52: Expose the final package set as `finalPackages`. Rename `haskellPackages`, accordingly, to `basePackages`. Overlays are applied on top of `basePackage` -- using `source-overrides`, `overrides`, `packages` in that order -- to produce `finalPackages`.
-    - #68: You can now use `imports` inside of `haskellProjects.<name>` to modularize your Haskell project configuration.
-      - #79: `flake.haskellFlakeProjectModules.<name>` option can be used to set and expose your Haskell project modules to other flakes.
-        - #106: Auto-generate the default modules in 'haskellFlakeProjectModules' for reuse in downstream flakes.
-      - #67: `overrides` will be combined using `composeManyExtensions`, however their order is arbitrary. This is an experimental feature, and a warning will be logged.
+  - #37: Group `buildTools` (renamed to `tools`), `hlsCheck` and `hlintCheck` under the new `devShell` submodule option
+  - #64: Remove hlintCheck (use [treefmt-nix](https://github.com/numtide/treefmt-nix#flake-parts) instead)
+  - #52: Rename `haskellPackages` to `basePackages`. Overlays are applied on top of `basePackage` -- using `source-overrides`, `overrides`, `packages` in that order -- to produce `finalPackages`.
+  - #69: The default flake template creates `flake.nix` only, while the `#example` one creates the full Haskell project template.
 
-## 0.1.0
+## 0.1.0 (Feb 1, 2023)
 
 - Initial release
