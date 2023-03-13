@@ -23,6 +23,9 @@ let
         ${command}
         touch $out
       '';
+
+  hlib = pkgs.haskell.lib.compose;
+
 in
 {
 
@@ -55,14 +58,39 @@ in
                   hpack
                 ''
             else root;
+          makeSrcAutonomous = name: root: pkg: hlib.overrideSrc
+            {
+              src =
+                # Since 'root' may be a subdirectory of a store path
+                # (in string form, which means that it isn't automatically
+                # copied), the purpose of cleanSourceWith here is to create a
+                # new (smaller) store path that is a copy of 'root' but
+                # does not contain the unrelated parent source contents.
+                lib.cleanSourceWith {
+                  name = "source-${name}-${pkg.version}";
+                  src = root;
+                };
+            }
+            pkg;
         in
         lib.mapAttrs
-          (name: value:
-            # NOTE: Even though cabal2nix does run hpack automatically,
-            # buildFromCabalSdist does not. So we must run hpack ourselves at
-            # the original source level.
-            let root = realiseHpack name value.root;
-            in fromSdist (self.callCabal2nix name root { })
+          (name: pkgCfg:
+            let
+              # NOTE: Even though cabal2nix does run hpack automatically,
+              # buildFromCabalSdist does not. So we must run hpack ourselves at
+              # the original source level.
+              root = realiseHpack name pkgCfg.root;
+              pkg = self.callCabal2nix name root { };
+            in
+            lib.pipe pkg
+              [
+                # Avoid rebuilding because of changes in parent directories
+                (makeSrcAutonomous name root)
+
+                # Make sure all files we use are included in the sdist, as a check
+                # for release-worthiness.
+                fromSdist
+              ]
           )
           config.packages;
 
@@ -86,7 +114,7 @@ in
         extraDependencies = p:
           let o = mkShellArgs.extraDependencies or (_: { }) p;
           in o // {
-            libraryHaskellDepends = o.libraryHaskellDepends or []
+            libraryHaskellDepends = o.libraryHaskellDepends or [ ]
               ++ builtins.attrValues (config.devShell.extraLibraries p);
           };
       });
@@ -102,7 +130,7 @@ in
           # as to give them maximum control over the final package
           # set used.
           localPackagesOverlay
-          (pkgs.haskell.lib.packageSourceOverrides config.source-overrides)
+          (hlib.packageSourceOverrides config.source-overrides)
           config.overrides
         ];
 
