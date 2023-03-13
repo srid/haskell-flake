@@ -41,4 +41,4 @@ In addition, haskell-flake supports:
 
 ## Next steps
 
-Visit [[guide]] for more details, and [[ref]] for module options.
+Visit [[guide]] for more details, and [[ref]] for module options. If you are new to Nix, see [[basics]].

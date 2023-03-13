@@ -16,6 +16,7 @@ nix run nixpkgs#hello
 
 ## See also
 
+- [[nix-rapid]]
 - [NixOS](https://nixos.org/), a Linux distro based on the Nix package manager.
 - [nix-darwin](https://github.com/LnL7/nix-darwin), replaces homebrew and the like on macOS, using Nix.
 
