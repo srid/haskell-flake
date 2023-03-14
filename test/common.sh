@@ -16,11 +16,13 @@ HASKELL_FLAKE=${DIR_OF_COMMON_SH}/..
 OVERRIDE_HASKELL_FLAKE="--override-input haskell-flake path:${HASKELL_FLAKE}"
 OVERRIDE_NIXPKGS="--override-input nixpkgs github:nixos/nixpkgs/bb31220cca6d044baa6dc2715b07497a2a7c4bc7"
 
-if [[ "$(nix --version)" == "nix (Nix) 2.14.1" ]]
+currentver="$(nix eval --raw --expr builtins.nixVersion)"
+requiredver="2.14.1"
+if [ "$(printf '%s\n' "$requiredver" "$currentver" | sort -V | head -n1)" = "$requiredver" ];
 then 
   echo
 else
-  echo "!!!! Using newer Nix from github:nixos/nix/2.14.1"
+  echo "!!!! Your Nix version is old ($currentver). Using newer Nix from github:nixos/nix/2.14.1"
   # Waiting on github.com/nixbuild/nix-quick-install-action to support 2.13+
   # We use newer Nix for:
   # - https://github.com/NixOS/nix/issues/7263
