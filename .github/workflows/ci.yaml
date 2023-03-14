@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: nixbuild/nix-quick-install-action@master
+      - uses: nixbuild/nix-quick-install-action@v22
         with:
           # We use newer Nix for:
           # - https://github.com/NixOS/nix/issues/7263
