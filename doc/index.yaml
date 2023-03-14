@@ -12,6 +12,7 @@ template:
   sidebar:
     collapsed: false
   urlStrategy: pretty
+  editBaseUrl: https://github.com/srid/haskell-flake/edit/master/doc
 
 pandoc:
   rewriteClass:
