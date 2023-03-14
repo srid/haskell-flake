@@ -5,7 +5,7 @@
 # Does not run the link checker. That's done in runtest.sh.
 
 nix --option sandbox false \
-    build --override-input haskell-flake path:${FLAKE} \
+    build ${OVERRIDE_HASKELL_FLAKE} \
     -L --show-trace \
     github:hercules-ci/flake.parts-website \
     "$@"
