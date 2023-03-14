@@ -2,7 +2,7 @@
 # 
 # You can also run it locally using:
 #
-#  nix develop --override-input haskell-flake ../ -c ./test.sh
+#  nix develop --override-input haskell-flake ../ -c ./test-in-devshell.sh
 #
 # Or, just run `runtest.sh` from project root.
 
