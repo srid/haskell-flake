@@ -2,6 +2,8 @@
 #! nix-shell -i bash -p bash
 set -e
 
+# Common test library of functions and variables
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 if [ "$(uname)" == "Darwin" ]; then
     SYSTEM=aarch64-darwin
     function logHeader {
@@ -13,7 +15,12 @@ else
         echo -e "\n||| $@"
     }
 fi
+FLAKE=$(pwd)
+OVERRIDE_HASKELL_FLAKE="--override-input haskell-flake path:${FLAKE}"
 
+# Export the common library.
+export -f logHeader
+export FLAKE SYSTEM OVERRIDE_HASKELL_FLAKE
 
 # Waiting on github.com/nixbuild/nix-quick-install-action to support 2.13+
 # We use newer Nix for:
@@ -27,12 +34,6 @@ logHeader "Testing ./nix/find-haskell-paths"
 pushd ./nix/find-haskell-paths
 $SHELL ./test.sh
 popd
-
-
-FLAKE=$(pwd)
-
-export -f logHeader
-export NIX FLAKE SYSTEM
 
 pushd ./test/with-subdir
 $SHELL ./test.sh

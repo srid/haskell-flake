@@ -1,4 +1,4 @@
 
-nix build --override-input haskell-flake path:${FLAKE} \
+nix build ${OVERRIDE_HASKELL_FLAKE} \
     --option log-lines 1000 --show-trace \
     "github:hercules-ci/flake.parts-website#checks.${SYSTEM}.linkcheck"
