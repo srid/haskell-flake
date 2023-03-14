@@ -1,26 +1,24 @@
 #! /usr/bin/env nix-shell
 #! nix-shell -i bash -p bash
-set -euxo pipefail
+set -euo pipefail
 
 source ./test/common.sh
 
-# Before anything, run the main haskell-flake tests
-logHeader "Testing ./nix/find-haskell-paths"
-pushd ./nix/find-haskell-paths
-$SHELL ./test.sh
-popd
+# The test directory must contain a 'test.sh' file that will be run in that
+# directory.
+TESTS=(
+  ./nix/find-haskell-paths
+  ./test/simple
+  ./test/with-subdir
+  ./doc
+)
 
-pushd ./test/with-subdir
-$SHELL ./test.sh
-popd
-
-pushd ./test/simple
-$SHELL ./test.sh
-popd 
-
-logHeader "Testing docs"
-pushd ./doc
-$SHELL ./test.sh
-popd
+for testDir in "${TESTS[@]}" 
+do 
+  logHeader "Testing $testDir"
+  pushd $testDir
+  $SHELL ./test.sh
+  popd
+done
 
 logHeader "All tests passed!"
