@@ -8,6 +8,7 @@ source ./test/common.sh
 # directory.
 TESTS=(
   ./nix/find-haskell-paths
+  ./example
   ./test/simple
   ./test/with-subdir
   ./doc

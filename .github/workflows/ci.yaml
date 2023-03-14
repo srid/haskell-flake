@@ -14,35 +14,6 @@ jobs:
           nix_conf: |
             experimental-features = nix-command flakes
             access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
-      - name: Test flake templates
-        id: template
-        run: |
-          FLAKE=$(pwd)
-          TEMP_DIR=$(mktemp -d)
-          cd $TEMP_DIR
-
-          function templateTest () {
-            # Build haskell executable
-            nix build \
-              --override-input haskell-flake path:${FLAKE} \
-              --override-input nixpkgs github:nixos/nixpkgs/bb31220cca6d044baa6dc2715b07497a2a7c4bc7
-            # Test haskell devshell (via HLS check)
-            nix develop \
-              --override-input haskell-flake path:${FLAKE} \
-              --override-input nixpkgs github:nixos/nixpkgs/bb31220cca6d044baa6dc2715b07497a2a7c4bc7 \
-               -c haskell-language-server
-          }
-
-          set -x
-          #### Test "#example" template
-          nix flake init -t $FLAKE#example
-          templateTest
-
-          ### Test "#default" template
-          rm -f flake.nix
-          nix flake init -t $FLAKE
-          templateTest
-
       - name: Run test
         id: test
         run: |

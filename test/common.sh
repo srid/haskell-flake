@@ -13,7 +13,8 @@ fi
 
 DIR_OF_COMMON_SH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 HASKELL_FLAKE=${DIR_OF_COMMON_SH}/..
-OVERRIDE_HASKELL_FLAKE="--quiet --override-input haskell-flake path:${HASKELL_FLAKE}"
+OVERRIDE_HASKELL_FLAKE="--override-input haskell-flake path:${HASKELL_FLAKE}"
+OVERRIDE_NIXPKGS="--override-input nixpkgs github:nixos/nixpkgs/bb31220cca6d044baa6dc2715b07497a2a7c4bc7"
 
 # Waiting on github.com/nixbuild/nix-quick-install-action to support 2.13+
 # We use newer Nix for:
