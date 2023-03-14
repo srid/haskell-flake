@@ -82,6 +82,7 @@ common shared
     , filepath
     , mtl
     , optics-core
+    , optics-th
     , profunctors
     , relude        >=1.0
     , shower
