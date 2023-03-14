@@ -1,4 +1,4 @@
 source ../../test/common.sh
 
-nix eval -I nixpkgs=flake:github:nixos/nixpkgs/bb31220cca6d044baa6dc2715b07497a2a7c4bc7 \
+nix eval -I nixpkgs=flake:${NIXPKGS_URL} \
     --impure --expr 'import ./parser_tests.nix {}'
