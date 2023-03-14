@@ -1,16 +1,14 @@
 # Common test library of functions and variables
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+function logHeader {
+  echo -e "\n||| $@"
+}
+
 if [ "$(uname)" == "Darwin" ]; then
-    SYSTEM=aarch64-darwin
-    function logHeader {
-        echo "\n||| $@"
-    }
+  SYSTEM=aarch64-darwin
 else
-    SYSTEM=x86_64-linux
-    function logHeader {
-        echo -e "\n||| $@"
-    }
+  SYSTEM=x86_64-linux
 fi
 
 DIR_OF_COMMON_SH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
