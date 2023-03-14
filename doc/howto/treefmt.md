@@ -2,15 +2,15 @@
 slug: treefmt
 ---
 
-# Formatting your project using treefmt
+# Auto formatting using treefmt
 
-`treefmt` provides an interface to run multiple formatters at once, so you don't have to run them manually for each file type.
+[treefmt](https://github.com/numtide/treefmt) provides an interface to run multiple [code formatters](https://en.wikipedia.org/wiki/Prettyprint) at once, so you don't have to run them manually for each file type.
 
 ## Writing the Nix to configure treefmt in your project
 
 ### Add treefmt and flake-root to your inputs
 
-`flake-root` is needed to find the root of your project based on the presence of a file, by default it is `flake.nix`. Check [here](https://github.com/srid/flake-root) to configure the file that tracks the root.
+The [`flake-root`](https://github.com/srid/flake-root) module is needed to find the root of your project based on the presence of a file, by default it is `flake.nix`. 
 
 ```nix
 {
@@ -20,7 +20,7 @@ slug: treefmt
 }
 ```
 
-### Import flakeModule (an attribute of outputs) of treefmt and flake-root
+### Import `flakeModule` output of treefmt and flake-root
 
 ```nix
 {
@@ -34,16 +34,16 @@ slug: treefmt
 
 ### Configure your formatter
 
-The example configuration below only consists of formatters required by a haskell project using nix. Refer to [treefmt-doc](https://numtide.github.io/treefmt/formatters/) for more formatters.
+To actually enable the individual formatters you want to configure treefmt. The example configuration below only consists of formatters required by a haskell project using nix. Refer to [treefmt-doc](https://numtide.github.io/treefmt/formatters/) for more formatters.
 
 ```nix
 {
   # Inside mkFlake's `perSystem`
   treefmt.config = {
     inherit (config.flake-root) projectRootFile;
-    # This is by default, needn't specify.
+    # This is the default, and can be overriden.
     package = pkgs.treefmt;
-    # formats .hs files
+    # formats .hs files (fourmolu is also available)
     programs.ormolu.enable = true;
     # formats .nix files
     programs.nixpkgs-fmt.enable = true;
@@ -57,6 +57,8 @@ The example configuration below only consists of formatters required by a haskel
 
 ### Add treefmt to your devShell
 
+Finally, add the resulting treefmt wrapper (`build.wrapper`) to your devShell. We also add the individual formatters (`build.programs`) to the devShell, so that they can be used directly in text editors and IDEs.
+
 ```nix
 {
   # Inside mkFlake's `perSystem`
@@ -67,6 +69,11 @@ The example configuration below only consists of formatters required by a haskel
   };
 }
 ```
+
+### Flake check
+
+The `treefmt-nix` flake module automatically adds a flake check that can be evaluated to make sure that the project is already autoformatted.
+
 ## Tips
 
 ### Exclude folders
