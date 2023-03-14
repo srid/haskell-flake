@@ -11,6 +11,7 @@ TESTS=(
   ./nix/find-haskell-paths
   ./example
   ./test/simple
+  ./test/hpack
   ./test/with-subdir
   ./doc
 )

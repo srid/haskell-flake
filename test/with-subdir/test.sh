@@ -20,7 +20,7 @@ trap cleanup EXIT
 logHeader "Testing source filtering"
 
 function get_drv_path() {
-  nix eval ${OVERRIDE_HASKELL_FLAKE} .#packages.$SYSTEM.default.drvPath
+  nix eval ${OVERRIDE_ALL} .#packages.$SYSTEM.default.drvPath
 }
 baseline=$(get_drv_path)
 

@@ -1,0 +1,17 @@
+name: haskell-flake-test
+version:         0.1.0.0
+license:         NONE
+author:          Joe
+maintainer:      joe@example.com
+
+ghc-options:
+  - -Wall
+
+default-language: Haskell2010
+
+executables:
+  haskell-flake-test:
+    main:          Main.hs
+    dependencies:    
+      - base
+    source-dirs:   src

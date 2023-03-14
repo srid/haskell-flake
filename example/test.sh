@@ -3,13 +3,10 @@ set -euo pipefail
 
 function templateTest () {
     # Build haskell executable
-    nix build \
-        ${OVERRIDE_HASKELL_FLAKE} \
-        ${OVERRIDE_NIXPKGS}
+    nix build ${OVERRIDE_ALL}
     # Test haskell devshell (via HLS check)
     nix develop \
-        ${OVERRIDE_HASKELL_FLAKE} \
-        ${OVERRIDE_NIXPKGS} \
+        ${OVERRIDE_ALL} \
         -c haskell-language-server
 }
 
