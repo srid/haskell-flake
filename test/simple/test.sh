@@ -1,29 +1,13 @@
-# This script is run in a `nix develop` shell by Github Actions.
-# 
-# You can also run it locally using:
-#
-#  nix develop --override-input haskell-flake ../ -c ./test.sh
-#
-# Or, just run `runtest.sh` from project root.
+set -euxo pipefail
 
-set -xe
-
-# Test haskell devshell (via HLS check)
-haskell-language-server
-
-# Setting buildTools.ghcid to null should disable that default buildTool
-which ghcid && exit 2 || echo
-
-# Adding a buildTool (fzf, here) should put it in devshell.
-which fzf
-
-# mkShellArgs works
-if [[ "$FOO" == "bar" ]]; then 
-    echo "$FOO"
-else 
-    echo "FOO is not bar" 
-    exit 2
-fi
-
-# extraLibraries works
-runghc ./script | grep -F 'TOML-flavored boolean: Bool True'
+# First, build the flake
+logHeader "Testing nix build"
+${NIX} build --override-input haskell-flake path:${FLAKE}
+# Run the devshell test script in a nix develop shell.
+logHeader "Testing nix devshell"
+${NIX} develop --override-input haskell-flake path:${FLAKE} -c ./test-in-devshell.sh
+# Test non-devshell features:
+# Checks
+logHeader "Testing nix flake checks"
+${NIX} --option sandbox false \
+    build --override-input haskell-flake path:${FLAKE} -L .#check
