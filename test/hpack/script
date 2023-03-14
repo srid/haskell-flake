@@ -1,5 +1,0 @@
-import Toml.Type.Value (Value(Bool))
-
-main :: IO ()
-main = do
-  putStrLn ("I depend on the `tomland` package. Here's a TOML-flavored boolean: " <> show (Bool True))
