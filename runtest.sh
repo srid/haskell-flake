@@ -13,6 +13,7 @@ TESTS=(
   ./test/simple
   ./test/hpack
   ./test/with-subdir
+  ./test/project-module
   ./doc
 )
 
