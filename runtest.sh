@@ -3,6 +3,7 @@
 set -euo pipefail
 
 source ./test/common.sh
+nix --version
 
 # The test directory must contain a 'test.sh' file that will be run in that
 # directory.
