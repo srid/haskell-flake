@@ -1,3 +1,4 @@
+source ../common.sh
 set -euxo pipefail
 
 # First, build the flake

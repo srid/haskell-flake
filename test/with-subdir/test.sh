@@ -1,3 +1,4 @@
+source ../common.sh
 set -euxo pipefail
 cabal_project="$(cat ./cabal.project)"
 main_hs="$(cat ./haskell-flake-test/src/Main.hs)"
