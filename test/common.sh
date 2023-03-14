@@ -23,7 +23,6 @@ then
   echo
 else
   echo "!!!! Your Nix version is old ($currentver). Using newer Nix from github:nixos/nix/2.14.1"
-  # Waiting on github.com/nixbuild/nix-quick-install-action to support 2.13+
   # We use newer Nix for:
   # - https://github.com/NixOS/nix/issues/7263
   # - https://github.com/NixOS/nix/issues/7026
