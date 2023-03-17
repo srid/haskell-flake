@@ -14,7 +14,7 @@ To test your Nix install, run:
 nix run nixpkgs#nix-info -- -m
 ```
 
-Note: If you are on an ARM-based Mac (like M1), the `system` field of `nix-info`'s output must say `"aarch64-darwin"`. If it instead says `"x86_64-darwin"`, it means that you have incorrectly installed Nix (i.e., under Rosetta).
+Note: If you are on an ARM-based Mac (like M1), make sure that you [did not install Nix in Rosetta](https://github.com/DeterminateSystems/nix-installer/issues/344).
 
 ## See also
 
