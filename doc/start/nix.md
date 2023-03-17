@@ -11,8 +11,10 @@ This installer automatically [enable flakes](https://nixos.wiki/wiki/Flakes#Enab
 To test your Nix install, run:
 
 ```sh
-nix run nixpkgs#hello
+nix run nixpkgs#nix-info -- -m
 ```
+
+Note: If you are on an ARM-based Mac (like M1), the `system` field of `nix-info`'s output must say `"aarch64-darwin"`. If it instead says `"x86_64-darwin"`, it means that you have incorrectly installed Nix (i.e., under Rosetta).
 
 ## See also
 
