@@ -16,6 +16,10 @@ nix run nixpkgs#nix-info -- -m
 
 Note: If you are on an ARM-based Mac (like M1), make sure that you [did not install Nix in Rosetta](https://github.com/DeterminateSystems/nix-installer/issues/344).
 
+## Recommendations
+
+For a better nix development environment experience, install [[direnv|nix-direnv & starship]].
+
 ## See also
 
 - [[nix-rapid]]
