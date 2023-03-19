@@ -31,6 +31,8 @@ programs.starship = {
 };
 ```
 
+See also https://github.com/srid/nixos-flake for a template configuration to put the home-manager configuration on, regardless of whether you are on Linux or macOS.
+
 ### Text Editor configuration
 
 #### VSCode
