@@ -8,10 +8,10 @@ slug: direnv
 
 ## Starship
 
-It is recommended to use [starship](https://starship.rs/) along with nix-direnv, because it gives a visual indication of the current environment. For example, if you are in a `nix develop` shell, your terminal prompt to change to something like this:
+It is recommended to use [starship](https://starship.rs/) along with nix-direnv, because it gives a visual indication of the current environment. For example, if you are in a `nix develop` shell, your terminal prompt automatically changes to something like this:
 
 ```sh
-srid on appreciate haskell-template on  master [!] via λ 9.2.6 via ❄️  impure (ghc-shell-for-haskell-template-0.1.0.0-0-env)
+srid on nixos haskell-template on  master [!] via λ 9.2.6 via ❄️  impure (ghc-shell-for-haskell-template-0.1.0.0-0-env)
 ❯
 ```
 

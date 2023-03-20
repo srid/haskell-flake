@@ -105,13 +105,17 @@ If you want to tag the images with the commit id of the working copy:
 
 ### SSL certs
 
-In order to be able to make https connections from inside of the docker image, you must expose the cacert Nix package via an environment variable:
+In order to be able to make https connections from inside of the docker image, you must expose the cacert Nix package via the relevant environment variable:
 
 ```nix
 {
   # Inside dockerTools.buildImage
   config = {
-    Env = [ "SSL_CERT_FILE=${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt" ];
+    Env = [ 
+      "SSL_CERT_FILE=${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt" 
+      # Ref: https://hackage.haskell.org/package/x509-system-1.6.7/docs/src/System.X509.Unix.html#getSystemCertificateStore
+      "SYSTEM_CERTIFICATE_PATH=${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
+    ];
   };
 }
 ```
