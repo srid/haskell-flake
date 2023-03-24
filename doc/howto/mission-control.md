@@ -4,9 +4,11 @@ slug: mission-control
 
 # Devshell scripts using mission-control
 
-Mission-control provides the user of devshell with a menu that can be configured to provide an array of commands. This makes it possible for the project's user to locate all of the commands they need (to get started) in one place.
+The [mission-control](https://github.com/Platonic-Systems/mission-control) flake-parts module enables creating a set of scripts or commands to run in the Nix dev shell. This makes it possible for the project's user to locate all of the commands they need (to get started) in one place, often replacing the likes of `Makefile` or `bin/` scripts.
 
-## Add mission-control to inputs
+## Usage
+
+To use this module, add `mission-control` to `inputs`,
 
 ```nix
 {
@@ -15,7 +17,8 @@ Mission-control provides the user of devshell with a menu that can be configured
 }
 ```
 
-Import the flakeModule:
+and import its flakeModule:
+
 ```nix
 {
   # Inside mkFlake
@@ -27,9 +30,11 @@ Import the flakeModule:
 
 ## Add a script
 
-### Docs
+Here we'll show a sample of scripts that are particular useful when developing Haskell projects.
 
-Following script will let you start a hoogle server by running `, docs` in your devshell:
+### Docs (Hoogle)
+
+We can add a convenient script to start Hoogle on project dependencies as follows. As a result, typing `, docs` in the dev shell will start Hoogle.
 
 ```nix
 {
@@ -46,8 +51,7 @@ Following script will let you start a hoogle server by running `, docs` in your 
   };
 }
 ```
-`exec` can be any shell script of type string or a value of type of package.
-`category` defines the group that this script belongs to.
+The `exec` option can be either a shell script (string) or a Nix package. The `category` option defines the group that this script belongs to, when displayed in the menu.
 
 ### Cabal repl
 
@@ -67,11 +71,13 @@ To start a cabal repl from your devShell on running  `, repl`, use:
   };
 }
 ```
-`"$@"` is a placeholder for the arguments provided to `, repl`. If you wish to run an executable `foo` from your project in cabal repl, use this: `, repl exe:foo`. Similarly, for a library `bar` it will be `, run lib:bar`.
+
+[`"$@"`](https://www.gnu.org/software/bash/manual/html_node/Special-Parameters.html) represents the command-line arguments passed to `, repl`. This allows us to pass custom arguments to `cabal repl`. For example, if you wish to run an executable `foo` from your project in cabal repl, you'd run `, repl exe:foo`. Similarly, to get into the repl for a library `bar` you'd run `, run lib:bar`.
 
 ### treefmt
 
-To run the formatter in your devshell with `, fmt`:
+If you use the [[treefmt|treefmt module]] for autoformatting the source tree, you can alias it as `, fmt`:
+
 ```nix
 { 
   # Inside perSystem
@@ -84,8 +90,6 @@ To run the formatter in your devshell with `, fmt`:
   };
 }
 ```
-
-Follow the instructions on [treefmt](https://haskell.flake.page/treefmt) to configure the formatter for your repo.
 
 ### Executable of type package
 
@@ -108,7 +112,7 @@ Since `exec` accepts a value of type package, the above can be rewritten as `exe
 
 ### wrapperName
 
-If you don't wish to run your command using `, <command>` you can change the `,` to be any string of your choice by setting the value of attribute `wrapperName`, as follows:
+If you don't wish to run your command using `, <command>` you can change the `,` to be any string of your choice by setting the option `wrapperName`, as follows:
 ```nix
 {
   # Inside perSystem
@@ -125,3 +129,5 @@ If you don't wish to run your command using `, <command>` you can change the `,`
 ## Example
 
 - https://github.com/srid/haskell-template/blob/master/flake.nix
+
+[mission-control]: https://github.com/Platonic-Systems/mission-control
