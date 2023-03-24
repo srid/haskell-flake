@@ -4,7 +4,7 @@ slug: mission-control
 
 # Devshell scripts using mission-control
 
-Mission-control provides the user of devshell with a menu of commands that can be configured to provide an array of commands that the user would need during the development phase.
+Mission-control provides the user of devshell with a menu that can be configured to provide an array of commands. This makes it possible for the project's user to locate all of the commands they need (to get started) in one place.
 
 ## Add mission-control to inputs
 
