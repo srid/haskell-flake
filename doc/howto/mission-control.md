@@ -113,7 +113,7 @@ If you don't wish to run your command using `, <command>` you can change the `,`
 {
   # Inside perSystem
   mission-control = {
-    wrapperName = "#";
+    wrapperName = "s";
   };
 }
 ```
