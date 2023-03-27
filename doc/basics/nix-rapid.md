@@ -6,6 +6,10 @@ slug: nix-rapid
 
 The goal of this document is to introduce you to Nix as quickly as possible while also preparing the motivated learner to dive deeper into [the whole Nix ecosystem][zero-to-nix]. At the end of this introduction, you will be able to create a flake for building a package and providing a developer environment shell.
 
+If you are already experienced in purely functional programming, it is highly recommended to read [Nix - taming Unix with functional programming](https://www.tweag.io/blog/2022-07-14-taming-unix-with-nix/) to gain a foundational perspective into Nix being purely functional but in the context of file system (as opposed to values store in memory).
+
+> Dolstra proposed that we can treat the file system in an operating system like memory in a running program, and equate package management to memory management
+
 ## Install
 
 Nix can be installed on Linux and macOS. Follow the instructions on [[nix]]. If you are using [NixOS], it already comes with Nix pre-installed.
@@ -286,6 +290,7 @@ This mini tutorial provided a rapid introduction to Nix flakes, enabling you to 
 ## See also
 
 - [A (more or less) one page introduction to Nix, the language](https://github.com/tazjin/nix-1p)
+- [Nix - taming Unix with functional programming](https://www.tweag.io/blog/2022-07-14-taming-unix-with-nix/)
 
 [zero-to-nix]: https://zero-to-nix.com/
 [nix-lang]: https://nixos.org/manual/nix/stable/language/index.html
