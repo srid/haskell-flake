@@ -1,5 +1,9 @@
 # Revision history for haskell-flake
 
+## `master`
+
+- #134: Add `autoWire` option to control generation of flake outputs
+
 ## 0.2.0 (Mar 13, 2023)
 
 - New features
