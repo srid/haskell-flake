@@ -256,8 +256,17 @@ in
                       This is an internal option, not meant to be set by the user.
                     '';
                   };
+                  autoWire = mkOption {
+                    type = types.bool;
+                    description = ''
+                      Automatically wire up the project outputs to the flake outputs.
 
-
+                      Disable this if you want to control the flake outputs
+                      yourself. Useful, for example, when overriding the default
+                      shell.
+                    '';
+                    default = true;
+                  };
                 };
               })
             ];
@@ -269,7 +278,6 @@ in
               description = "Haskell projects";
               type = types.attrsOf projectSubmodule;
             };
-
           };
 
           config =
@@ -290,19 +298,19 @@ in
                         then packageName
                         else "${name}-${packageName}";
                     in
-                    mapKeys dropDefaultPrefix project.outputs.localPackages)
+                    lib.optionalAttrs project.autoWire (mapKeys dropDefaultPrefix project.outputs.localPackages))
                   config.haskellProjects;
               devShells =
                 mergeMapAttrs
                   (name: project:
-                    lib.optionalAttrs project.devShell.enable {
+                    lib.optionalAttrs (project.autoWire && project.devShell.enable) {
                       "${name}" = project.outputs.devShell;
                     })
                   config.haskellProjects;
               checks =
                 mergeMapAttrs
                   (name: project:
-                    lib.optionalAttrs (project.devShell.enable && project.devShell.hlsCheck.enable) {
+                    lib.optionalAttrs (project.autoWire && project.devShell.enable && project.devShell.hlsCheck.enable) {
                       "${name}-hls" = project.outputs.hlsCheck;
                     })
                   config.haskellProjects;
