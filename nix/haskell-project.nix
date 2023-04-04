@@ -38,6 +38,15 @@ in
         in
         lib.mapAttrs build-haskell-package config.packages;
 
+      # TODO: move this to `parser.nix` and add tests
+      parseExecutables = pkg:
+        let
+          cabalContents = builtins.readFile (lib.concatStringsSep "/" [ pkg.root (builtins.head (lib.filter (lib.strings.hasSuffix ".cabal") (builtins.attrNames (builtins.readDir pkg.root)))) ]);
+          regexExecutables = builtins.map (x: builtins.match ''^executable ([a-zA-Z0-9_.-]*)$'' x) (lib.strings.splitString "\n" cabalContents);
+          filterExecutables = builtins.map (x: builtins.head x) (builtins.filter (x: x != null) regexExecutables);
+        in
+        filterExecutables;
+
       defaultBuildTools = hp: with hp; {
         inherit
           cabal-install
@@ -84,6 +93,22 @@ in
           (name: _: finalPackages."${name}")
           config.packages;
 
+        localApps = builtins.foldl' (x: y: x // y) { }
+          (lib.mapAttrsToList
+            (name: pkg:
+              builtins.foldl' (x: y: x // y) { }
+                (builtins.map
+                  (x: {
+                    "${x}" = {
+                      type = "app";
+                      program = "${finalPackages.${name}}/bin/${x}";
+                    };
+                  })
+                  (parseExecutables pkg)
+                )
+            )
+            config.packages
+          );
         hlsCheck = runCommandInSimulatedShell
           devShell
           self "${projectKey}-hls-check"

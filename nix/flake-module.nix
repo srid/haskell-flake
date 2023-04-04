@@ -129,6 +129,14 @@ in
                   packages excluding everything else.
                 '';
               };
+              localApps = mkOption {
+                # TODO: use a more specific type
+                type = types.attrsOf types.raw;
+                readOnly = true;
+                description = ''
+                  The executable Haskell packages in the project.
+                '';
+              };
               devShell = mkOption {
                 type = types.package;
                 readOnly = true;
@@ -284,21 +292,19 @@ in
             let
               # Like mapAttrs, but merges the values (also attrsets) of the resulting attrset.
               mergeMapAttrs = f: attrs: lib.mkMerge (lib.mapAttrsToList f attrs);
+              mapKeys = f: key: attrs: lib.mapAttrs' (n: v: { name = f key n; value = v; }) attrs;
+              # Prefix package names with the project name (unless
+              # project is named `default`)
+              dropDefaultPrefix = name: packageName:
+                if name == "default"
+                then packageName
+                else "${name}-${packageName}";
             in
             {
               packages =
                 mergeMapAttrs
                   (name: project:
-                    let
-                      mapKeys = f: attrs: lib.mapAttrs' (n: v: { name = f n; value = v; }) attrs;
-                      # Prefix package names with the project name (unless
-                      # project is named `default`)
-                      dropDefaultPrefix = packageName:
-                        if name == "default"
-                        then packageName
-                        else "${name}-${packageName}";
-                    in
-                    lib.optionalAttrs project.autoWire (mapKeys dropDefaultPrefix project.outputs.localPackages))
+                    lib.optionalAttrs project.autoWire (mapKeys dropDefaultPrefix name project.outputs.localPackages))
                   config.haskellProjects;
               devShells =
                 mergeMapAttrs
@@ -313,6 +319,11 @@ in
                     lib.optionalAttrs (project.autoWire && project.devShell.enable && project.devShell.hlsCheck.enable) {
                       "${name}-hls" = project.outputs.hlsCheck;
                     })
+                  config.haskellProjects;
+              apps =
+                mergeMapAttrs
+                  (name: project:
+                    lib.optionalAttrs project.autoWire (mapKeys dropDefaultPrefix name project.outputs.localApps))
                   config.haskellProjects;
             };
         });
