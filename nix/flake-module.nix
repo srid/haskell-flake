@@ -1,5 +1,5 @@
 # A flake-parts module for Haskell cabal projects.
-{ self, config, lib, flake-parts-lib, withSystem, ... }:
+{ self, lib, flake-parts-lib, withSystem, ... }:
 
 let
   inherit (flake-parts-lib)
@@ -119,22 +119,15 @@ in
                   overrides, on top of `basePackages`.
                 '';
               };
-              localPackages = mkOption {
-                type = types.attrsOf types.package;
-                readOnly = true;
-                description = ''
-                  The local Haskell packages in the project.
-
-                  This is a subset of `finalPackages` containing only local
-                  packages excluding everything else.
-                '';
-              };
-              localApps = mkOption {
+              packages = mkOption {
                 # TODO: use a more specific type
                 type = types.attrsOf types.raw;
                 readOnly = true;
                 description = ''
-                  The executable Haskell packages in the project.
+                  The local Haskell packages and executables in the project.
+
+                  The packages can be found in packages.<name>.package and
+                  the executables in packages.<name>.exes
                 '';
               };
               devShell = mkOption {
@@ -292,7 +285,6 @@ in
             let
               # Like mapAttrs, but merges the values (also attrsets) of the resulting attrset.
               mergeMapAttrs = f: attrs: lib.mkMerge (lib.mapAttrsToList f attrs);
-              mapKeys = f: key: attrs: lib.mapAttrs' (n: v: { name = f key n; value = v; }) attrs;
               # Prefix package names with the project name (unless
               # project is named `default`)
               dropDefaultPrefix = name: packageName:
@@ -304,7 +296,10 @@ in
               packages =
                 mergeMapAttrs
                   (name: project:
-                    lib.optionalAttrs project.autoWire (mapKeys dropDefaultPrefix name project.outputs.localPackages))
+                    let
+                      mapKeys = f: attrs: lib.mapAttrs' (n: v: { name = f name n; value = v.package; }) attrs;
+                    in
+                    lib.optionalAttrs project.autoWire (mapKeys dropDefaultPrefix project.outputs.packages))
                   config.haskellProjects;
               devShells =
                 mergeMapAttrs
@@ -323,7 +318,16 @@ in
               apps =
                 mergeMapAttrs
                   (name: project:
-                    lib.optionalAttrs project.autoWire (mapKeys dropDefaultPrefix name project.outputs.localApps))
+                    let
+                      mergeApps =
+                        builtins.foldl' (x: y: x // y) { }
+                          (lib.mapAttrsToList
+                            (name: value: value.exes)
+                            project.outputs.packages
+                          );
+                      mapKeys = f: attrs: lib.mapAttrs' (n: v: { name = f name n; value = v; }) attrs;
+                    in
+                    lib.optionalAttrs project.autoWire (mapKeys dropDefaultPrefix mergeApps))
                   config.haskellProjects;
             };
         });

@@ -71,6 +71,19 @@ in
               ++ builtins.attrValues (config.devShell.extraLibraries p);
           };
       });
+      exes =
+        (name: value:
+          builtins.foldl' (x: y: x // y) { }
+            (builtins.map
+              (x: {
+                "${x}" = {
+                  type = "app";
+                  program = "${finalPackages.${name}}/bin/${x}";
+                };
+              })
+              (parseExecutables value)
+            )
+        );
     in
     {
       outputs = {
@@ -89,26 +102,10 @@ in
 
         finalPackages = config.basePackages.extend finalOverlay;
 
-        localPackages = lib.mapAttrs
-          (name: _: finalPackages."${name}")
+        packages = lib.mapAttrs
+          (name: value: value // { package = finalPackages."${name}"; exes = exes name value; })
           config.packages;
 
-        localApps = builtins.foldl' (x: y: x // y) { }
-          (lib.mapAttrsToList
-            (name: pkg:
-              builtins.foldl' (x: y: x // y) { }
-                (builtins.map
-                  (x: {
-                    "${x}" = {
-                      type = "app";
-                      program = "${finalPackages.${name}}/bin/${x}";
-                    };
-                  })
-                  (parseExecutables pkg)
-                )
-            )
-            config.packages
-          );
         hlsCheck = runCommandInSimulatedShell
           devShell
           self "${projectKey}-hls-check"
