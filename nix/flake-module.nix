@@ -317,7 +317,7 @@ in
               checks =
                 mergeMapAttrs
                   (name: project:
-                    project.outputs.checks
+                    lib.optionalAttrs project.autoWire project.outputs.checks
                   )
                   config.haskellProjects;
             };
