@@ -3,6 +3,7 @@
 ## `master`
 
 - #134: Add `autoWire` option to control generation of flake outputs
+    - ??: Add `checks` to `outputs` submodule
 
 ## 0.2.0 (Mar 13, 2023)
 

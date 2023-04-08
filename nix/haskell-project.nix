@@ -62,6 +62,11 @@ in
               ++ builtins.attrValues (config.devShell.extraLibraries p);
           };
       });
+      hlsCheck =
+        runCommandInSimulatedShell
+          devShell
+          self "${projectKey}-hls-check"
+          { } "haskell-language-server";
     in
     {
       outputs = {
@@ -84,11 +89,12 @@ in
           (name: _: finalPackages."${name}")
           config.packages;
 
-        hlsCheck = runCommandInSimulatedShell
-          devShell
-          self "${projectKey}-hls-check"
-          { } "haskell-language-server";
+        checks = lib.filterAttrs (_: v: v != null) {
+          "${name}-hls" = if (config.devShell.enable && config.devShell.hlsCheck.enable) then hlsCheck else null;
+        };
 
       };
+
+      devShell.hlsCheck.drv = hlsCheck;
     };
 }
