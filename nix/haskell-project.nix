@@ -78,7 +78,7 @@ in
               (x: {
                 "${x}" = {
                   type = "app";
-                  program = "${finalPackages.${name}}/bin/${x}";
+                  program = "${pkgs.haskell.lib.justStaticExecutables finalPackages.${name}}/bin/${x}";
                 };
               })
               (parseExecutables value)
