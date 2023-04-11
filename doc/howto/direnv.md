@@ -31,7 +31,7 @@ programs.starship = {
 };
 ```
 
-See also https://github.com/srid/nixos-flake for a template configuration to put the home-manager configuration on, regardless of whether you are on Linux or macOS.
+Alternatively, if you are just getting started with home-manager, you can use the https://github.com/juspay/nix-dev-home template (based on [nixos-flake](https://github.com/srid/nixos-flake)), which works on both Linux or macOS.
 
 ### Text Editor configuration
 

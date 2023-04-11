@@ -32,7 +32,13 @@ in
                 '';
                 default = false;
               };
-
+              drv = mkOption {
+                type = types.package;
+                readOnly = true;
+                description = ''
+                  The `hlsCheck` derivation generated for this project.
+                '';
+              };
             };
           };
           packageSubmodule = with types; submodule {
@@ -137,13 +143,14 @@ in
                   The development shell derivation generated for this project.
                 '';
               };
-              hlsCheck = mkOption {
-                type = types.package;
+              checks = mkOption {
+                type = types.lazyAttrsOf types.package;
                 readOnly = true;
                 description = ''
-                  The `hlsCheck` derivation generated for this project.
+                  The flake checks generated for this project.
                 '';
               };
+
             };
           };
           projectSubmodule = types.submoduleWith {
@@ -311,9 +318,8 @@ in
               checks =
                 mergeMapAttrs
                   (name: project:
-                    lib.optionalAttrs (project.autoWire && project.devShell.enable && project.devShell.hlsCheck.enable) {
-                      "${name}-hls" = project.outputs.hlsCheck;
-                    })
+                    lib.optionalAttrs project.autoWire project.outputs.checks
+                  )
                   config.haskellProjects;
               apps =
                 mergeMapAttrs
