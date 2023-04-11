@@ -41,11 +41,15 @@ in
       # TODO: move this to `parser.nix` and add tests
       parseExecutables = pkg:
         let
+          parser = import ./find-haskell-paths/parser.nix { inherit pkgs lib; };
           cabalContents = builtins.readFile (lib.concatStringsSep "/" [ pkg.root (builtins.head (lib.filter (lib.strings.hasSuffix ".cabal") (builtins.attrNames (builtins.readDir pkg.root)))) ]);
-          regexExecutables = builtins.map (x: builtins.match ''^executable ([a-zA-Z0-9_.-]*)$'' x) (lib.strings.splitString "\n" cabalContents);
-          filterExecutables = builtins.map (x: builtins.head x) (builtins.filter (x: x != null) regexExecutables);
+          res = parser.parseCabalExecutableName cabalContents;
         in
-        filterExecutables;
+        if res.type == "success"
+        then
+          res.value
+        else
+          builtins.throw ("Failed to parse cabal file in ${pkg.root}: ${builtins.toJSON res}");
 
       defaultBuildTools = hp: with hp; {
         inherit

@@ -32,6 +32,23 @@ let
         expected = "foo";
       };
     };
+  cabalExecutableTests =
+    let
+      eval = s:
+        let res = parser.parseCabalExecutableName s; in
+        if res.type == "success" then res.value else res;
+    in
+    {
+      testSimple = {
+        expr = eval ''
+          executable foo-exec
+            main-is: foo.hs
+          executable bar-exec
+            main-is: bar.hs
+        '';
+        expected = [ "foo-exec" "bar-exec" ];
+      };
+    };
   # Like lib.runTests, but actually fails if any test fails.
   runTestsFailing = tests:
     let
@@ -44,4 +61,5 @@ in
 {
   "cabal.project" = runTestsFailing cabalProjectTests;
   "package.yaml" = runTestsFailing packageYamlTests;
+  "foo-bar.cabal" = runTestsFailing cabalExecutableTests;
 }
