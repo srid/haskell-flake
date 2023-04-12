@@ -263,17 +263,21 @@ in
                       This is an internal option, not meant to be set by the user.
                     '';
                   };
-                  autoWire = mkOption {
-                    type = types.bool;
-                    description = ''
-                      Automatically wire up the project outputs to the flake outputs.
+                  autoWire =
+                    let
+                      outputTypes = [ "packages" "checks" "devShells" ];
+                    in
+                    mkOption {
+                      type = types.listOf (types.enum outputTypes);
+                      description = ''
+                        Automatically wire up the project outputs to the flake outputs.
 
-                      Disable this if you want to control the flake outputs
-                      yourself. Useful, for example, when overriding the default
-                      shell.
-                    '';
-                    default = true;
-                  };
+                        Disable this if you want to control the flake outputs
+                        yourself. Useful, for example, when overriding the default
+                        shell.
+                      '';
+                      default = outputTypes;
+                    };
                 };
               })
             ];
@@ -291,6 +295,7 @@ in
             let
               # Like mapAttrs, but merges the values (also attrsets) of the resulting attrset.
               mergeMapAttrs = f: attrs: lib.mkMerge (lib.mapAttrsToList f attrs);
+              contains = k: vs: lib.any (x: x == k) vs;
             in
             {
               packages =
@@ -305,19 +310,19 @@ in
                         then packageName
                         else "${name}-${packageName}";
                     in
-                    lib.optionalAttrs project.autoWire (mapKeys dropDefaultPrefix project.outputs.localPackages))
+                    lib.optionalAttrs (contains "packages" project.autoWire) (mapKeys dropDefaultPrefix project.outputs.localPackages))
                   config.haskellProjects;
               devShells =
                 mergeMapAttrs
                   (name: project:
-                    lib.optionalAttrs (project.autoWire && project.devShell.enable) {
+                    lib.optionalAttrs (contains "devShells" project.autoWire && project.devShell.enable) {
                       "${name}" = project.outputs.devShell;
                     })
                   config.haskellProjects;
               checks =
                 mergeMapAttrs
                   (name: project:
-                    lib.optionalAttrs project.autoWire project.outputs.checks
+                    lib.optionalAttrs (contains "checks" project.autoWire) project.outputs.checks
                   )
                   config.haskellProjects;
             };
