@@ -4,6 +4,7 @@
 
 - #134: Add `autoWire` option to control generation of flake outputs
     - #138: Add `checks` to `outputs` submodule
+    - #143: Changed `autoWire` to be an enum type, for granular controlling of which outputs to autowire.
 
 ## 0.2.0 (Mar 13, 2023)
 
