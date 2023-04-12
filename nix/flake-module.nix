@@ -266,7 +266,7 @@ in
                   };
                   autoWire =
                     let
-                      outputTypes = [ "packages" "checks" "devShells" ];
+                      outputTypes = [ "packages" "checks" "apps" "devShells" ];
                     in
                     mkOption {
                       type = types.listOf (types.enum outputTypes);
@@ -340,7 +340,7 @@ in
                           );
                       mapKeys = f: attrs: lib.mapAttrs' (n: v: { name = f name n; value = v; }) attrs;
                     in
-                    lib.optionalAttrs project.autoWire (mapKeys dropDefaultPrefix mergeApps))
+                    lib.optionalAttrs (contains "apps" project.autoWire) (mapKeys dropDefaultPrefix mergeApps))
                   config.haskellProjects;
             };
         });
