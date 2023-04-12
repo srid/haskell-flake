@@ -270,11 +270,11 @@ in
                     mkOption {
                       type = types.listOf (types.enum outputTypes);
                       description = ''
-                        Automatically wire up the project outputs to the flake outputs.
+                        List of flake output types to autowire.
 
-                        Disable this if you want to control the flake outputs
-                        yourself. Useful, for example, when overriding the default
-                        shell.
+                        Using an empty list will disable autowiring entirely,
+                        enabling you to manually wire them using
+                        `config.haskellProjects.<name>.outputs`.
                       '';
                       default = outputTypes;
                     };
