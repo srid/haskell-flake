@@ -10,3 +10,5 @@ order: 100
 - https://github.com/srid/haskell-multi-nix/blob/master/flake.nix (Demonstrates multiple local packages)
 - https://github.com/srid/emanote/blob/master/flake.nix
 - https://github.com/srid/ema/blob/master/flake.nix
+- https://github.com/nammayatri/nammayatri/blob/main/Backend/default.nix
+- https://github.com/haskell/hackage-server/blob/master/flake.nix

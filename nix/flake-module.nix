@@ -265,17 +265,21 @@ in
                       This is an internal option, not meant to be set by the user.
                     '';
                   };
-                  autoWire = mkOption {
-                    type = types.bool;
-                    description = ''
-                      Automatically wire up the project outputs to the flake outputs.
+                  autoWire =
+                    let
+                      outputTypes = [ "packages" "checks" "apps" "devShells" ];
+                    in
+                    mkOption {
+                      type = types.listOf (types.enum outputTypes);
+                      description = ''
+                        List of flake output types to autowire.
 
-                      Disable this if you want to control the flake outputs
-                      yourself. Useful, for example, when overriding the default
-                      shell.
-                    '';
-                    default = true;
-                  };
+                        Using an empty list will disable autowiring entirely,
+                        enabling you to manually wire them using
+                        `config.haskellProjects.<name>.outputs`.
+                      '';
+                      default = outputTypes;
+                    };
                 };
               })
             ];
@@ -294,6 +298,9 @@ in
               # Like mapAttrs, but merges the values (also attrsets) of the resulting attrset.
               mergeMapAttrs = f: attrs: lib.mkMerge (lib.mapAttrsToList f attrs);
               mapKeys = f: projectName: attrs: lib.mapAttrs' (n: v: { name = f projectName n; value = v; }) attrs;
+
+              contains = k: vs: lib.any (x: x == k) vs;
+
               # Prefix value with the project name (unless
               # project is named `default`)
               dropDefaultPrefix = projectName: value:
@@ -311,25 +318,26 @@ in
                           (_: packageWithExes: packageWithExes.package)
                           (mapKeys dropDefaultPrefix name project.outputs.packages);
                     in
-                    lib.optionalAttrs project.autoWire res)
+                    lib.optionalAttrs (contains "packages" project.autoWire) res)
                   config.haskellProjects;
               devShells =
                 mergeMapAttrs
                   (name: project:
-                    lib.optionalAttrs (project.autoWire && project.devShell.enable) {
+                    lib.optionalAttrs (contains "devShells" project.autoWire && project.devShell.enable) {
                       "${name}" = project.outputs.devShell;
                     })
                   config.haskellProjects;
               checks =
                 mergeMapAttrs
                   (name: project:
-                    lib.optionalAttrs project.autoWire project.outputs.checks
+                    lib.optionalAttrs (contains "checks" project.autoWire) project.outputs.checks
                   )
                   config.haskellProjects;
               apps =
                 mergeMapAttrs
                   (name: project:
                     let
+                      # TODO: better name for x
                       x = 
                         mergeMapAttrs
                           (_: packageWithExes:
@@ -337,7 +345,7 @@ in
                           )
                         project.outputs.packages;
                     in
-                    lib.optionalAttrs project.autoWire x)
+                    lib.optionalAttrs (contains "apps" project.autoWire) x)
                   config.haskellProjects;
             };
         });
