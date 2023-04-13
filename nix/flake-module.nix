@@ -297,7 +297,7 @@ in
             let
               # Like mapAttrs, but merges the values (also attrsets) of the resulting attrset.
               mergeMapAttrs = f: attrs: lib.mkMerge (lib.mapAttrsToList f attrs);
-              mapKeys = f: projectName: attrs: lib.mapAttrs' (n: v: { name = f projectName n; value = v; }) attrs;
+              mapKeys = f: attrs: lib.mapAttrs' (n: v: { name = f n; value = v; }) attrs;
 
               contains = k: vs: lib.any (x: x == k) vs;
 
@@ -316,7 +316,7 @@ in
                       projectPackages =
                         lib.mapAttrs
                           (_: packageWithExes: packageWithExes.package)
-                          (mapKeys dropDefaultPrefix name project.outputs.packages);
+                          (mapKeys (dropDefaultPrefix name) project.outputs.packages);
                     in
                     lib.optionalAttrs (contains "packages" project.autoWire) projectPackages)
                   config.haskellProjects;
@@ -340,7 +340,7 @@ in
                       projectApps =
                         mergeMapAttrs
                           (_: packageWithExes:
-                            mapKeys dropDefaultPrefix name packageWithExes.exes
+                            mapKeys (dropDefaultPrefix name) packageWithExes.exes
                           )
                           project.outputs.packages;
                     in
