@@ -126,14 +126,15 @@ in
                 '';
               };
               packages = mkOption {
-                # TODO: use a more specific type
                 type = types.attrsOf types.raw;
                 readOnly = true;
                 description = ''
                   The local Haskell packages and executables in the project.
 
-                  The packages can be found in packages.<name>.package and
-                  the executables in packages.<name>.exes
+                  Package information for all local packages. Contains the following keys:
+
+                  - `package`: The Haskell package derivation
+                  - `executables`: Attrset of executables found in the .cabal file
                 '';
               };
               devShell = mkOption {
@@ -233,7 +234,7 @@ in
                     '';
                     default =
                       let
-                        find-haskell-paths = import ./find-haskell-paths {
+                        haskell-parsers = import ./haskell-parsers {
                           inherit pkgs lib;
                           throwError = msg: builtins.throw ''
                             haskell-flake: A default value for `packages` cannot be auto-determined:
@@ -245,8 +246,8 @@ in
                         };
                       in
                       lib.mapAttrs
-                        (_: value: { root = value; })
-                        (find-haskell-paths config.projectRoot);
+                        (_: value: { root = value.path; })
+                        (haskell-parsers config.projectRoot);
                     defaultText = lib.literalMD "autodiscovered by reading `self` files.";
                   };
                   devShell = mkOption {
@@ -292,21 +293,25 @@ in
             let
               # Like mapAttrs, but merges the values (also attrsets) of the resulting attrset.
               mergeMapAttrs = f: attrs: lib.mkMerge (lib.mapAttrsToList f attrs);
-              # Prefix package names with the project name (unless
+              mapKeys = f: projectName: attrs: lib.mapAttrs' (n: v: { name = f projectName n; value = v; }) attrs;
+              # Prefix value with the project name (unless
               # project is named `default`)
-              dropDefaultPrefix = name: packageName:
-                if name == "default"
-                then packageName
-                else "${name}-${packageName}";
+              dropDefaultPrefix = projectName: value:
+                if projectName == "default"
+                then value
+                else "${projectName}-${value}";
             in
             {
               packages =
                 mergeMapAttrs
                   (name: project:
                     let
-                      mapKeys = f: attrs: lib.mapAttrs' (n: v: { name = f name n; value = v.package; }) attrs;
+                      res = 
+                        lib.mapAttrs
+                          (_: packageWithExes: packageWithExes.package)
+                          (mapKeys dropDefaultPrefix name project.outputs.packages);
                     in
-                    lib.optionalAttrs project.autoWire (mapKeys dropDefaultPrefix project.outputs.packages))
+                    lib.optionalAttrs project.autoWire res)
                   config.haskellProjects;
               devShells =
                 mergeMapAttrs
@@ -325,15 +330,14 @@ in
                 mergeMapAttrs
                   (name: project:
                     let
-                      mergeApps =
-                        builtins.foldl' (x: y: x // y) { }
-                          (lib.mapAttrsToList
-                            (name: value: value.exes)
-                            project.outputs.packages
-                          );
-                      mapKeys = f: attrs: lib.mapAttrs' (n: v: { name = f name n; value = v; }) attrs;
+                      x = 
+                        mergeMapAttrs
+                          (_: packageWithExes:
+                            mapKeys dropDefaultPrefix name packageWithExes.exes
+                          )
+                        project.outputs.packages;
                     in
-                    lib.optionalAttrs project.autoWire (mapKeys dropDefaultPrefix mergeApps))
+                    lib.optionalAttrs project.autoWire x)
                   config.haskellProjects;
             };
         });

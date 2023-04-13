@@ -35,16 +35,19 @@ let
   cabalExecutableTests =
     let
       eval = s:
-        let res = parser.parseCabalExecutableName s; in
+        let res = parser.parseCabalExecutableNames s; in
         if res.type == "success" then res.value else res;
     in
     {
       testSimple = {
         expr = eval ''
+
           executable foo-exec
             main-is: foo.hs
+        
           executable bar-exec
             main-is: bar.hs
+
         '';
         expected = [ "foo-exec" "bar-exec" ];
       };

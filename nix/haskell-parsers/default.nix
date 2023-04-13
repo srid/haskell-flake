@@ -71,9 +71,17 @@ let
       else throwError ("Failed to parse ${cabalProjectFile}: ${builtins.toJSON res}")
     else
       [ projectRoot ];
+  packageExecutables = path:
+    let
+      cabalFile = traversal.findSingleCabalFile path;
+      res = parser.parseCabalExecutableNames (builtins.readFile (lib.concatStrings [ path "/" cabalFile ]));
+    in
+      if res.type == "success"
+      then res.value 
+      else throwError ("Failed to parse ${cabalFile}: ${builtins.toJSON res}");
 in
-lib.listToAttrs
+  lib.listToAttrs
   (map
     (path:
-    lib.nameValuePair (traversal.findHaskellPackageNameOfDirectory path) path)
+      lib.nameValuePair (traversal.findHaskellPackageNameOfDirectory path) ( { inherit path; executables = packageExecutables path; }))
     packageDirs)

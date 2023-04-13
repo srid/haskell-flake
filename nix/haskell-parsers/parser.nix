@@ -46,7 +46,7 @@ in
     parsec.runParser parser packageYamlFile;
 
   # Extract all the executables from a .cabal file 
-  parseCabalExecutableName = cabalFile:
+  parseCabalExecutableNames = cabalFile:
     with parsec;
     let
       # Skip empty lines and lines that don't start with 'executable'

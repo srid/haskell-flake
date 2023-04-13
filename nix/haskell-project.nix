@@ -38,19 +38,6 @@ in
         in
         lib.mapAttrs build-haskell-package config.packages;
 
-      # TODO: move this to `parser.nix` and add tests
-      parseExecutables = pkg:
-        let
-          parser = import ./find-haskell-paths/parser.nix { inherit pkgs lib; };
-          cabalContents = builtins.readFile (lib.concatStringsSep "/" [ pkg.root (builtins.head (lib.filter (lib.strings.hasSuffix ".cabal") (builtins.attrNames (builtins.readDir pkg.root)))) ]);
-          res = parser.parseCabalExecutableName cabalContents;
-        in
-        if res.type == "success"
-        then
-          res.value
-        else
-          builtins.throw ("Failed to parse cabal file in ${pkg.root}: ${builtins.toJSON res}");
-
       defaultBuildTools = hp: with hp; {
         inherit
           cabal-install
@@ -75,18 +62,13 @@ in
               ++ builtins.attrValues (config.devShell.extraLibraries p);
           };
       });
-      exes =
-        (name: value:
-          builtins.foldl' (x: y: x // y) { }
-            (builtins.map
-              (x: {
-                "${x}" = {
-                  type = "app";
-                  program = "${pkgs.haskell.lib.justStaticExecutables finalPackages.${name}}/bin/${x}";
-                };
-              })
-              (parseExecutables value)
-            )
+      packageApps = packageName: packageExecutables:
+        lib.listToAttrs
+        (map
+          (executable: 
+            lib.nameValuePair ("${executable}") ({ program = "${pkgs.haskell.lib.justStaticExecutables finalPackages.${packageName}}/bin/${executable}"; } )
+          )
+          ( packageExecutables )
         );
       hlsCheck =
         runCommandInSimulatedShell
@@ -111,8 +93,12 @@ in
 
         finalPackages = config.basePackages.extend finalOverlay;
 
-        packages = lib.mapAttrs
-          (name: value: value // { package = finalPackages."${name}"; exes = exes name value; })
+        packages =
+        let
+          haskell-parsers = (import ./haskell-parsers { inherit pkgs lib; }) config.projectRoot;
+        in
+        lib.mapAttrs
+          (packageName: _: { package = finalPackages."${packageName}"; exes = packageApps packageName haskell-parsers.${packageName}.executables; })
           config.packages;
 
         checks = lib.filterAttrs (_: v: v != null) {
