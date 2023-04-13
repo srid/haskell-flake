@@ -129,8 +129,6 @@ in
                 type = types.attrsOf types.attrs;
                 readOnly = true;
                 description = ''
-                  The local Haskell packages and executables in the project.
-
                   Package information for all local packages. Contains the following keys:
 
                   - `package`: The Haskell package derivation
