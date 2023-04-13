@@ -64,12 +64,12 @@ in
       });
       packageApps = packageName: packageExecutables:
         lib.listToAttrs
-        (map
-          (executable: 
-            lib.nameValuePair ("${executable}") ({ program = "${pkgs.haskell.lib.justStaticExecutables finalPackages.${packageName}}/bin/${executable}"; } )
-          )
-          ( packageExecutables )
-        );
+          (map
+            (executable:
+              lib.nameValuePair ("${executable}") ({ program = "${pkgs.haskell.lib.justStaticExecutables finalPackages.${packageName}}/bin/${executable}"; })
+            )
+            (packageExecutables)
+          );
       hlsCheck =
         runCommandInSimulatedShell
           devShell
@@ -94,12 +94,12 @@ in
         finalPackages = config.basePackages.extend finalOverlay;
 
         packages =
-        let
-          haskell-parsers = (import ./haskell-parsers { inherit pkgs lib; }) config.projectRoot;
-        in
-        lib.mapAttrs
-          (packageName: _: { package = finalPackages."${packageName}"; exes = packageApps packageName haskell-parsers.${packageName}.executables; })
-          config.packages;
+          let
+            haskell-parsers = (import ./haskell-parsers { inherit pkgs lib; }) config.projectRoot;
+          in
+          lib.mapAttrs
+            (packageName: _: { package = finalPackages."${packageName}"; exes = packageApps packageName haskell-parsers.${packageName}.executables; })
+            config.packages;
 
         checks = lib.filterAttrs (_: v: v != null) {
           "${name}-hls" = if (config.devShell.enable && config.devShell.hlsCheck.enable) then hlsCheck else null;

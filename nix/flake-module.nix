@@ -313,7 +313,7 @@ in
                 mergeMapAttrs
                   (name: project:
                     let
-                      projectPackages = 
+                      projectPackages =
                         lib.mapAttrs
                           (_: packageWithExes: packageWithExes.package)
                           (mapKeys dropDefaultPrefix name project.outputs.packages);
@@ -337,12 +337,12 @@ in
                 mergeMapAttrs
                   (name: project:
                     let
-                      projectApps = 
+                      projectApps =
                         mergeMapAttrs
                           (_: packageWithExes:
                             mapKeys dropDefaultPrefix name packageWithExes.exes
                           )
-                        project.outputs.packages;
+                          project.outputs.packages;
                     in
                     lib.optionalAttrs (contains "apps" project.autoWire) projectApps)
                   config.haskellProjects;
