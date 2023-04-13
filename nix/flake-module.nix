@@ -126,7 +126,7 @@ in
                 '';
               };
               packages = mkOption {
-                type = types.attrsOf types.raw;
+                type = types.attrsOf types.attrs;
                 readOnly = true;
                 description = ''
                   The local Haskell packages and executables in the project.
@@ -313,12 +313,12 @@ in
                 mergeMapAttrs
                   (name: project:
                     let
-                      res = 
+                      projectPackages = 
                         lib.mapAttrs
                           (_: packageWithExes: packageWithExes.package)
                           (mapKeys dropDefaultPrefix name project.outputs.packages);
                     in
-                    lib.optionalAttrs (contains "packages" project.autoWire) res)
+                    lib.optionalAttrs (contains "packages" project.autoWire) projectPackages)
                   config.haskellProjects;
               devShells =
                 mergeMapAttrs
@@ -337,15 +337,14 @@ in
                 mergeMapAttrs
                   (name: project:
                     let
-                      # TODO: better name for x
-                      x = 
+                      projectApps = 
                         mergeMapAttrs
                           (_: packageWithExes:
                             mapKeys dropDefaultPrefix name packageWithExes.exes
                           )
                         project.outputs.packages;
                     in
-                    lib.optionalAttrs (contains "apps" project.autoWire) x)
+                    lib.optionalAttrs (contains "apps" project.autoWire) projectApps)
                   config.haskellProjects;
             };
         });
