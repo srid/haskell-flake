@@ -283,7 +283,7 @@ in
                     '';
                     default =
                       let
-                        haskell-parsers = import ./haskell-parsers {
+                        find-haskell-packages = import ./find-haskell-packages {
                           inherit pkgs lib;
                           throwError = msg: builtins.throw ''
                             haskell-flake: A default value for `packages` cannot be auto-determined:
@@ -296,7 +296,7 @@ in
                       in
                       lib.mapAttrs
                         (_: value: { root = value.path; })
-                        (haskell-parsers config.projectRoot);
+                        (find-haskell-packages config.projectRoot);
                     defaultText = lib.literalMD "autodiscovered by reading `self` files.";
                   };
                   devShell = mkOption {

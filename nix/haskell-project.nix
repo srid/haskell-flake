@@ -95,10 +95,10 @@ in
 
         packages =
           let
-            haskell-parsers = (import ./haskell-parsers { inherit pkgs lib; }) config.projectRoot;
+            find-haskell-packages = (import ./find-haskell-packages { inherit pkgs lib; }) config.projectRoot;
           in
           lib.mapAttrs
-            (packageName: _: { package = finalPackages."${packageName}"; exes = packageApps packageName haskell-parsers.${packageName}.executables; })
+            (packageName: _: { package = finalPackages."${packageName}"; exes = packageApps packageName find-haskell-packages.${packageName}.executables; })
             config.packages;
 
         apps =

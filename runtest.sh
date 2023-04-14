@@ -8,7 +8,7 @@ nix --version
 # The test directory must contain a 'test.sh' file that will be run in that
 # directory.
 TESTS=(
-  ./nix/haskell-parsers
+  ./nix/find-haskell-packages
   ./example
   ./test/simple
   ./test/hpack
