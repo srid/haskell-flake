@@ -59,6 +59,9 @@
         };
         # haskell-flake doesn't set the default package, but you can do it here.
         packages.default = self'.packages.haskell-flake-test;
+        # Having an alias enforces the `haskell-flake-test` attribute in `apps`
+        # to be used instead of falling back to using from `packages`.
+        apps.test = self'.apps.haskell-flake-test;
       };
     };
 }

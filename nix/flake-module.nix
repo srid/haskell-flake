@@ -126,13 +126,20 @@ in
                 '';
               };
               packages = mkOption {
-                type = types.attrsOf types.attrs;
+                type = types.attrsOf packageInfoSubmodule;
                 readOnly = true;
                 description = ''
                   Package information for all local packages. Contains the following keys:
 
                   - `package`: The Haskell package derivation
                   - `executables`: Attrset of executables found in the .cabal file
+                '';
+              };
+              apps = mkOption {
+                type = types.attrsOf appType;
+                readOnly = true;
+                description = ''
+                  All the `executables` from `packages` option merged.
                 '';
               };
               devShell = mkOption {
@@ -151,6 +158,50 @@ in
               };
 
             };
+          };
+          derivationType = lib.types.package // {
+            check = lib.isDerivation;
+          };
+
+          getExe = x:
+            "${lib.getBin x}/bin/${x.meta.mainProgram or (throw ''Package ${x.name or ""} does not have meta.mainProgram set, so I don't know how to find the main executable. You can set meta.mainProgram, or pass the full path to executable, e.g. program = "''${pkg}/bin/foo"'')}";
+          programType = lib.types.coercedTo derivationType getExe lib.types.str;
+          appType = lib.types.submodule {
+            options = {
+              type = mkOption {
+                type = lib.types.enum [ "app" ];
+                default = "app";
+                description = ''
+                  A type tag for `apps` consumers.
+                '';
+              };
+              program = mkOption {
+                type = programType;
+                description = ''
+                  A path to an executable or a derivation with `meta.mainProgram`.
+                '';
+              };
+            };
+          };
+          packageInfoSubmodule = types.submoduleWith {
+            modules = [
+              ({ config, ... }: {
+                options = {
+                  package = mkOption {
+                    type = types.package;
+                    description = ''
+                      Package derivation.
+                    '';
+                  };
+                  exes = mkOption {
+                    type = types.attrsOf appType;
+                    description = ''
+                      Attrset of executables from `.cabal` file.  
+                    '';
+                  };
+                };
+              })
+            ];
           };
           projectSubmodule = types.submoduleWith {
             specialArgs = { inherit pkgs self; };
@@ -313,7 +364,7 @@ in
                     let
                       projectPackages =
                         lib.mapAttrs
-                          (_: packageWithExes: packageWithExes.package)
+                          (_: packageInfo: packageInfo.package)
                           (mapKeys (dropDefaultPrefix name) project.outputs.packages);
                     in
                     lib.optionalAttrs (contains "packages" project.autoWire) projectPackages)
@@ -334,15 +385,8 @@ in
               apps =
                 mergeMapAttrs
                   (name: project:
-                    let
-                      projectApps =
-                        mergeMapAttrs
-                          (_: packageWithExes:
-                            mapKeys (dropDefaultPrefix name) packageWithExes.exes
-                          )
-                          project.outputs.packages;
-                    in
-                    lib.optionalAttrs (contains "apps" project.autoWire) projectApps)
+                    lib.optionalAttrs (contains "apps" project.autoWire) (mapKeys (dropDefaultPrefix name) project.outputs.apps)
+                  )
                   config.haskellProjects;
             };
         });

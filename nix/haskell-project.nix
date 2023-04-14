@@ -28,7 +28,7 @@ in
 
   config =
     let
-      inherit (config.outputs) finalPackages finalOverlay;
+      inherit (config.outputs) finalPackages finalOverlay packages;
 
       projectKey = name;
 
@@ -100,6 +100,10 @@ in
           lib.mapAttrs
             (packageName: _: { package = finalPackages."${packageName}"; exes = packageApps packageName haskell-parsers.${packageName}.executables; })
             config.packages;
+
+        apps =
+          lib.mkMerge
+            (lib.mapAttrsToList (_: packageInfo: packageInfo.exes) packages);
 
         checks = lib.filterAttrs (_: v: v != null) {
           "${name}-hls" = if (config.devShell.enable && config.devShell.hlsCheck.enable) then hlsCheck else null;
