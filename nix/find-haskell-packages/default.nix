@@ -80,8 +80,12 @@ let
     then res.value
     else throwError ("Failed to parse ${cabalFile}: ${builtins.toJSON res}");
 in
-lib.listToAttrs
-  (map
-    (path:
-    lib.nameValuePair (traversal.findHaskellPackageNameOfDirectory path) ({ inherit path; executables = packageExecutables path; }))
-    packageDirs)
+{
+  packagesPath =
+    lib.listToAttrs
+      (map
+        (path:
+          lib.nameValuePair (traversal.findHaskellPackageNameOfDirectory path) path)
+        packageDirs);
+  inherit packageExecutables;
+}

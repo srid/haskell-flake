@@ -95,10 +95,10 @@ in
 
         packages =
           let
-            find-haskell-packages = (import ./find-haskell-packages { inherit pkgs lib; }) config.projectRoot;
+            packageExecutables = ((import ./find-haskell-packages { inherit pkgs lib; }) config.projectRoot).packageExecutables;
           in
           lib.mapAttrs
-            (packageName: _: { package = finalPackages."${packageName}"; exes = packageApps packageName find-haskell-packages.${packageName}.executables; })
+            (packageName: value: { package = finalPackages."${packageName}"; exes = packageApps packageName (packageExecutables value.root); })
             config.packages;
 
         apps =
