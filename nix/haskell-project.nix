@@ -63,7 +63,7 @@ in
               ++ builtins.attrValues (config.devShell.extraLibraries p);
           };
       });
-      packageApps = packageName: getCabalExecutables:
+      packageApps = packageName: exes:
         lib.listToAttrs
           (map
             (executable:
@@ -76,7 +76,7 @@ in
                 }
               )
             )
-            (getCabalExecutables)
+            exes
           );
       hlsCheck =
         runCommandInSimulatedShell
