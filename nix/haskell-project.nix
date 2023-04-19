@@ -67,7 +67,14 @@ in
         lib.listToAttrs
           (map
             (executable:
-              lib.nameValuePair ("${executable}") ({ program = "${pkgs.haskell.lib.justStaticExecutables finalPackages.${packageName}}/bin/${executable}"; })
+              lib.nameValuePair executable (
+                let
+                  pkg = pkgs.haskell.lib.justStaticExecutables finalPackages.${packageName};
+                in
+                {
+                  program = "${pkg}/bin/${executable}";
+                }
+              )
             )
             (getCabalExecutables)
           );
