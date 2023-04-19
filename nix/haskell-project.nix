@@ -95,7 +95,7 @@ in
 
         packages =
           let
-            getCabalExecutables = (import ./find-haskell-packages { inherit pkgs lib; }).getCabalExecutables;
+            getCabalExecutables = (import ./haskell-parsers { inherit pkgs lib; }).getCabalExecutables;
           in
           lib.mapAttrs
             (packageName: value: { package = finalPackages."${packageName}"; exes = packageApps packageName (getCabalExecutables value.root); })
