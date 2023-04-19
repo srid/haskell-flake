@@ -140,7 +140,7 @@ in
                 type = types.attrsOf appType;
                 readOnly = true;
                 description = ''
-                  All the `executables` from `packages` option merged.
+                  Flake apps for each Cabal executable in the project.
                 '';
               };
               devShell = mkOption {
@@ -161,28 +161,26 @@ in
             };
           };
 
-          packageInfoSubmodule = types.submoduleWith {
-            modules = [
-              {
-                options = {
-                  package = mkOption {
-                    type = types.package;
-                    description = ''
-                      Package derivation.
-                    '';
-                  };
-                  exes = mkOption {
-                    type = types.attrsOf appType;
-                    description = ''
-                      Attrset of executables from `.cabal` file.  
+          packageInfoSubmodule = types.submodule {
+            options = {
+              package = mkOption {
+                type = types.package;
+                description = ''
+                  The local package derivation.
+                '';
+              };
+              exes = mkOption {
+                type = types.attrsOf appType;
+                description = ''
+                  Attrset of executables from `.cabal` file.  
 
-                      The executables are accessed without any reference to the
-                      Haskell library, using `justStaticExecutables`.
-                    '';
-                  };
-                };
-              }
-            ];
+                  The executables are accessed without any reference to the
+                  Haskell library, using `justStaticExecutables`.
+
+                  NOTE: Evaluating up to this option will involve IFD.
+                '';
+              };
+            };
           };
           projectSubmodule = types.submoduleWith {
             specialArgs = { inherit pkgs self; };
@@ -333,7 +331,7 @@ in
 
               # Prefix value with the project name (unless
               # project is named `default`)
-              dropDefaultPrefix = projectName: value:
+              prefixUnlessDefault = projectName: value:
                 if projectName == "default"
                 then value
                 else "${projectName}-${value}";
@@ -343,12 +341,10 @@ in
                 mergeMapAttrs
                   (name: project:
                     let
-                      projectPackages =
-                        lib.mapAttrs
-                          (_: packageInfo: packageInfo.package)
-                          (mapKeys (dropDefaultPrefix name) project.outputs.packages);
+                      packages = lib.mapAttrs (_: info: info.package) project.outputs.packages;
                     in
-                    lib.optionalAttrs (contains "packages" project.autoWire) projectPackages)
+                    lib.optionalAttrs (contains "packages" project.autoWire)
+                      (mapKeys (prefixUnlessDefault name) packages))
                   config.haskellProjects;
               devShells =
                 mergeMapAttrs
@@ -360,13 +356,15 @@ in
               checks =
                 mergeMapAttrs
                   (name: project:
-                    lib.optionalAttrs (contains "checks" project.autoWire) project.outputs.checks
+                    lib.optionalAttrs (contains "checks" project.autoWire)
+                      project.outputs.checks
                   )
                   config.haskellProjects;
               apps =
                 mergeMapAttrs
                   (name: project:
-                    lib.optionalAttrs (contains "apps" project.autoWire) (mapKeys (dropDefaultPrefix name) project.outputs.apps)
+                    lib.optionalAttrs (contains "apps" project.autoWire)
+                      (mapKeys (prefixUnlessDefault name) project.outputs.apps)
                   )
                   config.haskellProjects;
             };
