@@ -1,3 +1,5 @@
+# Taken from https://github.com/hercules-ci/flake-parts/blob/dcc36e45d054d7bb554c9cdab69093debd91a0b5/modules/apps.nix#L11-L41
+
 { pkgs, lib, ... }:
 let
   derivationType = lib.types.package // {
