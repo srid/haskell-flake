@@ -16,7 +16,9 @@ in
     perSystem = mkPerSystemOption
       ({ config, self', inputs', pkgs, system, ... }:
         let
-          appType = import ./app-type.nix { inherit pkgs lib; };
+          appType = import ./types/app-type.nix { inherit pkgs lib; };
+          haskellOverlayType = import ./types/haskell-overlay-type.nix { inherit lib; };
+
           hlsCheckSubmodule = types.submodule {
             options = {
               enable = mkOption {
@@ -227,7 +229,7 @@ in
                     default = { };
                   };
                   overrides = mkOption {
-                    type = import ./haskell-overlay-type.nix { inherit lib; };
+                    type = haskellOverlayType;
                     description = ''
                       Cabal package overrides for this Haskell project
                 
