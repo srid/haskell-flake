@@ -163,7 +163,7 @@ in
 
           packageInfoSubmodule = types.submoduleWith {
             modules = [
-              ({ config, ... }: {
+              {
                 options = {
                   package = mkOption {
                     type = types.package;
@@ -178,7 +178,7 @@ in
                     '';
                   };
                 };
-              })
+              }
             ];
           };
           projectSubmodule = types.submoduleWith {
