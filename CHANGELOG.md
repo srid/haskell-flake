@@ -5,7 +5,7 @@
 - #134: Add `autoWire` option to control generation of flake outputs
     - #138: Add `checks` to `outputs` submodule
     - #143: Changed `autoWire` to be an enum type, for granular controlling of which outputs to autowire.
-- #137: Expose cabal executables as flake apps. Add a corresponding `outputs.apps` option.
+- #137: Expose cabal executables as flake apps. Add a corresponding `outputs.apps` option, while the `outputs.localPackages` option is renamed to `outputs.packages`.
 
 ## 0.2.0 (Mar 13, 2023)
 
