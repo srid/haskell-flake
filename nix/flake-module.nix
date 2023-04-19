@@ -325,9 +325,9 @@ in
             let
               # Like mapAttrs, but merges the values (also attrsets) of the resulting attrset.
               mergeMapAttrs = f: attrs: lib.mkMerge (lib.mapAttrsToList f attrs);
-              mapKeys = f: attrs: lib.mapAttrs' (n: v: { name = f n; value = v; }) attrs;
+              mapKeys = f: lib.mapAttrs' (n: v: { name = f n; value = v; });
 
-              contains = k: vs: lib.any (x: x == k) vs;
+              contains = k: lib.any (x: x == k);
 
               # Prefix value with the project name (unless
               # project is named `default`)

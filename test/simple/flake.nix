@@ -46,7 +46,7 @@
           devShell = {
             tools = hp: {
               # Adding a tool should make it available in devshell.
-              fzf = pkgs.fzf;
+              inherit (pkgs) fzf;
             };
             extraLibraries = hp: {
               inherit (hp) tomland;

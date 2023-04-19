@@ -8,7 +8,7 @@ let
   # make the project root mutable, because those are expected when running
   # something in a project shell (it is indeed the case with HLS).
   runCommandInSimulatedShell = devShell: projectRoot: name: attrs: command:
-    pkgs.runCommand name (attrs // { nativeBuildInputs = devShell.nativeBuildInputs; })
+    pkgs.runCommand name (attrs // { inherit (devShell) nativeBuildInputs; })
       ''
         # Set pipefail option for safer bash
         set -euo pipefail
@@ -74,9 +74,9 @@ in
           lib.listToAttrs
             (map
               (exe:
-                lib.nameValuePair exe ({
+                lib.nameValuePair exe {
                   program = "${staticPackage}/bin/${exe}";
-                })
+                }
               )
               exeNames
             );

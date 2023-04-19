@@ -14,7 +14,7 @@ let
     let
       contents = lib.attrNames (builtins.readDir root);
       hasCabal = lib.any (lib.strings.hasSuffix ".cabal") contents;
-      hasHpack = builtins.elem ("package.yaml") contents;
+      hasHpack = builtins.elem "package.yaml" contents;
     in
     if (!hasCabal && hasHpack)
     then

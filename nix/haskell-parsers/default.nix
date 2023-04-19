@@ -1,6 +1,6 @@
 { pkgs
 , lib
-, throwError ? msg: builtins.throw msg
+, throwError ? builtins.throw
 , ...
 }:
 
@@ -20,15 +20,15 @@ let
     findSinglePackageYamlFile = path:
       let f = path + "/package.yaml";
       in if builtins.pathExists f then f else null;
-    getCabalName = cabalFile:
-      lib.strings.removeSuffix ".cabal" cabalFile;
+    getCabalName =
+      lib.strings.removeSuffix ".cabal";
     getPackageYamlName = fp:
       let
         name = parser.parsePackageYamlName (builtins.readFile fp);
       in
       if name.type == "success"
       then name.value
-      else throwError ("Failed to parse ${fp}: ${builtins.toJSON name}");
+      else throwError "Failed to parse ${fp}: ${builtins.toJSON name}";
     findHaskellPackageNameOfDirectory = path:
       let
         cabalFile = findSingleCabalFile path;
@@ -69,7 +69,7 @@ in
                 else "${projectRoot}/${path}"
               )
               res.value
-          else throwError ("Failed to parse ${cabalProjectFile}: ${builtins.toJSON res}")
+          else throwError "Failed to parse ${cabalProjectFile}: ${builtins.toJSON res}"
         else
           [ projectRoot ];
     in
@@ -86,5 +86,5 @@ in
     in
     if res.type == "success"
     then res.value
-    else throwError ("Failed to parse ${cabalFile}: ${builtins.toJSON res}");
+    else throwError "Failed to parse ${cabalFile}: ${builtins.toJSON res}";
 }

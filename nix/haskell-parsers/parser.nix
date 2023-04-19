@@ -2,7 +2,7 @@
 #
 # "sufficiently" because we care only about 'packages' from `cabal.project` and
 # 'name' from `package.yaml`.
-{ pkgs, lib, ... }:
+{ lib, ... }:
 
 let
   nix-parsec = builtins.fetchGit {
@@ -24,9 +24,8 @@ in
       path = parsec.fmap lib.concatStrings (parsec.many1 (parsec.anyCharBut "\n"));
       key = parsec.string "packages:\n";
       val =
-        (parsec.many1
-          (parsec.between spaces1 newline path)
-        );
+        parsec.many1
+          (parsec.between spaces1 newline path);
       parser = parsec.skipThen
         key
         val;
@@ -54,7 +53,7 @@ in
         skipTill
           (sequence [ (skipWhile (x: x != "\n")) anyChar ])
           (parsec.string "executable ");
-      val = (parsec.fmap lib.concatStrings (parsec.many1 (parsec.anyCharBut "\n")));
+      val = parsec.fmap lib.concatStrings (parsec.many1 (parsec.anyCharBut "\n"));
       parser = parsec.many (parsec.skipThen
         skipLines
         val);
