@@ -1,5 +1,5 @@
 # A flake-parts module for Haskell cabal projects.
-{ self, config, lib, flake-parts-lib, withSystem, ... }:
+{ self, lib, flake-parts-lib, withSystem, ... }:
 
 let
   inherit (flake-parts-lib)
@@ -16,6 +16,7 @@ in
     perSystem = mkPerSystemOption
       ({ config, self', inputs', pkgs, system, ... }:
         let
+          appType = import ./app-type.nix { inherit pkgs lib; };
           hlsCheckSubmodule = types.submodule {
             options = {
               enable = mkOption {
@@ -125,14 +126,21 @@ in
                   overrides, on top of `basePackages`.
                 '';
               };
-              localPackages = mkOption {
-                type = types.attrsOf types.package;
+              packages = mkOption {
+                type = types.attrsOf packageInfoSubmodule;
                 readOnly = true;
                 description = ''
-                  The local Haskell packages in the project.
+                  Package information for all local packages. Contains the following keys:
 
-                  This is a subset of `finalPackages` containing only local
-                  packages excluding everything else.
+                  - `package`: The Haskell package derivation
+                  - `executables`: Attrset of executables found in the .cabal file
+                '';
+              };
+              apps = mkOption {
+                type = types.attrsOf appType;
+                readOnly = true;
+                description = ''
+                  Flake apps for each Cabal executable in the project.
                 '';
               };
               devShell = mkOption {
@@ -150,6 +158,28 @@ in
                 '';
               };
 
+            };
+          };
+
+          packageInfoSubmodule = types.submodule {
+            options = {
+              package = mkOption {
+                type = types.package;
+                description = ''
+                  The local package derivation.
+                '';
+              };
+              exes = mkOption {
+                type = types.attrsOf appType;
+                description = ''
+                  Attrset of executables from `.cabal` file.  
+
+                  The executables are accessed without any reference to the
+                  Haskell library, using `justStaticExecutables`.
+
+                  NOTE: Evaluating up to this option will involve IFD.
+                '';
+              };
             };
           };
           projectSubmodule = types.submoduleWith {
@@ -232,7 +262,7 @@ in
                     '';
                     default =
                       let
-                        find-haskell-paths = import ./find-haskell-paths {
+                        haskell-parsers = import ./haskell-parsers {
                           inherit pkgs lib;
                           throwError = msg: builtins.throw ''
                             haskell-flake: A default value for `packages` cannot be auto-determined:
@@ -244,8 +274,8 @@ in
                         };
                       in
                       lib.mapAttrs
-                        (_: value: { root = value; })
-                        (find-haskell-paths config.projectRoot);
+                        (_: path: { root = path; })
+                        (haskell-parsers.findPackagesInCabalProject config.projectRoot);
                     defaultText = lib.literalMD "autodiscovered by reading `self` files.";
                   };
                   devShell = mkOption {
@@ -265,7 +295,7 @@ in
                   };
                   autoWire =
                     let
-                      outputTypes = [ "packages" "checks" "devShells" ];
+                      outputTypes = [ "packages" "checks" "apps" "devShells" ];
                     in
                     mkOption {
                       type = types.listOf (types.enum outputTypes);
@@ -295,22 +325,26 @@ in
             let
               # Like mapAttrs, but merges the values (also attrsets) of the resulting attrset.
               mergeMapAttrs = f: attrs: lib.mkMerge (lib.mapAttrsToList f attrs);
+              mapKeys = f: attrs: lib.mapAttrs' (n: v: { name = f n; value = v; }) attrs;
+
               contains = k: vs: lib.any (x: x == k) vs;
+
+              # Prefix value with the project name (unless
+              # project is named `default`)
+              prefixUnlessDefault = projectName: value:
+                if projectName == "default"
+                then value
+                else "${projectName}-${value}";
             in
             {
               packages =
                 mergeMapAttrs
                   (name: project:
                     let
-                      mapKeys = f: attrs: lib.mapAttrs' (n: v: { name = f n; value = v; }) attrs;
-                      # Prefix package names with the project name (unless
-                      # project is named `default`)
-                      dropDefaultPrefix = packageName:
-                        if name == "default"
-                        then packageName
-                        else "${name}-${packageName}";
+                      packages = lib.mapAttrs (_: info: info.package) project.outputs.packages;
                     in
-                    lib.optionalAttrs (contains "packages" project.autoWire) (mapKeys dropDefaultPrefix project.outputs.localPackages))
+                    lib.optionalAttrs (contains "packages" project.autoWire)
+                      (mapKeys (prefixUnlessDefault name) packages))
                   config.haskellProjects;
               devShells =
                 mergeMapAttrs
@@ -322,7 +356,15 @@ in
               checks =
                 mergeMapAttrs
                   (name: project:
-                    lib.optionalAttrs (contains "checks" project.autoWire) project.outputs.checks
+                    lib.optionalAttrs (contains "checks" project.autoWire)
+                      project.outputs.checks
+                  )
+                  config.haskellProjects;
+              apps =
+                mergeMapAttrs
+                  (name: project:
+                    lib.optionalAttrs (contains "apps" project.autoWire)
+                      (mapKeys (prefixUnlessDefault name) project.outputs.apps)
                   )
                   config.haskellProjects;
             };

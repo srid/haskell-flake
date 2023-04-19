@@ -44,4 +44,20 @@ in
         val;
     in
     parsec.runParser parser packageYamlFile;
+
+  # Extract all the executables from a .cabal file 
+  parseCabalExecutableNames = cabalFile:
+    with parsec;
+    let
+      # Skip empty lines and lines that don't start with 'executable'
+      skipLines =
+        skipTill
+          (sequence [ (skipWhile (x: x != "\n")) anyChar ])
+          (parsec.string "executable ");
+      val = (parsec.fmap lib.concatStrings (parsec.many1 (parsec.anyCharBut "\n")));
+      parser = parsec.many (parsec.skipThen
+        skipLines
+        val);
+    in
+    parsec.runParser parser cabalFile;
 }

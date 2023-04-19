@@ -23,12 +23,13 @@ let
         ${command}
         touch $out
       '';
+  haskell-parsers = pkgs.callPackage ./haskell-parsers { };
 in
 {
 
   config =
     let
-      inherit (config.outputs) finalPackages finalOverlay;
+      inherit (config.outputs) finalPackages finalOverlay packages;
 
       projectKey = name;
 
@@ -62,6 +63,25 @@ in
               ++ builtins.attrValues (config.devShell.extraLibraries p);
           };
       });
+
+      buildPackageInfo = name: value: {
+        package = finalPackages.${name};
+        exes =
+          let
+            exeNames = haskell-parsers.getCabalExecutables value.root;
+            staticPackage = pkgs.haskell.lib.justStaticExecutables finalPackages.${name};
+          in
+          lib.listToAttrs
+            (map
+              (exe:
+                lib.nameValuePair exe ({
+                  program = "${staticPackage}/bin/${exe}";
+                })
+              )
+              exeNames
+            );
+      };
+
       hlsCheck =
         runCommandInSimulatedShell
           devShell
@@ -85,9 +105,11 @@ in
 
         finalPackages = config.basePackages.extend finalOverlay;
 
-        localPackages = lib.mapAttrs
-          (name: _: finalPackages."${name}")
-          config.packages;
+        packages = lib.mapAttrs buildPackageInfo config.packages;
+
+        apps =
+          lib.mkMerge
+            (lib.mapAttrsToList (_: packageInfo: packageInfo.exes) packages);
 
         checks = lib.filterAttrs (_: v: v != null) {
           "${name}-hls" = if (config.devShell.enable && config.devShell.hlsCheck.enable) then hlsCheck else null;

@@ -35,8 +35,9 @@ When nixifying a Haskell project without flake-parts (thus without haskell-flake
 
 In addition, compared to using plain nixpkgs, haskell-flake supports:
 
-- Auto-detection of local packages based on `cabal.project` file (via [find-haskell-paths](https://github.com/srid/haskell-flake/tree/master/nix/find-haskell-paths))
+- Auto-detection of local packages based on `cabal.project` file (via [haskell-parsers](https://github.com/srid/haskell-flake/tree/master/nix/haskell-parsers))
 - Support for hpack's `package.yaml`
+- Parse executables from `.cabal` file 
 - Composition of dependency overrides, and other project settings, via [[modules]]
 
 ## Next steps
