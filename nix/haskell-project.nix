@@ -23,6 +23,7 @@ let
         ${command}
         touch $out
       '';
+  haskell-parsers = pkgs.callPackage ./haskell-parsers { };
 in
 {
 
@@ -94,11 +95,11 @@ in
         finalPackages = config.basePackages.extend finalOverlay;
 
         packages =
-          let
-            getCabalExecutables = (import ./haskell-parsers { inherit pkgs lib; }).getCabalExecutables;
-          in
           lib.mapAttrs
-            (packageName: value: { package = finalPackages."${packageName}"; exes = packageApps packageName (getCabalExecutables value.root); })
+            (packageName: value: {
+              package = finalPackages."${packageName}";
+              exes = packageApps packageName (haskell-parsers.getCabalExecutables value.root);
+            })
             config.packages;
 
         apps =
