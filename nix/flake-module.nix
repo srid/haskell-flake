@@ -16,7 +16,7 @@ in
     perSystem = mkPerSystemOption
       ({ config, self', inputs', pkgs, system, ... }:
         let
-          appType = pkgs.callPackage ./app-type.nix { };
+          appType = import ./app-type.nix { inherit pkgs lib; };
           hlsCheckSubmodule = types.submodule {
             options = {
               enable = mkOption {
