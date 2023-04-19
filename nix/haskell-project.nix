@@ -63,21 +63,25 @@ in
               ++ builtins.attrValues (config.devShell.extraLibraries p);
           };
       });
-      packageApps = packageName: exes:
-        lib.listToAttrs
-          (map
-            (executable:
-              lib.nameValuePair executable (
-                let
-                  pkg = pkgs.haskell.lib.justStaticExecutables finalPackages.${packageName};
-                in
-                {
-                  program = "${pkg}/bin/${executable}";
-                }
+
+      buildPackageInfo = name: value: {
+        package = finalPackages.${name};
+        exes =
+          let
+            exeNames = haskell-parsers.getCabalExecutables value.root;
+            staticPackage = pkgs.haskell.lib.justStaticExecutables finalPackages.${name};
+          in
+          lib.listToAttrs
+            (map
+              (exe:
+                lib.nameValuePair exe ({
+                  program = "${staticPackage}/bin/${exe}";
+                })
               )
-            )
-            exes
-          );
+              exeNames
+            );
+      };
+
       hlsCheck =
         runCommandInSimulatedShell
           devShell
@@ -101,13 +105,7 @@ in
 
         finalPackages = config.basePackages.extend finalOverlay;
 
-        packages =
-          lib.mapAttrs
-            (packageName: value: {
-              package = finalPackages."${packageName}";
-              exes = packageApps packageName (haskell-parsers.getCabalExecutables value.root);
-            })
-            config.packages;
+        packages = lib.mapAttrs buildPackageInfo config.packages;
 
         apps =
           lib.mkMerge

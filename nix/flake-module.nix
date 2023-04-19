@@ -175,6 +175,9 @@ in
                     type = types.attrsOf appType;
                     description = ''
                       Attrset of executables from `.cabal` file.  
+
+                      The executables are accessed without any reference to the
+                      Haskell library, using `justStaticExecutables`.
                     '';
                   };
                 };
