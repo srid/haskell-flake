@@ -296,7 +296,7 @@ in
                       in
                       lib.mapAttrs
                         (_: path: { root = path; })
-                        (find-haskell-packages config.projectRoot).packagesPath;
+                        (find-haskell-packages.findPackagesInCabalProject config.projectRoot);
                     defaultText = lib.literalMD "autodiscovered by reading `self` files.";
                   };
                   devShell = mkOption {

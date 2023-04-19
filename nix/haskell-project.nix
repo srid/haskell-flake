@@ -62,13 +62,13 @@ in
               ++ builtins.attrValues (config.devShell.extraLibraries p);
           };
       });
-      packageApps = packageName: packageExecutables:
+      packageApps = packageName: getCabalExecutables:
         lib.listToAttrs
           (map
             (executable:
               lib.nameValuePair ("${executable}") ({ program = "${pkgs.haskell.lib.justStaticExecutables finalPackages.${packageName}}/bin/${executable}"; })
             )
-            (packageExecutables)
+            (getCabalExecutables)
           );
       hlsCheck =
         runCommandInSimulatedShell
@@ -95,10 +95,10 @@ in
 
         packages =
           let
-            packageExecutables = ((import ./find-haskell-packages { inherit pkgs lib; }) config.projectRoot).packageExecutables;
+            getCabalExecutables = (import ./find-haskell-packages { inherit pkgs lib; }).getCabalExecutables;
           in
           lib.mapAttrs
-            (packageName: value: { package = finalPackages."${packageName}"; exes = packageApps packageName (packageExecutables value.root); })
+            (packageName: value: { package = finalPackages."${packageName}"; exes = packageApps packageName (getCabalExecutables value.root); })
             config.packages;
 
         apps =

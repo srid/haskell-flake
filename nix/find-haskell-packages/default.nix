@@ -44,34 +44,42 @@ let
         throwError "Neither a .cabal file nor a package.yaml found under ${path}";
   };
 in
-projectRoot:
-let
-  cabalProjectFile = projectRoot + "/cabal.project";
-  packageDirs =
-    if builtins.pathExists cabalProjectFile
-    then
-      let
-        res = parser.parseCabalProjectPackages (builtins.readFile cabalProjectFile);
-        isSelfPath = path:
-          path == "." || path == "./" || path == "./.";
-      in
-      if res.type == "success"
-      then
-        map
-          (path:
-            if isSelfPath path
-            then projectRoot
-            else if lib.strings.hasInfix "*" path
-            then throwError "Found a path with glob (${path}) in ${cabalProjectFile}, which is not supported"
-            else if lib.strings.hasSuffix ".cabal" path
-            then throwError "Expected a directory but ${path} (in ${cabalProjectFile}) is a .cabal filepath"
-            else "${projectRoot}/${path}"
-          )
-          res.value
-      else throwError ("Failed to parse ${cabalProjectFile}: ${builtins.toJSON res}")
-    else
-      [ projectRoot ];
-  packageExecutables = path:
+{
+  findPackagesInCabalProject = projectRoot:
+    let
+      cabalProjectFile = projectRoot + "/cabal.project";
+      packageDirs =
+        if builtins.pathExists cabalProjectFile
+        then
+          let
+            res = parser.parseCabalProjectPackages (builtins.readFile cabalProjectFile);
+            isSelfPath = path:
+              path == "." || path == "./" || path == "./.";
+          in
+          if res.type == "success"
+          then
+            map
+              (path:
+                if isSelfPath path
+                then projectRoot
+                else if lib.strings.hasInfix "*" path
+                then throwError "Found a path with glob (${path}) in ${cabalProjectFile}, which is not supported"
+                else if lib.strings.hasSuffix ".cabal" path
+                then throwError "Expected a directory but ${path} (in ${cabalProjectFile}) is a .cabal filepath"
+                else "${projectRoot}/${path}"
+              )
+              res.value
+          else throwError ("Failed to parse ${cabalProjectFile}: ${builtins.toJSON res}")
+        else
+          [ projectRoot ];
+    in
+    lib.listToAttrs
+      (map
+        (path:
+          lib.nameValuePair (traversal.findHaskellPackageNameOfDirectory path) path)
+        packageDirs);
+
+  getCabalExecutables = path:
     let
       cabalFile = traversal.findSingleCabalFile path;
       res = parser.parseCabalExecutableNames (builtins.readFile (lib.concatStrings [ path "/" cabalFile ]));
@@ -79,13 +87,4 @@ let
     if res.type == "success"
     then res.value
     else throwError ("Failed to parse ${cabalFile}: ${builtins.toJSON res}");
-in
-{
-  packagesPath =
-    lib.listToAttrs
-      (map
-        (path:
-          lib.nameValuePair (traversal.findHaskellPackageNameOfDirectory path) path)
-        packageDirs);
-  inherit packageExecutables;
 }
