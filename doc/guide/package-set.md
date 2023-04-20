@@ -13,6 +13,7 @@ A "project" in haskell-flake primarily serves the purpose of developing Haskell 
   haskellProjects.ghc810 = {
     packages = {};  # No local packages
     devShell.enable = false;
+    autoWire = [ ];  # Don't wire any flake outputs
 
     # Start from nixpkgs's ghc8107 package set
     basePackages = pkgs.haskell.packages.ghc8107;
