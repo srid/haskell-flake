@@ -1,7 +1,7 @@
 # Like callCabal2nix, but does more:
 # - Source filtering (to prevent parent content changes causing rebuilds)
 # - Always build from cabal's sdist for release-worthiness
-{ pkgs, lib, self, ... }:
+{ pkgs, lib, self, hasExecutable, ... }:
 
 let
   hlib = pkgs.haskell.lib.compose;
@@ -54,16 +54,16 @@ let
   pkg = self.callCabal2nix name root { };
 in
 lib.pipe pkg
-  [
+  ([
     # Avoid rebuilding because of changes in parent directories
     (makeSrcAutonomous name root)
 
     # Make sure all files we use are included in the sdist, as a check
     # for release-worthiness.
     fromSdist
-
+  ] ++ lib.optionals (hasExecutable name) [
     # TODO: Make it an option that the user can override
     # This is better than using justStaticExecutables, because with the later
     # builds will repeated twice!
     pkgs.haskell.lib.enableSeparateBinOutput
-  ]
+  ])
