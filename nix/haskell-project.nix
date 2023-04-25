@@ -68,14 +68,16 @@ in
         package = finalPackages.${name};
         exes =
           let
+            inherit (pkgs.haskell.lib) enableSeparateBinOutput;
             exeNames = haskell-parsers.getCabalExecutables value.root;
-            staticPackage = pkgs.haskell.lib.justStaticExecutables finalPackages.${name};
+            # TODO: We must do this globally in overlay, to avoid repeat builds?
+            packageBinOut = (enableSeparateBinOutput finalPackages.${name}).bin;
           in
           lib.listToAttrs
             (map
               (exe:
                 lib.nameValuePair exe {
-                  program = "${staticPackage}/bin/${exe}";
+                  program = "${packageBinOut}/bin/${exe}";
                 }
               )
               exeNames
