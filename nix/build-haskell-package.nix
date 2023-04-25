@@ -61,4 +61,9 @@ lib.pipe pkg
     # Make sure all files we use are included in the sdist, as a check
     # for release-worthiness.
     fromSdist
+
+    # TODO: Make it an option that the user can override
+    # This is better than using justStaticExecutables, because with the later
+    # builds will repeated twice!
+    pkgs.haskell.lib.enableSeparateBinOutput
   ]
