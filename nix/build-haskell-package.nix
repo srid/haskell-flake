@@ -1,12 +1,8 @@
 # Like callCabal2nix, but does more:
 # - Source filtering (to prevent parent content changes causing rebuilds)
 # - Always build from cabal's sdist for release-worthiness
-<<<<<<< HEAD
 # - Enables separate bin output for executables
-{ pkgs, lib, self, hasExecutable, ... }:
-=======
-{ pkgs, lib, self, debug, ... }:
->>>>>>> cabal2nix-order
+{ pkgs, lib, self, debug, hasExecutable, ... }:
 
 let
   log = import ./logging.nix { inherit lib debug; };
@@ -26,16 +22,8 @@ let
 in
 
 name: pkgCfg:
-<<<<<<< HEAD
-let
-  pkg = self.callCabal2nix name pkgCfg.root { };
-in
-lib.pipe pkg
-  ([
-=======
 lib.pipe pkgCfg.root
   [
->>>>>>> cabal2nix-order
     # Avoid rebuilding because of changes in parent directories
     (mkNewStorePath "source-${name}")
     (log.traceDebug "${name}.mkNewStorePath" (x: x.outPath))
@@ -46,15 +34,11 @@ lib.pipe pkgCfg.root
     # Make sure all files we use are included in the sdist, as a check
     # for release-worthiness.
     fromSdist
-<<<<<<< HEAD
+    (log.traceDebug "${name}.fromSdist" (x: x.outPath))
 
   ] ++ lib.optionals (hasExecutable name) [
-    # TODO: Make it an option that the user can override
-    # This is better than using justStaticExecutables, because with the later
-    # builds will repeated twice!
-    pkgs.haskell.lib.enableSeparateBinOutput
-  ])
-=======
-    (log.traceDebug "${name}.fromSdist" (x: x.outPath))
-  ]
->>>>>>> cabal2nix-order
+  # TODO: Make it an option that the user can override
+  # This is better than using justStaticExecutables, because with the later
+  # builds will repeated twice!
+  pkgs.haskell.lib.enableSeparateBinOutput
+]
