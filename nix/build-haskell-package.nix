@@ -4,34 +4,29 @@
 { pkgs, lib, self, ... }:
 
 let
-  hlib = pkgs.haskell.lib.compose;
-
   fromSdist = self.buildFromCabalSdist or (builtins.trace "Your version of Nixpkgs does not support hs.buildFromCabalSdist yet." (pkg: pkg));
 
-  makeSrcAutonomous = name: root: pkg: hlib.overrideSrc
-    {
-      src =
-        # Since 'root' may be a subdirectory of a store path
-        # (in string form, which means that it isn't automatically
-        # copied), the purpose of cleanSourceWith here is to create a
-        # new (smaller) store path that is a copy of 'root' but
-        # does not contain the unrelated parent source contents.
-        lib.cleanSourceWith {
-          name = "source-${name}-${pkg.version}";
-          src = root;
-        };
-    }
-    pkg;
+  mkNewStorePath = name: src:
+    # Since 'src' may be a subdirectory of a store path
+    # (in string form, which means that it isn't automatically
+    # copied), the purpose of cleanSourceWith here is to create a
+    # new (smaller) store path that is a copy of 'src' but
+    # does not contain the unrelated parent source contents.
+    lib.cleanSourceWith {
+      name = "${name}";
+      inherit src;
+    };
 in
 
 name: pkgCfg:
-let
-  pkg = self.callCabal2nix name pkgCfg.root { };
-in
-lib.pipe pkg
+lib.pipe pkgCfg.root
   [
     # Avoid rebuilding because of changes in parent directories
-    (makeSrcAutonomous name pkgCfg.root)
+    (mkNewStorePath "source-${name}")
+
+    (x: builtins.trace x.outPath x)
+
+    (root: self.callCabal2nix name root { })
 
     # Make sure all files we use are included in the sdist, as a check
     # for release-worthiness.
