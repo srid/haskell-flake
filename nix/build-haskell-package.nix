@@ -41,4 +41,5 @@ lib.pipe pkgCfg.root
     # This is better than using justStaticExecutables, because with the later
     # builds will repeated twice!
     pkgs.haskell.lib.enableSeparateBinOutput
+    (log.traceDebug "${name}.afterFlags" (x: x.outPath))
   ])
