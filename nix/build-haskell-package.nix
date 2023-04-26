@@ -1,42 +1,52 @@
 # Like callCabal2nix, but does more:
 # - Source filtering (to prevent parent content changes causing rebuilds)
 # - Always build from cabal's sdist for release-worthiness
+<<<<<<< HEAD
 # - Enables separate bin output for executables
 { pkgs, lib, self, hasExecutable, ... }:
+=======
+{ pkgs, lib, self, debug, ... }:
+>>>>>>> cabal2nix-order
 
 let
-  hlib = pkgs.haskell.lib.compose;
+  log = import ./logging.nix { inherit lib debug; };
 
   fromSdist = self.buildFromCabalSdist or (builtins.trace "Your version of Nixpkgs does not support hs.buildFromCabalSdist yet." (pkg: pkg));
 
-  makeSrcAutonomous = name: root: pkg: hlib.overrideSrc
-    {
-      src =
-        # Since 'root' may be a subdirectory of a store path
-        # (in string form, which means that it isn't automatically
-        # copied), the purpose of cleanSourceWith here is to create a
-        # new (smaller) store path that is a copy of 'root' but
-        # does not contain the unrelated parent source contents.
-        lib.cleanSourceWith {
-          name = "source-${name}-${pkg.version}";
-          src = root;
-        };
-    }
-    pkg;
+  mkNewStorePath = name: src:
+    # Since 'src' may be a subdirectory of a store path
+    # (in string form, which means that it isn't automatically
+    # copied), the purpose of cleanSourceWith here is to create a
+    # new (smaller) store path that is a copy of 'src' but
+    # does not contain the unrelated parent source contents.
+    lib.cleanSourceWith {
+      name = "${name}";
+      inherit src;
+    };
 in
 
 name: pkgCfg:
+<<<<<<< HEAD
 let
   pkg = self.callCabal2nix name pkgCfg.root { };
 in
 lib.pipe pkg
   ([
+=======
+lib.pipe pkgCfg.root
+  [
+>>>>>>> cabal2nix-order
     # Avoid rebuilding because of changes in parent directories
-    (makeSrcAutonomous name pkgCfg.root)
+    (mkNewStorePath "source-${name}")
+    (log.traceDebug "${name}.mkNewStorePath" (x: x.outPath))
+
+    (root: self.callCabal2nix name root { })
+    (log.traceDebug "${name}.cabal2nixDeriver" (x: x.cabal2nixDeriver.outPath))
 
     # Make sure all files we use are included in the sdist, as a check
     # for release-worthiness.
     fromSdist
+<<<<<<< HEAD
 
   ] ++ lib.optionals (hasExecutable name) [
     # TODO: Make it an option that the user can override
@@ -44,3 +54,7 @@ lib.pipe pkg
     # builds will repeated twice!
     pkgs.haskell.lib.enableSeparateBinOutput
   ])
+=======
+    (log.traceDebug "${name}.fromSdist" (x: x.outPath))
+  ]
+>>>>>>> cabal2nix-order

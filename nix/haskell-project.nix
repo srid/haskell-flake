@@ -37,6 +37,7 @@ in
         let
           build-haskell-package = import ./build-haskell-package.nix {
             inherit pkgs lib self;
+            inherit (config) debug;
             hasExecutable = name: packages.${name}.exes != { };
           };
         in
