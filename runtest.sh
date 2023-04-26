@@ -11,7 +11,6 @@ TESTS=(
   ./nix/haskell-parsers
   ./example
   ./test/simple
-  # ./test/hpack
   ./test/with-subdir
   ./test/project-module
   ./doc

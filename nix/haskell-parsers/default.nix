@@ -17,31 +17,17 @@ let
       else if num == 1
       then builtins.head cabalFiles
       else throwError "Expected a single .cabal file, but found multiple: ${builtins.toJSON cabalFiles}";
-    findSinglePackageYamlFile = path:
-      let f = path + "/package.yaml";
-      in if builtins.pathExists f then f else null;
     getCabalName =
       lib.strings.removeSuffix ".cabal";
-    getPackageYamlName = fp:
-      let
-        name = parser.parsePackageYamlName (builtins.readFile fp);
-      in
-      if name.type == "success"
-      then name.value
-      else throwError "Failed to parse ${fp}: ${builtins.toJSON name}";
     findHaskellPackageNameOfDirectory = path:
       let
         cabalFile = findSingleCabalFile path;
-        packageYamlFile = findSinglePackageYamlFile path;
       in
       if cabalFile != null
       then
         getCabalName cabalFile
-      else if packageYamlFile != null
-      then
-        getPackageYamlName packageYamlFile
       else
-        throwError "Neither a .cabal file nor a package.yaml found under ${path}";
+        throwError "No .cabal file found under ${path}";
   };
 in
 {
