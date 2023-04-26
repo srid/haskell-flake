@@ -32,18 +32,6 @@ in
     in
     parsec.runParser parser cabalProjectFile;
 
-  # Extract the "name" field from a package.yaml file.
-  parsePackageYamlName = packageYamlFile:
-    let
-      spaces1 = parsec.skipWhile1 (c: c == " " || c == "\t");
-      key = parsec.string "name:";
-      val = parsec.fmap lib.concatStrings (parsec.many1 (parsec.anyCharBut "\n"));
-      parser = parsec.skipThen
-        (parsec.skipThen key spaces1)
-        val;
-    in
-    parsec.runParser parser packageYamlFile;
-
   # Extract all the executables from a .cabal file 
   parseCabalExecutableNames = cabalFile:
     with parsec;
