@@ -1,6 +1,7 @@
 # Like callCabal2nix, but does more:
 # - Source filtering (to prevent parent content changes causing rebuilds)
 # - Always build from cabal's sdist for release-worthiness
+# - Enables separate bin output for executables
 { pkgs, lib, self, hasExecutable, ... }:
 
 let
@@ -36,6 +37,7 @@ lib.pipe pkg
     # Make sure all files we use are included in the sdist, as a check
     # for release-worthiness.
     fromSdist
+
   ] ++ lib.optionals (hasExecutable name) [
     # TODO: Make it an option that the user can override
     # This is better than using justStaticExecutables, because with the later
