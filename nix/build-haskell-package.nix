@@ -23,7 +23,7 @@ in
 
 name: pkgCfg:
 lib.pipe pkgCfg.root
-  [
+  ([
     # Avoid rebuilding because of changes in parent directories
     (mkNewStorePath "source-${name}")
     (log.traceDebug "${name}.mkNewStorePath" (x: x.outPath))
@@ -37,8 +37,8 @@ lib.pipe pkgCfg.root
     (log.traceDebug "${name}.fromSdist" (x: x.outPath))
 
   ] ++ lib.optionals (hasExecutable name) [
-  # TODO: Make it an option that the user can override
-  # This is better than using justStaticExecutables, because with the later
-  # builds will repeated twice!
-  pkgs.haskell.lib.enableSeparateBinOutput
-]
+    # TODO: Make it an option that the user can override
+    # This is better than using justStaticExecutables, because with the later
+    # builds will repeated twice!
+    pkgs.haskell.lib.enableSeparateBinOutput
+  ])
