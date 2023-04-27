@@ -6,7 +6,8 @@
 let
   log = import ./logging.nix { inherit lib debug; };
 
-  fromSdist = self.buildFromCabalSdist or (builtins.trace "Your version of Nixpkgs does not support hs.buildFromCabalSdist yet." (pkg: pkg));
+  fromSdist = self.buildFromCabalSdist or
+    (log.traceWarning "Your nixpkgs does not have hs.buildFromCabalSdist" (pkg: pkg));
 
   mkNewStorePath = name: src:
     # Since 'src' may be a subdirectory of a store path
@@ -25,13 +26,13 @@ lib.pipe pkgCfg.root
   [
     # Avoid rebuilding because of changes in parent directories
     (mkNewStorePath "source-${name}")
-    (log.traceDebug "${name}.mkNewStorePath" (x: x.outPath))
+    (x: log.traceDebug "${name}.mkNewStorePath ${x.outPath}" x)
 
     (root: self.callCabal2nix name root { })
-    (log.traceDebug "${name}.cabal2nixDeriver" (x: x.cabal2nixDeriver.outPath))
+    (x: log.traceDebug "${name}.cabal2nixDeriver ${x.cabal2nixDeriver.outPath}" x)
 
     # Make sure all files we use are included in the sdist, as a check
     # for release-worthiness.
     fromSdist
-    (log.traceDebug "${name}.fromSdist" (x: x.outPath))
+    (x: log.traceDebug "${name}.fromSdist ${x.outPath}" x)
   ]

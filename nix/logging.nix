@@ -1,11 +1,16 @@
-{ lib, debug, ... }:
+{ debug ? false, ... }:
 
 {
-  traceDebug = k: f:
+  traceDebug = msg:
     if debug then
-      (x: lib.pipe x [
-        (builtins.trace ("DEBUG[haskell-flake]: " + k + " " + f x))
-      ])
+      builtins.trace ("DEBUG[haskell-flake]: " + msg)
     else
-      (x: x);
+      x: x;
+
+  traceWarning = msg:
+    builtins.trace ("WARNING[haskell-flake]: " + msg);
+
+  throwError = msg: builtins.throw ''
+    ERROR[haskell-flake]: ${msg}
+  '';
 }

@@ -18,6 +18,7 @@ in
         let
           appType = import ./types/app-type.nix { inherit pkgs lib; };
           haskellOverlayType = import ./types/haskell-overlay-type.nix { inherit lib; };
+          log = import ./logging.nix { };
 
           hlsCheckSubmodule = types.submodule {
             options = {
@@ -275,12 +276,12 @@ in
                       let
                         haskell-parsers = import ./haskell-parsers {
                           inherit pkgs lib;
-                          throwError = msg: builtins.throw ''
-                            haskell-flake: A default value for `packages` cannot be auto-determined:
+                          throwError = msg: log.throwError ''
+                            A default value for `packages` cannot be auto-determined:
 
                               ${msg}
 
-                            Please specify the `packages` option manually or change your project configuration.
+                            Please specify the `packages` option manually or change your project configuration (cabal.project).
                           '';
                         };
                       in

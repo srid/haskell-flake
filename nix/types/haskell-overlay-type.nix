@@ -1,9 +1,12 @@
 { lib, ... }:
 
+let
+  log = import ../logging.nix { };
+in
 # WARNING: While the order is deterministic, it is not
-# determined by the user. Thus overlays may be applied in
-# an unexpected order.
-# We need: https://github.com/NixOS/nixpkgs/issues/215486
+  # determined by the user. Thus overlays may be applied in
+  # an unexpected order.
+  # We need: https://github.com/NixOS/nixpkgs/issues/215486
 lib.types.mkOptionType {
   name = "haskellOverlay";
   description = "An Haskell overlay function";
@@ -12,17 +15,14 @@ lib.types.mkOptionType {
   # to check that the function takes two arguments, and
   # returns an attrset.
   check = lib.isFunction;
-  merge = _loc: defs:
+  merge = _loc: defs':
     let
-      logWarning =
-        if builtins.length defs > 1
-        then builtins.trace "WARNING[haskell-flake]: Multiple haskell overlays are applied in arbitrary order." null
-        else null;
+      defs =
+        if builtins.length defs' > 1
+        then log.traceWarning "Multiple haskell overlays are applied in arbitrary order" defs'
+        else defs';
       overlays =
-        map (x: x.value)
-          (builtins.seq
-            logWarning
-            defs);
+        map (x: x.value) defs;
     in
     lib.composeManyExtensions overlays;
 }
