@@ -189,139 +189,140 @@ in
             specialArgs = { inherit pkgs self; };
             modules = [
               ./haskell-project.nix
-              ({ config, ... }: {
-                options = {
-                  projectRoot = mkOption {
-                    type = types.path;
-                    description = ''
-                      Path to the root of the project directory.
-
-                      Chaning this affects certain functionality, like where to
-                      look for the 'cabal.project' file.
-                    '';
-                    default = self;
-                    defaultText = "Top-level directory of the flake";
-                  };
-                  debug = mkOption {
-                    type = types.bool;
-                    default = false;
-                    description = ''
-                      Whether to enable verbose trace output from haskell-flake.
-
-                      Useful for debugging.
-                    '';
-                  };
-                  basePackages = mkOption {
-                    type = types.attrsOf raw;
-                    description = ''
-                      Which Haskell package set / compiler to use.
-
-                      You can effectively select the GHC version here. 
-                  
-                      To get the appropriate value, run:
-
-                          nix-env -f "<nixpkgs>" -qaP -A haskell.compiler
-
-                      And then, use that in `pkgs.haskell.packages.ghc<version>`
-                    '';
-                    example = "pkgs.haskell.packages.ghc924";
-                    default = pkgs.haskellPackages;
-                    defaultText = lib.literalExpression "pkgs.haskellPackages";
-                  };
-                  source-overrides = mkOption {
-                    type = types.attrsOf (types.oneOf [ types.path types.str ]);
-                    description = ''
-                      Source overrides for Haskell packages
-
-                      You can either assign a path to the source, or Hackage
-                      version string.
-                    '';
-                    default = { };
-                  };
-                  overrides = mkOption {
-                    type = haskellOverlayType;
-                    description = ''
-                      Cabal package overrides for this Haskell project
-                
-                      For handy functions, see 
-                      <https://github.com/NixOS/nixpkgs/blob/master/pkgs/development/haskell-modules/lib/compose.nix>
-
-                      **WARNING**: When using `imports`, multiple overlays
-                      will be merged using `lib.composeManyExtensions`.
-                      However the order the overlays are applied can be
-                      arbitrary (albeit deterministic, based on module system
-                      implementation).  Thus, the use of `overrides` via
-                      `imports` is not officiallly supported. If you'd like
-                      to see proper support, add your thumbs up to
-                      <https://github.com/NixOS/nixpkgs/issues/215486>.
-                    '';
-                    default = self: super: { };
-                    defaultText = lib.literalExpression "self: super: { }";
-                  };
-                  packages = mkOption {
-                    type = types.lazyAttrsOf packageSubmodule;
-                    description = ''
-                      Set of local packages in the project repository.
-
-                      If you have a `cabal.project` file (under `projectRoot`),
-                      those packages are automatically discovered. Otherwise, a
-                      top-level .cabal or package.yaml file is used to discover
-                      the single local project.
-
-                      haskell-flake currently supports a limited range of syntax
-                      for `cabal.project`. Specifically it requires an explicit
-                      list of package directories under the "packages" option.
-                    '';
-                    default =
-                      let
-                        haskell-parsers = import ./haskell-parsers {
-                          inherit pkgs lib;
-                          throwError = msg: log.throwError ''
-                            A default value for `packages` cannot be auto-determined:
-
-                              ${msg}
-
-                            Please specify the `packages` option manually or change your project configuration (cabal.project).
-                          '';
-                        };
-                      in
-                      lib.mapAttrs
-                        (_: path: { root = path; })
-                        (haskell-parsers.findPackagesInCabalProject config.projectRoot);
-                    defaultText = lib.literalMD "autodiscovered by reading `self` files.";
-                  };
-                  devShell = mkOption {
-                    type = devShellSubmodule;
-                    description = ''
-                      Development shell configuration
-                    '';
-                    default = { };
-                  };
-                  outputs = mkOption {
-                    type = outputsSubmodule;
-                    description = ''
-                      The flake outputs generated for this project.
-
-                      This is an internal option, not meant to be set by the user.
-                    '';
-                  };
-                  autoWire =
-                    let
-                      outputTypes = [ "packages" "checks" "apps" "devShells" ];
-                    in
-                    mkOption {
-                      type = types.listOf (types.enum outputTypes);
+              ({ config, ... }:
+                {
+                  options = {
+                    projectRoot = mkOption {
+                      type = types.path;
                       description = ''
-                        List of flake output types to autowire.
+                        Path to the root of the project directory.
 
-                        Using an empty list will disable autowiring entirely,
-                        enabling you to manually wire them using
-                        `config.haskellProjects.<name>.outputs`.
+                        Chaning this affects certain functionality, like where to
+                        look for the 'cabal.project' file.
                       '';
-                      default = outputTypes;
+                      default = self;
+                      defaultText = "Top-level directory of the flake";
                     };
-                };
-              })
+                    debug = mkOption {
+                      type = types.bool;
+                      default = false;
+                      description = ''
+                        Whether to enable verbose trace output from haskell-flake.
+
+                        Useful for debugging.
+                      '';
+                    };
+                    basePackages = mkOption {
+                      type = types.attrsOf raw;
+                      description = ''
+                        Which Haskell package set / compiler to use.
+
+                        You can effectively select the GHC version here. 
+                  
+                        To get the appropriate value, run:
+
+                            nix-env -f "<nixpkgs>" -qaP -A haskell.compiler
+
+                        And then, use that in `pkgs.haskell.packages.ghc<version>`
+                      '';
+                      example = "pkgs.haskell.packages.ghc924";
+                      default = pkgs.haskellPackages;
+                      defaultText = lib.literalExpression "pkgs.haskellPackages";
+                    };
+                    source-overrides = mkOption {
+                      type = types.attrsOf (types.oneOf [ types.path types.str ]);
+                      description = ''
+                        Source overrides for Haskell packages
+
+                        You can either assign a path to the source, or Hackage
+                        version string.
+                      '';
+                      default = { };
+                    };
+                    overrides = mkOption {
+                      type = haskellOverlayType;
+                      description = ''
+                        Cabal package overrides for this Haskell project
+                
+                        For handy functions, see 
+                        <https://github.com/NixOS/nixpkgs/blob/master/pkgs/development/haskell-modules/lib/compose.nix>
+
+                        **WARNING**: When using `imports`, multiple overlays
+                        will be merged using `lib.composeManyExtensions`.
+                        However the order the overlays are applied can be
+                        arbitrary (albeit deterministic, based on module system
+                        implementation).  Thus, the use of `overrides` via
+                        `imports` is not officiallly supported. If you'd like
+                        to see proper support, add your thumbs up to
+                        <https://github.com/NixOS/nixpkgs/issues/215486>.
+                      '';
+                      default = self: super: { };
+                      defaultText = lib.literalExpression "self: super: { }";
+                    };
+                    packages = mkOption {
+                      type = types.lazyAttrsOf packageSubmodule;
+                      description = ''
+                        Set of local packages in the project repository.
+
+                        If you have a `cabal.project` file (under `projectRoot`),
+                        those packages are automatically discovered. Otherwise, a
+                        top-level .cabal or package.yaml file is used to discover
+                        the single local project.
+
+                        haskell-flake currently supports a limited range of syntax
+                        for `cabal.project`. Specifically it requires an explicit
+                        list of package directories under the "packages" option.
+                      '';
+                      default =
+                        let
+                          haskell-parsers = import ./haskell-parsers {
+                            inherit pkgs lib;
+                            throwError = msg: log.throwError ''
+                              A default value for `packages` cannot be auto-determined:
+
+                                ${msg}
+
+                              Please specify the `packages` option manually or change your project configuration (cabal.project).
+                            '';
+                          };
+                        in
+                        lib.mapAttrs
+                          (_: path: { root = path; })
+                          (haskell-parsers.findPackagesInCabalProject config.projectRoot);
+                      defaultText = lib.literalMD "autodiscovered by reading `self` files.";
+                    };
+                    devShell = mkOption {
+                      type = devShellSubmodule;
+                      description = ''
+                        Development shell configuration
+                      '';
+                      default = { };
+                    };
+                    outputs = mkOption {
+                      type = outputsSubmodule;
+                      description = ''
+                        The flake outputs generated for this project.
+
+                        This is an internal option, not meant to be set by the user.
+                      '';
+                    };
+                    autoWire =
+                      let
+                        outputTypes = [ "packages" "checks" "apps" "devShells" ];
+                      in
+                      mkOption {
+                        type = types.listOf (types.enum outputTypes);
+                        description = ''
+                          List of flake output types to autowire.
+
+                          Using an empty list will disable autowiring entirely,
+                          enabling you to manually wire them using
+                          `config.haskellProjects.<name>.outputs`.
+                        '';
+                        default = outputTypes;
+                      };
+                  };
+                })
             ];
           };
         in
