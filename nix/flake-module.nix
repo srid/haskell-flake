@@ -201,6 +201,15 @@ in
                     default = self;
                     defaultText = "Top-level directory of the flake";
                   };
+                  debug = mkOption {
+                    type = types.bool;
+                    default = false;
+                    description = ''
+                      Whether to enable verbose trace output from haskell-flake.
+
+                      Useful for debugging.
+                    '';
+                  };
                   basePackages = mkOption {
                     type = types.attrsOf raw;
                     description = ''
