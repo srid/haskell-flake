@@ -35,7 +35,7 @@ in
 
       localPackagesOverlay = self: _:
         let
-          build-haskell-package = import ./build-haskell-package.nix {
+          build-haskell-package = import ../build-haskell-package.nix {
             inherit pkgs lib self;
             inherit (config) log;
           };
