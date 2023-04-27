@@ -159,7 +159,6 @@ in
                   The flake checks generated for this project.
                 '';
               };
-
             };
           };
 
@@ -190,9 +189,6 @@ in
             modules = [
               ./haskell-project.nix
               ({ config, name, ... }:
-                let
-                  log = import ./logging.nix { inherit (config) debug; };
-                in
                 {
                   options = {
                     projectRoot = mkOption {
@@ -213,6 +209,15 @@ in
                         Whether to enable verbose trace output from haskell-flake.
 
                         Useful for debugging.
+                      '';
+                    };
+                    log = mkOption {
+                      type = types.attrsOf (types.functionTo types.raw);
+                      default = import ./logging.nix { inherit (config) debug; };
+                      internal = true;
+                      readOnly = true;
+                      description = ''
+                        Internal logging module
                       '';
                     };
                     basePackages = mkOption {
@@ -280,7 +285,7 @@ in
                         let
                           haskell-parsers = import ./haskell-parsers {
                             inherit pkgs lib;
-                            throwError = msg: log.throwError ''
+                            throwError = msg: config.log.throwError ''
                               A default value for `packages` cannot be auto-determined:
 
                                 ${msg}
@@ -291,7 +296,7 @@ in
                         in
                         lib.pipe config.projectRoot [
                           haskell-parsers.findPackagesInCabalProject
-                          (x: log.traceDebug "config.haskellProjects.${name}.packages = ${builtins.toJSON x}" x)
+                          (x: config.log.traceDebug "config.haskellProjects.${name}.packages = ${builtins.toJSON x}" x)
 
                           (lib.mapAttrs (_: path: { root = path; }))
                         ];

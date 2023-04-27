@@ -1,11 +1,9 @@
 # Like callCabal2nix, but does more:
 # - Source filtering (to prevent parent content changes causing rebuilds)
 # - Always build from cabal's sdist for release-worthiness
-{ pkgs, lib, self, debug, ... }:
+{ pkgs, lib, self, log, ... }:
 
 let
-  log = import ./logging.nix { inherit lib debug; };
-
   fromSdist = self.buildFromCabalSdist or
     (log.traceWarning "Your nixpkgs does not have hs.buildFromCabalSdist" (pkg: pkg));
 
