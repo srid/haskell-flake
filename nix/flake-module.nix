@@ -176,8 +176,9 @@ in
                 description = ''
                   Attrset of executables from `.cabal` file.  
 
-                  The executables are accessed without any reference to the
-                  Haskell library, using `justStaticExecutables`.
+                  If the associated Haskell project has a separate bin output
+                  (cf. `enableSeparateBinOutput`), then this exes will refer
+                  only to the bin output.
 
                   NOTE: Evaluating up to this option will involve IFD.
                 '';
