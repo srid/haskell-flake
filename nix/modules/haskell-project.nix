@@ -290,7 +290,7 @@ in
   };
   config =
     let
-      inherit (config.outputs) finalPackages finalOverlay packages;
+      inherit (config.outputs) finalPackages packages;
 
       localPackagesOverlay = self: _:
         let
@@ -300,6 +300,17 @@ in
           };
         in
         lib.mapAttrs build-haskell-package config.packages;
+
+      finalOverlay = lib.composeManyExtensions [
+        # The order here matters.
+        #
+        # User's overrides (cfg.overrides) is applied **last** so
+        # as to give them maximum control over the final package
+        # set used.
+        localPackagesOverlay
+        (pkgs.haskell.lib.packageSourceOverrides config.source-overrides)
+        config.overrides
+      ];
 
       defaultBuildTools = hp: with hp; {
         inherit
@@ -346,18 +357,7 @@ in
     in
     {
       outputs = {
-        inherit devShell;
-
-        finalOverlay = lib.composeManyExtensions [
-          # The order here matters.
-          #
-          # User's overrides (cfg.overrides) is applied **last** so
-          # as to give them maximum control over the final package
-          # set used.
-          localPackagesOverlay
-          (pkgs.haskell.lib.packageSourceOverrides config.source-overrides)
-          config.overrides
-        ];
+        inherit devShell finalOverlay;
 
         finalPackages = config.basePackages.extend finalOverlay;
 
