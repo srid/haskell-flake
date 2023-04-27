@@ -72,13 +72,12 @@ in
         exes =
           let
             exeNames = haskell-parsers.getCabalExecutables value.root;
-            staticPackage = pkgs.haskell.lib.justStaticExecutables finalPackages.${name};
           in
           lib.listToAttrs
             (map
               (exe:
                 lib.nameValuePair exe {
-                  program = "${staticPackage}/bin/${exe}";
+                  program = "${lib.getBin finalPackages.${name}}/bin/${exe}";
                 }
               )
               exeNames
