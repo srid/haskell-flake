@@ -1,5 +1,5 @@
 # A flake-parts module for Haskell cabal projects.
-{ self, lib, flake-parts-lib, withSystem, ... }:
+{ self, lib, flake-parts-lib, ... }:
 
 let
   inherit (flake-parts-lib)
@@ -12,6 +12,9 @@ let
     raw;
 in
 {
+  imports = [
+    ./modules/haskell-flake-project-modules.nix
+  ];
   options = {
     perSystem = mkPerSystemOption
       ({ config, self', inputs', pkgs, system, ... }:
@@ -394,39 +397,5 @@ in
             };
         });
 
-    flake = mkOption {
-      type = types.submoduleWith {
-        specialArgs = { inherit withSystem; };
-        modules = [
-          ./default-project-modules.nix
-          {
-            options = {
-              haskellFlakeProjectModules = mkOption {
-                type = types.lazyAttrsOf types.deferredModule;
-                description = ''
-                  A lazy attrset of `haskellProjects.<name>` modules that can be
-                  imported in other flakes.
-                '';
-                defaultText = ''
-                  Package and dependency information for this project exposed for reuse
-                  in another flake, when using this project as a Haskell dependency.
-
-                  Typically the consumer of this flake will want to use one of the
-                  following modules:
-
-                    - output: provides both local package and dependency overrides.
-                    - local: provides only local package overrides (ignores dependency
-                      overrides in this flake)
-
-                  These default modules are always available.
-                '';
-                default = { }; # Set in config (see ./default-project-modules.nix)
-              };
-            };
-          }
-        ];
-      };
-
-    };
   };
 }
