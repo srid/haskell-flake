@@ -30,7 +30,8 @@ let
         ${command}
         touch $out
       '';
-  haskell-parsers = pkgs.callPackage ./haskell-parsers { };
+  # TODO: dry!
+  haskell-parsers = pkgs.callPackage ../haskell-parsers { };
   appType = import ../types/app-type.nix { inherit pkgs lib; };
   haskellOverlayType = import ../types/haskell-overlay-type.nix { inherit lib; };
 
