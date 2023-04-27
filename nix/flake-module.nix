@@ -18,7 +18,6 @@ in
         let
           appType = import ./types/app-type.nix { inherit pkgs lib; };
           haskellOverlayType = import ./types/haskell-overlay-type.nix { inherit lib; };
-          log = import ./logging.nix { };
 
           hlsCheckSubmodule = types.submodule {
             options = {
@@ -189,7 +188,10 @@ in
             specialArgs = { inherit pkgs self; };
             modules = [
               ./haskell-project.nix
-              ({ config, ... }:
+              ({ config, name, ... }:
+                let
+                  log = import ./logging.nix { inherit (config) debug; };
+                in
                 {
                   options = {
                     projectRoot = mkOption {
@@ -286,9 +288,12 @@ in
                             '';
                           };
                         in
-                        lib.mapAttrs
-                          (_: path: { root = path; })
-                          (haskell-parsers.findPackagesInCabalProject config.projectRoot);
+                        lib.pipe config.projectRoot [
+                          haskell-parsers.findPackagesInCabalProject
+                          (x: log.traceDebug "config.haskellProjects.${name}.packages = ${builtins.toJSON x}" x)
+
+                          (lib.mapAttrs (_: path: { root = path; }))
+                        ];
                       defaultText = lib.literalMD "autodiscovered by reading `self` files.";
                     };
                     devShell = mkOption {
