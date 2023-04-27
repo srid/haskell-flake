@@ -1,7 +1,7 @@
 # Like callCabal2nix, but does more:
 # - Source filtering (to prevent parent content changes causing rebuilds)
 # - Always build from cabal's sdist for release-worthiness
-# - Enables separate bin output for executables
+# - Enables separate bin output for Cabal packages with executables
 { pkgs, lib, self, debug, hasExecutable, ... }:
 
 let
@@ -37,9 +37,11 @@ lib.pipe pkgCfg.root
     (log.traceDebug "${name}.fromSdist" (x: x.outPath))
 
   ] ++ lib.optionals (hasExecutable name) [
-    # TODO: Make it an option that the user can override
+
     # This is better than using justStaticExecutables, because with the later
-    # builds will repeated twice!
+    # builds will repeated twice! The user can always disable this in `overrides`.
+    # But we may want to provide an option as well, possible as part of overall
+    # easy overrides feature: https://github.com/srid/haskell-flake/issues/101
     pkgs.haskell.lib.enableSeparateBinOutput
-    (log.traceDebug "${name}.afterFlags" (x: x.outPath))
+    (log.traceDebug "${name}.final" (x: x.outPath))
   ])

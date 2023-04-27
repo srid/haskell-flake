@@ -7,7 +7,7 @@
     - #143: Changed `autoWire` to be an enum type, for granular controlling of which outputs to autowire.
 - #137: Expose cabal executables as flake apps. Add a corresponding `outputs.apps` option, while the `outputs.localPackages` option is renamed to `outputs.packages` (it now contains package metadata, including packages and its executables).
 - #148: Remove automatic hpack->cabal generation. Use `pre-commit-hooks.nix` instead.
-- #149: Fix unnecessary re-runs of cabal2nix evaluation. Add a `debug` option to enable produce verbose diagnostic messages.
+- #149: Fix unnecessary re-runs of cabal2nix evaluation. Add a `debug` option to enable verbose diagnostic messages.
 
 ## 0.2.0 (Mar 13, 2023)
 
