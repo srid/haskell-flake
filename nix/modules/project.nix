@@ -84,6 +84,7 @@ in
 {
   imports = [
     ./project/devshell.nix
+    ./project/defaults.nix
   ];
   options = {
     projectRoot = mkOption {

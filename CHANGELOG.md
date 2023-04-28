@@ -9,6 +9,7 @@
   - #151: Use `lib.getBin` to get the bin output
 - #148: Remove automatic hpack->cabal generation. Use `pre-commit-hooks.nix` instead.
 - #149: Fix unnecessary re-runs of cabal2nix evaluation. Add a `debug` option to have haskell-flake produce diagnostic messages.
+- #153: Add `config.defaults` submodule to allow overriding the default devShell tools added by haskell-flake
 
 ## 0.2.0 (Mar 13, 2023)
 
