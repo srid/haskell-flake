@@ -20,11 +20,12 @@ let
         type = functionTo (types.attrsOf (types.nullOr types.package));
         description = ''
           Build tools for developing the Haskell project.
+
+          These tools are merged with the haskell-flake defaults defined in the
+          `defaults.devShell.tools` option. Set the value to `null` to remove
+          that default tool.
         '';
         default = hp: { };
-        defaultText = ''
-          Build tools useful for Haskell development are included by default.
-        '';
       };
       extraLibraries = mkOption {
         type = functionTo (types.attrsOf (types.nullOr types.package));
@@ -83,14 +84,10 @@ in
     let
       inherit (config.outputs) finalPackages;
 
-      defaultBuildTools = hp: with hp; {
-        inherit
-          cabal-install
-          haskell-language-server
-          ghcid
-          hlint;
-      };
-      nativeBuildInputs = lib.attrValues (defaultBuildTools finalPackages // config.devShell.tools finalPackages);
+      nativeBuildInputs = lib.attrValues (
+        config.defaults.devShell.tools finalPackages //
+        config.devShell.tools finalPackages
+      );
       mkShellArgs = config.devShell.mkShellArgs // {
         nativeBuildInputs = (config.devShell.mkShellArgs.nativeBuildInputs or [ ]) ++ nativeBuildInputs;
       };
