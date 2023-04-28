@@ -143,7 +143,7 @@ let
 in
 {
   imports = [
-    ./haskell-project/hls-check.nix
+    ./project/hls-check.nix
   ];
   options = {
     projectRoot = mkOption {
