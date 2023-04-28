@@ -8,8 +8,6 @@ let
     functionTo
     raw;
 
-  # TODO: dry!
-  haskell-parsers = pkgs.callPackage ../haskell-parsers { };
   appType = import ../types/app-type.nix { inherit pkgs lib; };
   haskellOverlayType = import ../types/haskell-overlay-type.nix { inherit lib; };
 
@@ -341,6 +339,14 @@ in
         package = finalPackages.${name};
         exes =
           let
+            haskell-parsers = import ../haskell-parsers {
+              inherit pkgs lib;
+              throwError = msg: config.log.throwError ''
+                Unable to determine executable names for package ${name}:
+
+                  ${msg}
+              '';
+            };
             exeNames = haskell-parsers.getCabalExecutables value.root;
           in
           lib.listToAttrs
