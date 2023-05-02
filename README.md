@@ -7,3 +7,11 @@ A [`flake-parts`](https://flake.parts/) module to make Haskell development [simp
 ## Documentation
 
 https://haskell.flake.page/
+
+## Discussion
+
+- Forum
+  - https://github.com/srid/haskell-flake/discussions
+- Chat
+  - https://app.element.io/#/room/#haskell:nixos.org
+  - https://app.element.io/#/room/#hercules-ci:matrix.org
