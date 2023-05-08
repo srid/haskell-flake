@@ -78,6 +78,8 @@ If you are only specifying the source of the Haskell package, but are not overri
 
 If you are using both the options, `overrides` take priority over `source-overrides`.
 
+## See also
 
+- [Setting environment variables for build](https://github.com/srid/haskell-flake/discussions/159#discussioncomment-5840505)
 
 [nixpkgs]: https://zero-to-nix.com/concepts/nixpkgs
