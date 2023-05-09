@@ -85,4 +85,6 @@ By importing "bar"'s `output` project module, you automatically get the override
 ## Examples
 
 - https://github.com/srid/nixpkgs-140774-workaround
+- [shared-kernel](https://github.com/nammayatri/shared-kernel/blob/591bdc1c87b3f80b57a3c3849414bd106a1f8365/flake.nix#L24-L26) importing [euler-hs overrides](https://github.com/juspay/euler-hs/blob/168dc51f8a68e4bf52de6c691343afa594f933a9/flake.nix#L31-L52) and local packages.
+
 - https://github.com/juspay/prometheus-haskell/pull/3
