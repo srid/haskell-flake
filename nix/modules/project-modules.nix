@@ -5,13 +5,17 @@ let
     mkOption
     types;
   haskellOverlayType = pkgs.callPackage ../types/haskell-overlay-type.nix { };
+  haskellOverlayTypeDummy =
+    types.functionTo
+      (types.functionTo
+        (types.lazyAttrsOf types.raw));
 in
 {
   options.flake = mkOption {
     type = types.submoduleWith {
       modules = [{
         options.haskellFlakeProjectOverlays = mkOption {
-          type = types.lazyAttrsOf (types.functionTo haskellOverlayType);
+          type = types.lazyAttrsOf haskellOverlayTypeDummy;
         };
         options.haskellFlakeProjectModules = mkOption
           {
@@ -40,17 +44,17 @@ in
           let
             defaults = rec {
               output = pkgs: pkgs.lib.composeManyExtensions [
-                local
-                input
+                (local pkgs)
+                (input pkgs)
               ];
               local = pkgs:
-                withSystem pkgs.system ({ config, ... }:
+                withSystem pkgs.system ({ config, pkgs, ... }:
                   # The 'local' overlay provides only local package overrides.
                   lib.mapAttrs (_: v: { source = v.root; })
                     config.haskellProjects.default.packages
                 );
               input = pkgs:
-                withSystem pkgs.system ({ config, ... }:
+                withSystem pkgs.system ({ config, pkgs, ... }:
                   config.haskellProjects.default.packageSettingsOverlay
                 );
             };
