@@ -4,6 +4,8 @@ let
     mkOption
     types;
 
+  haskellOverlayType = pkgs.callPackage ../../types/haskell-overlay-type.nix { };
+
   # Overrides for package named 'name'
   packageSettingsSubmodule = types.submoduleWith {
     specialArgs = { };
@@ -28,11 +30,15 @@ in
 {
   options = {
     packageSettings = mkOption {
-      type = types.listOf (types.lazyAttrsOf packageSettingsSubmodule);
+      type = types.listOf (
+        types.either
+          haskellOverlayType
+          (types.lazyAttrsOf packageSettingsSubmodule)
+      );
       default = [ ];
     };
     packageSettingsOverlay = mkOption {
-      type = pkgs.callPackage ../../types/haskell-overlay-type.nix { };
+      type = haskellOverlayType;
       internal = true;
       readOnly = true;
     };
@@ -41,23 +47,26 @@ in
   config = {
     packageSettingsOverlay =
       lib.composeManyExtensions
-        (lib.forEach config.packageSettings (settings: self: super:
-          lib.flip lib.mapAttrs settings
-            (name: settings:
-              let
-                drv =
-                  if settings.source == null
-                  then super.${name}
-                  else if builtins.isPath settings.source
-                  then self.callCabal2nix name settings.source { }
-                  else self.callHackage name settings.source { };
-                overrides =
-                  if builtins.isList settings.overrides
-                  then settings.overrides
-                  else settings.overrides self super;
-              in
-              lib.pipe drv overrides
-            )
+        (lib.forEach config.packageSettings (settings:
+          if builtins.isFunction settings
+          then settings
+          else self: super:
+            lib.flip lib.mapAttrs settings
+              (name: settings:
+                let
+                  drv =
+                    if settings.source == null
+                    then super.${name}
+                    else if builtins.isPath settings.source
+                    then self.callCabal2nix name settings.source { }
+                    else self.callHackage name settings.source { };
+                  overrides =
+                    if builtins.isList settings.overrides
+                    then settings.overrides
+                    else settings.overrides self super;
+                in
+                lib.pipe drv overrides
+              )
         ));
   };
 }
