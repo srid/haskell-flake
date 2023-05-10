@@ -15,7 +15,7 @@ in
     type = types.submoduleWith {
       modules = [{
         options.haskellFlakeProjectOverlays = mkOption {
-          type = types.lazyAttrsOf haskellOverlayTypeDummy;
+          type = types.lazyAttrsOf (types.functionTo haskellOverlayTypeDummy);
         };
         options.haskellFlakeProjectModules = mkOption
           {
