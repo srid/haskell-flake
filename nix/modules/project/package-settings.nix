@@ -28,7 +28,7 @@ in
 {
   options = {
     packageSettings = mkOption {
-      type = types.listOf (types.attrsOf packageSettingsSubmodule);
+      type = types.listOf (types.lazyAttrsOf packageSettingsSubmodule);
       default = [ ];
     };
     packageSettingsOverlay = mkOption {
