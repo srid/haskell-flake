@@ -27,6 +27,11 @@
           # source-overrides = { };
           # overrides = self: super: { };
 
+          packageSettings = with pkgs.haskell.lib.compose; [{
+            shower.source = "0.2.0.3";
+            shower.overrides = [ dontCheck dontHaddock doJailbreak ];
+          }];
+
           # devShell = {
           #  # Enabled by default
           #  enable = true;  

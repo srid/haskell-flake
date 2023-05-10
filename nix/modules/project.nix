@@ -85,6 +85,7 @@ in
   imports = [
     ./project/devshell.nix
     ./project/defaults.nix
+    ./project/package-settings.nix
   ];
   options = {
     projectRoot = mkOption {
@@ -238,12 +239,10 @@ in
       finalOverlay = lib.composeManyExtensions [
         # The order here matters.
         #
-        # User's overrides (cfg.overrides) is applied **last** so
-        # as to give them maximum control over the final package
-        # set used.
+        # User's overrides (cfg.packageSettingsOverlay) is applied **last** so
+        # as to give them maximum control over the final package set used.
         localPackagesOverlay
-        (pkgs.haskell.lib.packageSourceOverrides config.source-overrides)
-        config.overrides
+        config.packageSettingsOverlay
       ];
 
       buildPackageInfo = name: value: {

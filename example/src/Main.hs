@@ -1,4 +1,6 @@
 module Main where
 
+import Shower (printer)
+
 main :: IO ()
-main = putStrLn "Hello, Haskell!"
+main = printer "Hello, Haskell!"
