@@ -47,10 +47,13 @@ in
                 (local pkgs)
                 (input pkgs)
               ];
-              local = pkgs: _self: _super:
+              local = pkgs: self: _super:
                 withSystem pkgs.system ({ config, pkgs, ... }:
                   # The 'local' overlay provides only local package overrides.
-                  lib.mapAttrs (_: v: { source = v.root; })
+                  lib.mapAttrs
+                    (name: v:
+                      # TODO: use sdist etc all like build-haskell-packages.nix
+                      self.callCabal2nix name v.root { })
                     config.haskellProjects.default.packages
                 );
               input = pkgs:
