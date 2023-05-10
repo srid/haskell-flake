@@ -47,7 +47,7 @@ in
                 (local pkgs)
                 (input pkgs)
               ];
-              local = pkgs:
+              local = pkgs: _self: _super:
                 withSystem pkgs.system ({ config, pkgs, ... }:
                   # The 'local' overlay provides only local package overrides.
                   lib.mapAttrs (_: v: { source = v.root; })
