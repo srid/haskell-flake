@@ -41,7 +41,7 @@ in
                 drv =
                   if settings.source == null
                   then super.${name}
-                  else if lib.isPath settings.source
+                  else if builtins.isPath settings.source
                   then self.callCabal2nix name settings.source { }
                   else self.callHackage name settings.source { };
               in
