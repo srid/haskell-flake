@@ -31,14 +31,14 @@ in
             local
             input
           ];
+          # The 'local' overlay provides only local package overrides.
           local = self: super:
             withSystem super.ghc.system ({ config, ... }:
-              # The 'local' overlay provides only local package overrides.
               config.haskellProjects.default.outputs.localPackagesOverlay self super
             );
           input = self: super:
             withSystem super.ghc.system ({ config, ... }:
-              config.haskellProjects.default.packageSettingsOverlay self super
+              config.haskellProjects.default.outputs.packageSettingsOverlay self super
             );
         };
       }];

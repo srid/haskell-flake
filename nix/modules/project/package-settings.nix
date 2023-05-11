@@ -37,7 +37,7 @@ in
       );
       default = [ ];
     };
-    packageSettingsOverlay = mkOption {
+    outputs.packageSettingsOverlay = mkOption {
       type = haskellOverlayType;
       internal = true;
       readOnly = true;
@@ -45,7 +45,7 @@ in
   };
 
   config = {
-    packageSettingsOverlay =
+    outputs.packageSettingsOverlay =
       lib.composeManyExtensions
         (lib.forEach config.packageSettings (settings:
           if builtins.isFunction settings

@@ -247,7 +247,7 @@ in
         # User's overrides (cfg.packageSettingsOverlay) is applied **last** so
         # as to give them maximum control over the final package set used.
         localPackagesOverlay
-        config.packageSettingsOverlay
+        config.outputs.packageSettingsOverlay
       ];
 
       buildPackageInfo = name: value: {
