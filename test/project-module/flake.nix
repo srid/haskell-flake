@@ -7,7 +7,7 @@
     flake-parts = { };
     haskell-flake = { };
 
-    haskell-multi-nix.url = "github:srid/haskell-multi-nix/d6ac6ccab559f886d1fc7da8cab44b99cb0c2c3d";
+    haskell-multi-nix.url = "github:srid/haskell-multi-nix/package-settings-ng";
     haskell-multi-nix.inputs.haskell-flake.follows = "haskell-flake";
     haskell-multi-nix.inputs.nixpkgs.follows = "nixpkgs";
     haskell-multi-nix.inputs.flake-parts.follows = "flake-parts";
@@ -20,7 +20,7 @@
       ];
       perSystem = { self', pkgs, ... }: {
         haskellProjects.default = {
-          imports = [ inputs.haskell-multi-nix.haskellFlakeProjectModules.output ];
+          packageSettings = [ inputs.haskell-multi-nix.haskellFlakeProjectOverlays.output ];
         };
         packages.default = self'.packages.haskell-flake-test;
       };
