@@ -20,11 +20,6 @@
         inputs.check-flake.flakeModule
       ];
       flake.haskellFlakeProjectModules.default = { pkgs, ... }: {
-        overrides = self: super: {
-          # This is purposefully incorrect (pointing to ./.) because we
-          # expect it to be overriden in perSystem below.
-          foo = self.callCabal2nix "foo" ./. { };
-        };
         devShell = {
           tools = hp: {
             # Setting to null should remove this tool from defaults.
@@ -37,12 +32,9 @@
         haskellProjects.default = {
           # Multiple modules should be merged correctly.
           imports = [ self.haskellFlakeProjectModules.default ];
-          overrides = self: super: {
-            # This overrides the overlay above (in `flake.*`), because the
-            # module system merges them in such order. cf. the WARNING in option
-            # docs.
-            foo = self.callCabal2nix "foo" (inputs.haskell-multi-nix + /foo) { };
-          };
+          packageSettings = [{
+            foo.source = inputs.haskell-multi-nix + /foo;
+          }];
           devShell = {
             tools = hp: {
               # Adding a tool should make it available in devshell.
