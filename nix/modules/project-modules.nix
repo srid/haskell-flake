@@ -41,13 +41,12 @@ in
           };
 
         config.haskellFlakeProjectOverlays = rec {
-          # TODO: can we eliminate the 'system' arg? maybe make this perSystem?
           output = lib.composeManyExtensions [
             local
             input
           ];
           local = self: super:
-            withSystem super.stdenv.hostPlatform.system ({ config, ... }:
+            withSystem super.ghc.system ({ config, ... }:
               # The 'local' overlay provides only local package overrides.
               lib.mapAttrs
                 (name: v:
@@ -56,7 +55,7 @@ in
                 config.haskellProjects.default.packages
             );
           input = self: super:
-            withSystem super.stdenv.hostPlatform.system ({ config, ... }:
+            withSystem super.ghc.system ({ config, ... }:
               config.haskellProjects.default.packageSettingsOverlay self super
             );
         };
