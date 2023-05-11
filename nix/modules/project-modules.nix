@@ -43,12 +43,13 @@ in
         config.haskellFlakeProjectOverlays =
           let
             defaults = rec {
+              # TODO: can we eliminate the 'pkgs' arg? maybe make this perSystem.
               output = pkgs: pkgs.lib.composeManyExtensions [
                 (local pkgs)
                 (input pkgs)
               ];
               local = pkgs: self: _super:
-                withSystem pkgs.system ({ config, pkgs, ... }:
+                withSystem pkgs.system ({ config, ... }:
                   # The 'local' overlay provides only local package overrides.
                   lib.mapAttrs
                     (name: v:
@@ -57,7 +58,7 @@ in
                     config.haskellProjects.default.packages
                 );
               input = pkgs:
-                withSystem pkgs.system ({ config, pkgs, ... }:
+                withSystem pkgs.system ({ config, ... }:
                   config.haskellProjects.default.packageSettingsOverlay
                 );
             };
