@@ -24,6 +24,11 @@ let
 
   outputsSubmodule = types.submodule {
     options = {
+      localPackagesOverlay = mkOption {
+        type = types.raw;
+        readOnly = true;
+        internal = true;
+      };
       finalOverlay = mkOption {
         type = types.raw;
         readOnly = true;
@@ -273,7 +278,7 @@ in
     in
     {
       outputs = {
-        inherit finalOverlay;
+        inherit finalOverlay localPackagesOverlay;
 
         finalPackages = config.basePackages.extend finalOverlay;
 

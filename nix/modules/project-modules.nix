@@ -8,7 +8,7 @@ let
   haskellOverlayTypeDummy =
     types.functionTo
       (types.functionTo
-        (types.lazyAttrsOf types.raw));
+        (types.lazyAttrsOf types.package));
 in
 {
   options.flake = mkOption {
@@ -34,11 +34,7 @@ in
           local = self: super:
             withSystem super.ghc.system ({ config, ... }:
               # The 'local' overlay provides only local package overrides.
-              lib.mapAttrs
-                (name: v:
-                  # TODO: use sdist etc all like build-haskell-packages.nix
-                  self.callCabal2nix name v.root { })
-                config.haskellProjects.default.packages
+              config.haskellProjects.default.outputs.localPackagesOverlay self super
             );
           input = self: super:
             withSystem super.ghc.system ({ config, ... }:
