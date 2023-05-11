@@ -15,7 +15,7 @@ in
     type = types.submoduleWith {
       modules = [{
         options.haskellFlakeProjectOverlays = mkOption {
-          type = types.lazyAttrsOf (types.functionTo haskellOverlayTypeDummy);
+          type = types.lazyAttrsOf haskellOverlayTypeDummy;
         };
         options.haskellFlakeProjectModules = mkOption
           {
@@ -42,12 +42,12 @@ in
 
         config.haskellFlakeProjectOverlays = rec {
           # TODO: can we eliminate the 'system' arg? maybe make this perSystem?
-          output = system: lib.composeManyExtensions [
-            (local system)
-            (input system)
+          output = lib.composeManyExtensions [
+            local
+            input
           ];
-          local = system: self: _super:
-            withSystem system ({ config, ... }:
+          local = self: super:
+            withSystem super.stdenv.hostPlatform.system ({ config, ... }:
               # The 'local' overlay provides only local package overrides.
               lib.mapAttrs
                 (name: v:
@@ -55,9 +55,9 @@ in
                   self.callCabal2nix name v.root { })
                 config.haskellProjects.default.packages
             );
-          input = system:
-            withSystem system ({ config, ... }:
-              config.haskellProjects.default.packageSettingsOverlay
+          input = self: super:
+            withSystem super.stdenv.hostPlatform.system ({ config, ... }:
+              config.haskellProjects.default.packageSettingsOverlay self super
             );
         };
         config.haskellFlakeProjectModules =
