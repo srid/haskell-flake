@@ -40,30 +40,26 @@ in
             default = { }; # Set in config (see ./default-project-modules.nix)
           };
 
-        config.haskellFlakeProjectOverlays =
-          let
-            defaults = rec {
-              # TODO: can we eliminate the 'system' arg? maybe make this perSystem?
-              output = system: lib.composeManyExtensions [
-                (local system)
-                (input system)
-              ];
-              local = system: self: _super:
-                withSystem system ({ config, ... }:
-                  # The 'local' overlay provides only local package overrides.
-                  lib.mapAttrs
-                    (name: v:
-                      # TODO: use sdist etc all like build-haskell-packages.nix
-                      self.callCabal2nix name v.root { })
-                    config.haskellProjects.default.packages
-                );
-              input = system:
-                withSystem system ({ config, ... }:
-                  config.haskellProjects.default.packageSettingsOverlay
-                );
-            };
-          in
-          defaults;
+        config.haskellFlakeProjectOverlays = rec {
+          # TODO: can we eliminate the 'system' arg? maybe make this perSystem?
+          output = system: lib.composeManyExtensions [
+            (local system)
+            (input system)
+          ];
+          local = system: self: _super:
+            withSystem system ({ config, ... }:
+              # The 'local' overlay provides only local package overrides.
+              lib.mapAttrs
+                (name: v:
+                  # TODO: use sdist etc all like build-haskell-packages.nix
+                  self.callCabal2nix name v.root { })
+                config.haskellProjects.default.packages
+            );
+          input = system:
+            withSystem system ({ config, ... }:
+              config.haskellProjects.default.packageSettingsOverlay
+            );
+        };
         config.haskellFlakeProjectModules =
           let
             defaults = rec {
