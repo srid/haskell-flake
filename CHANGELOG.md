@@ -1,5 +1,11 @@
 # Revision history for haskell-flake
 
+## `master`
+
+- #162: Removed `overrides` and `source-overrides`. Use `packages` to specify your source overrides; use `settings` to override individual packages in modular fashion.
+  - Add `package.<name>.cabal.executables` referring to the executables in a package. This is auto-detected by parsing the Cabal file.
+  - Add `projectFlakeName` option (useful in debug logging prefix)
+
 ## 0.3.0 (May 22, 2023)
 
 - #134: Add `autoWire` option to control generation of flake outputs

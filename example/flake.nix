@@ -14,9 +14,9 @@
         # Typically, you just want a single project named "default". But
         # multiple projects are also possible, each using different GHC version.
         haskellProjects.default = {
-          # If you have a .cabal file in the root, this option is determined
+          # If you have a .cabal file in the source, this option is determined
           # automatically. Otherwise, specify all your local packages here.
-          # packages.example.root = ./.;
+          # packages.example.source = ./.;
 
           # The base package set representing a specific GHC version.
           # By default, this is pkgs.haskellPackages.
@@ -24,8 +24,8 @@
           # basePackages = pkgs.haskellPackages;
 
           # Dependency overrides go here. See https://haskell.flake.page/dependency
-          # source-overrides = { };
-          # overrides = self: super: { };
+          # packages = { };
+          # settings = { };
 
           # devShell = {
           #  # Enabled by default

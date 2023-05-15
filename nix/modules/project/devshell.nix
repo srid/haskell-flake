@@ -93,9 +93,12 @@ in
       };
       devShell = finalPackages.shellFor (mkShellArgs // {
         packages = p:
+          let
+            localPackages = (lib.filterAttrs (k: v: v.local) config.packages);
+          in
           map
             (name: p."${name}")
-            (lib.attrNames config.packages);
+            (lib.attrNames localPackages);
         withHoogle = true;
         extraDependencies = p:
           let o = mkShellArgs.extraDependencies or (_: { }) p;

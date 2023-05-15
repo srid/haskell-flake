@@ -1,56 +1,47 @@
 # Definition of the `haskellProjects.${name}` submodule's `config`
-{ name, config, lib, pkgs, ... }:
+project@{ name, lib, pkgs, ... }:
 let
   inherit (lib)
-    mkOption
     types;
 
-  haskell-parsers = import ../../haskell-parsers {
-    inherit pkgs lib;
-    throwError = msg: config.log.throwError ''
-      A default value for `packages` cannot be auto-determined:
+  packageSubmodule = import ./package.nix { inherit project lib pkgs; };
 
-        ${msg}
+  # Merge the list of attrset of modules.
+  mergeModuleAttrs =
+    lib.zipAttrsWith (k: vs: { imports = vs; });
 
-      Please specify the `packages` option manually or change your project configuration (cabal.project).
-    '';
-  };
-
-  packageSubmodule = with types; submodule {
-    options = {
-      root = mkOption {
-        type = path;
-        description = ''
-          Path containing the Haskell package's `.cabal` file.
-        '';
-      };
-    };
-  };
-
+  tracePackages = k: x:
+    project.config.log.traceDebug "${k} ${builtins.toJSON x}" x;
 in
 {
   options = {
-    packages = mkOption {
-      type = types.lazyAttrsOf packageSubmodule;
+    packages = lib.mkOption {
+      type = types.lazyAttrsOf types.deferredModule;
+      default = { };
+      apply = packages:
+        let
+          packages' =
+            # Merge user-provided 'packages' with 'defaults.packages'. 
+            #
+            # Note that the user can override the latter too if they wish.
+            mergeModuleAttrs
+              [ project.config.defaults.packages packages ];
+        in
+        tracePackages "${name}.packages:apply" (
+          lib.mapAttrs
+            (k: v:
+              (lib.evalModules {
+                modules = [ packageSubmodule v ];
+                specialArgs = { inherit pkgs; };
+              }).config
+            )
+            packages');
+
       description = ''
-        Set of local packages in the project repository.
+        Additional packages to add to `basePackages`.
 
-        If you have a `cabal.project` file (under `projectRoot`), those packages
-        are automatically discovered. Otherwise, the top-level .cabal file is
-        used to discover the only local package.
-        
-        haskell-flake currently supports a limited range of syntax for
-        `cabal.project`. Specifically it requires an explicit list of package
-        directories under the "packages" option.
+        Local packages are added automatically (see `config.defaults.packages`):
       '';
-      default =
-        lib.pipe config.projectRoot [
-          haskell-parsers.findPackagesInCabalProject
-          (x: config.log.traceDebug "config.haskellProjects.${name}.packages = ${builtins.toJSON x}" x)
-
-          (lib.mapAttrs (_: path: { root = path; }))
-        ];
-      defaultText = lib.literalMD "autodiscovered by reading `self` files.";
     };
   };
 }
