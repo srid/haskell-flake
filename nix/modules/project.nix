@@ -181,6 +181,33 @@ in
     let
       inherit (config.outputs) finalPackages packages;
 
+      t = x: builtins.trace x x;
+
+      isLocalPackage = cfg:
+        cfg.root != null && lib.strings.hasPrefix (t "${config.projectRoot}") (t "${cfg.root}");
+
+      # Subet of config.packages that are local to the project.
+      localPackages =
+        lib.pipe config.packages [
+          (lib.filterAttrs (_: isLocalPackage))
+          (x:
+            let x' = lib.mapAttrs (_: y: builtins.removeAttrs y [ "apply" ]) x;
+            in config.log.traceDebug "localPackages: ${builtins.toJSON x'}" x)
+        ];
+      nonLocalPackageSettings =
+        lib.pipe config.packages [
+          (lib.filterAttrs (_: x: ! isLocalPackage x))
+          # TODO: print everything but 'apply'
+          # (x: config.log.traceDebug "nonLocalPackageSettings: ${builtins.toJSON x}" x)
+        ];
+
+      nonLocalPackageSettingsOverlay = self: super:
+        lib.mapAttrs
+          (name: cfg:
+            cfg.apply super."${name}"
+          )
+          nonLocalPackageSettings;
+
       localPackagesOverlay = self: _:
         let
           build-haskell-package = import ../build-haskell-package.nix {
@@ -188,18 +215,20 @@ in
             inherit (config) log;
           };
         in
-        lib.mapAttrs build-haskell-package config.packages;
+        lib.mapAttrs build-haskell-package localPackages;
 
-      finalOverlay = lib.composeManyExtensions [
-        # The order here matters.
-        #
-        # User's overrides (cfg.overrides) is applied **last** so
-        # as to give them maximum control over the final package
-        # set used.
-        localPackagesOverlay
-        (pkgs.haskell.lib.packageSourceOverrides config.source-overrides)
-        config.overrides
-      ];
+      finalOverlay = lib.composeManyExtensions
+        [
+          # The order here matters.
+          #
+          # User's overrides (cfg.overrides) is applied **last** so
+          # as to give them maximum control over the final package
+          # set used.
+          localPackagesOverlay
+          nonLocalPackageSettingsOverlay
+          (pkgs.haskell.lib.packageSourceOverrides config.source-overrides)
+          config.overrides
+        ];
 
       buildPackageInfo = name: value: {
         package = finalPackages.${name};
@@ -233,7 +262,7 @@ in
 
         finalPackages = config.basePackages.extend finalOverlay;
 
-        packages = lib.mapAttrs buildPackageInfo config.packages;
+        packages = lib.mapAttrs buildPackageInfo localPackages;
 
         apps =
           lib.mkMerge
@@ -241,3 +270,4 @@ in
       };
     };
 }
+

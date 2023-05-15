@@ -33,4 +33,6 @@ lib.pipe pkgCfg.root
     # for release-worthiness.
     fromSdist
     (x: log.traceDebug "${name}.fromSdist ${x.outPath}" x)
+
+    pkgCfg.apply
   ]
