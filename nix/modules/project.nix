@@ -1,5 +1,5 @@
 # Definition of the `haskellProjects.${name}` submodule's `config`
-{ name, self, config, lib, pkgs, ... }:
+{ self, config, lib, pkgs, ... }:
 let
   inherit (lib)
     mkOption
@@ -9,18 +9,6 @@ let
 
   appType = import ../types/app-type.nix { inherit pkgs lib; };
   haskellOverlayType = import ../types/haskell-overlay-type.nix { inherit lib; };
-
-  packageSubmodule = with types; submodule {
-    options = {
-      root = mkOption {
-        type = path;
-        description = ''
-          The directory path under which the Haskell package's `.cabal`
-          file or `package.yaml` resides.
-        '';
-      };
-    };
-  };
 
   outputsSubmodule = types.submodule {
     options = {
@@ -83,8 +71,9 @@ let
 in
 {
   imports = [
-    ./project/devshell.nix
     ./project/defaults.nix
+    ./project/packages.nix
+    ./project/devshell.nix
   ];
   options = {
     projectRoot = mkOption {
@@ -163,41 +152,7 @@ in
       default = self: super: { };
       defaultText = lib.literalExpression "self: super: { }";
     };
-    packages = mkOption {
-      type = types.lazyAttrsOf packageSubmodule;
-      description = ''
-        Set of local packages in the project repository.
 
-        If you have a `cabal.project` file (under `projectRoot`),
-        those packages are automatically discovered. Otherwise, a
-        top-level .cabal or package.yaml file is used to discover
-        the single local project.
-
-        haskell-flake currently supports a limited range of syntax
-        for `cabal.project`. Specifically it requires an explicit
-        list of package directories under the "packages" option.
-      '';
-      default =
-        let
-          haskell-parsers = import ../haskell-parsers {
-            inherit pkgs lib;
-            throwError = msg: config.log.throwError ''
-              A default value for `packages` cannot be auto-determined:
-
-                ${msg}
-
-              Please specify the `packages` option manually or change your project configuration (cabal.project).
-            '';
-          };
-        in
-        lib.pipe config.projectRoot [
-          haskell-parsers.findPackagesInCabalProject
-          (x: config.log.traceDebug "config.haskellProjects.${name}.packages = ${builtins.toJSON x}" x)
-
-          (lib.mapAttrs (_: path: { root = path; }))
-        ];
-      defaultText = lib.literalMD "autodiscovered by reading `self` files.";
-    };
     outputs = mkOption {
       type = outputsSubmodule;
       description = ''
