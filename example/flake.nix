@@ -24,8 +24,7 @@
           # basePackages = pkgs.haskellPackages;
 
           # Dependency overrides go here. See https://haskell.flake.page/dependency
-          # source-overrides = { };
-          # overrides = self: super: { };
+          # packages = { };
 
           # devShell = {
           #  # Enabled by default
