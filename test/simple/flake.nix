@@ -20,10 +20,10 @@
         inputs.check-flake.flakeModule
       ];
       flake.haskellFlakeProjectModules.default = { pkgs, ... }: {
-        overrides = self: super: {
+        packages = {
           # This is purposefully incorrect (pointing to ./.) because we
           # expect it to be overriden in perSystem below.
-          foo = self.callCabal2nix "foo" ./. { };
+          foo.root = ./.;
         };
         devShell = {
           tools = hp: {
@@ -33,15 +33,14 @@
           hlsCheck.enable = true;
         };
       };
-      perSystem = { self', pkgs, ... }: {
+      perSystem = { self', pkgs, lib, ... }: {
         haskellProjects.default = {
           # Multiple modules should be merged correctly.
           imports = [ self.haskellFlakeProjectModules.default ];
-          overrides = self: super: {
-            # This overrides the overlay above (in `flake.*`), because the
-            # module system merges them in such order. cf. the WARNING in option
-            # docs.
-            foo = self.callCabal2nix "foo" (inputs.haskell-multi-nix + /foo) { };
+          packages = {
+            # Because the module being imported above also defines a root for
+            # the 'foo' package, we must override it here using `lib.mkForce`.
+            foo.root = lib.mkForce (inputs.haskell-multi-nix + /foo);
           };
           devShell = {
             tools = hp: {
