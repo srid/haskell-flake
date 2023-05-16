@@ -20,10 +20,14 @@ in
         Whether this package is local to the flake.
       '';
       internal = true;
-      readOnly = true;
+      # FIXME: why can't we set this when using project-modules.nix?
+      # readOnly = true;
       default =
+        let
+          t = x: builtins.trace x x;
+        in
         config.root != null &&
-        lib.strings.hasPrefix "${project.config.projectRoot}" "${config.root}";
+        lib.strings.hasPrefix (t "${project.config.projectRoot}") "${config.root}";
       defaultText = ''
         Computed automatically if package 'root' is under 'projectRoot'.
       '';
@@ -58,7 +62,8 @@ in
     apply = mkOption {
       type = types.functionTo types.package;
       internal = true;
-      readOnly = true;
+      # FIXME: why can't we set this when using project-modules.nix?
+      # readOnly = true;
       description = ''
         A function that applies all the overrides in this module.
         
