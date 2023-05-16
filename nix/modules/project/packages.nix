@@ -1,10 +1,10 @@
 # Definition of the `haskellProjects.${name}` submodule's `config`
-{ lib, pkgs, ... }:
+project@{ lib, pkgs, ... }:
 {
   options = {
     packages =
       import ./package.nix {
-        inherit lib pkgs;
+        inherit project lib pkgs;
         description = ''
           Set of local packages in the project repository.
 

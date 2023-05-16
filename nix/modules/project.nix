@@ -184,7 +184,7 @@ in
       t = x: builtins.trace x x;
 
       # FIXME: Won't merge with module attr values.
-      packages = config.defaults.packages // config.packages;
+      packages = config.packages;
 
       isLocalPackage = cfg:
         cfg.root != null && lib.strings.hasPrefix (t "${config.projectRoot}") (t "${cfg.root}");

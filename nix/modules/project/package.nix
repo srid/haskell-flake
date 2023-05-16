@@ -1,4 +1,4 @@
-{ description, default ? null, lib, pkgs, ... }:
+{ project, description, lib, pkgs, ... }:
 let
   inherit (lib)
     mkOption
@@ -68,7 +68,7 @@ let
   packagesType = types.lazyAttrsOf packageSubmodule;
 in
 lib.mkOption {
-  inherit description default;
+  inherit description;
   type = packagesType;
   apply = packages:
     lib.mapAttrs
@@ -78,5 +78,14 @@ lib.mkOption {
           specialArgs = { inherit pkgs; };
         }).config
       )
-      packages;
+      (
+        # Merge user-provided 'packages' with 'defaults.packages'. 
+        #
+        # Note that the user can override the latter too if they wish.
+        lib.zipAttrsWith
+          (
+            k: vs: { imports = vs; }
+          )
+          [ project.config.defaults.packages packages ]
+      );
 }

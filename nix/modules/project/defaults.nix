@@ -31,8 +31,8 @@ in
           hlint;
       };
     };
-    packages = import ./package.nix {
-      inherit config lib pkgs;
+    packages = mkOption {
+      type = types.lazyAttrsOf types.deferredModule;
       description = ''Local packages scanned from projectRoot'';
       default =
         lib.pipe config.projectRoot [
