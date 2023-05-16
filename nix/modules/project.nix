@@ -179,23 +179,26 @@ in
   };
   config =
     let
-      inherit (config.outputs) finalPackages packages;
+      inherit (config.outputs) finalPackages;
 
       t = x: builtins.trace x x;
+
+      # FIXME: Won't merge with module attr values.
+      packages = config.defaults.packages // config.packages;
 
       isLocalPackage = cfg:
         cfg.root != null && lib.strings.hasPrefix (t "${config.projectRoot}") (t "${cfg.root}");
 
       # Subet of config.packages that are local to the project.
       localPackages =
-        lib.pipe config.packages [
+        lib.pipe packages [
           (lib.filterAttrs (_: isLocalPackage))
           (x:
             let x' = lib.mapAttrs (_: y: builtins.removeAttrs y [ "apply" ]) x;
             in config.log.traceDebug "localPackages: ${builtins.toJSON x'}" x)
         ];
       nonLocalPackageSettings =
-        lib.pipe config.packages [
+        lib.pipe packages [
           (lib.filterAttrs (_: x: ! isLocalPackage x))
           # TODO: print everything but 'apply'
           # (x: config.log.traceDebug "nonLocalPackageSettings: ${builtins.toJSON x}" x)
@@ -266,7 +269,7 @@ in
 
         apps =
           lib.mkMerge
-            (lib.mapAttrsToList (_: packageInfo: packageInfo.exes) packages);
+            (lib.mapAttrsToList (_: packageInfo: packageInfo.exes) config.outputs.packages);
       };
     };
 }
