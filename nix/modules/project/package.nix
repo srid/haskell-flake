@@ -53,12 +53,55 @@ in
       default = null;
     };
 
+    justStaticExecutables = mkOption {
+      type = types.bool;
+      description = ''
+        Link executables statically against haskell libs to reduce closure size
+      '';
+      default = false;
+    };
+
+    libraryProfiling = mkOption {
+      type = types.nullOr types.bool;
+      description = ''
+        Whether to build the library with profiling enabled
+      '';
+      default = null;
+    };
+
+    executableProfiling = mkOption {
+      type = types.nullOr types.bool;
+      description = ''
+        Whether to build executables with profiling enabled
+      '';
+      default = null;
+    };
+
     extraBuildDepends = mkOption {
       type = types.nullOr (types.listOf types.package);
       description = ''
         Extra build dependencies for the package.
       '';
       default = null;
+    };
+
+    # Additional functionality not in nixpkgs
+    # TODO: Instead of baking this in haskell-flake, can we instead allow the
+    # user to define these 'custom' options? Are NixOS modules flexible enough
+    # for that?
+    removeReferencesTo = mkOption {
+      type = types.listOf types.package;
+      description = ''
+        Packages to remove references to.
+
+        This is useful to ditch data dependencies, from your Haskell executable,
+        that are not needed at runtime.
+
+        cf. 
+        - https://github.com/NixOS/nixpkgs/pull/204675
+        - https://srid.ca/remove-references-to
+      '';
+      default = [ ];
     };
 
     apply = mkOption {
@@ -79,8 +122,37 @@ in
           lib.optional (config.haddock != null)
             (if config.haddock then doHaddock else dontHaddock)
           ++
+          lib.optional config.justStaticExecutables
+            justStaticExecutables
+          ++
+          lib.optional (config.libraryProfiling != null)
+            (if config.libraryProfiling then enableLibraryProfiling else disableLibraryProfiling)
+          ++
+          lib.optional (config.executableProfiling != null)
+            (if config.executableProfiling then enableExecutableProfiling else disableExecutableProfiling)
+          ++
           lib.optional (config.extraBuildDepends != null && config.extraBuildDepends != [ ])
             (addBuildDepends config.extraBuildDepends)
+          ++
+          lib.optional (config.removeReferencesTo != [ ])
+            (
+              let
+                # Remove the given references from drv's executables.
+                # We shouldn't need this after https://github.com/haskell/cabal/pull/8534
+                removeReferencesTo = disallowedReferences: drv:
+                  drv.overrideAttrs (old: rec {
+                    inherit disallowedReferences;
+                    # Ditch data dependencies that are not needed at runtime.
+                    # cf. https://github.com/NixOS/nixpkgs/pull/204675
+                    # cf. https://srid.ca/remove-references-to
+                    postInstall = (old.postInstall or "") + ''
+                      ${lib.concatStrings (map (e: "echo Removing reference to: ${e}\n") disallowedReferences)}
+                      ${lib.concatStrings (map (e: "remove-references-to -t ${e} $out/bin/*\n") disallowedReferences)}
+                    '';
+                  });
+              in
+              removeReferencesTo config.removeReferencesTo
+            )
         );
     };
   };
