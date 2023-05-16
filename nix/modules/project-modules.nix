@@ -35,6 +35,10 @@ in
         config.haskellFlakeProjectModules =
           let
             defaults = rec {
+              packages = { pkgs, lib, ... }: withSystem pkgs.system ({ config, ... }: {
+                inherit (config.haskellProjects.default)
+                  packages;
+              });
               # The 'output' module provides both local package and dependency
               # overrides.
               output = {
