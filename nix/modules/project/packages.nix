@@ -66,12 +66,24 @@ let
     ];
   };
 
+  # Merge the list of attrset of modules.
+  mergeModuleAttrs = attrs:
+    lib.zipAttrsWith (k: vs: { imports = vs; }) attrs;
+
 in
 {
   options = {
     packages = lib.mkOption {
       type = types.lazyAttrsOf packageSubmodule;
       apply = packages:
+        let
+          packages' =
+            # Merge user-provided 'packages' with 'defaults.packages'. 
+            #
+            # Note that the user can override the latter too if they wish.
+            mergeModuleAttrs
+              [ project.config.defaults.packages packages ];
+        in
         lib.mapAttrs
           (k: v:
             (lib.evalModules {
@@ -79,16 +91,7 @@ in
               specialArgs = { inherit pkgs; };
             }).config
           )
-          (
-            # Merge user-provided 'packages' with 'defaults.packages'. 
-            #
-            # Note that the user can override the latter too if they wish.
-            lib.zipAttrsWith
-              (
-                k: vs: { imports = vs; }
-              )
-              [ project.config.defaults.packages packages ]
-          );
+          packages';
       description = ''
         Set of local packages in the project repository.
 
