@@ -44,6 +44,14 @@ let
         default = null;
       };
 
+      extraBuildDepends = mkOption {
+        type = types.nullOr (types.listOf types.package);
+        description = ''
+          Extra build dependencies for the package.
+        '';
+        default = null;
+      };
+
       apply = mkOption {
         type = types.functionTo types.package;
         internal = true;
@@ -55,13 +63,16 @@ let
             ++
             lib.optional (config.haddock != null)
               (if config.haddock then doHaddock else dontHaddock)
+            ++
+            lib.optional (config.extraBuildDepends != null && config.extraBuildDepends != [ ])
+              (addBuildDepends config.extraBuildDepends)
           );
       };
     };
   };
 
-  packageSubmodule = types.submoduleWith {
-    modules = [
+  packageSubmodule = types.deferredModuleWith {
+    staticModules = [
       packageOptions
     ];
   };
@@ -71,6 +82,15 @@ in
   options = {
     packages = mkOption {
       type = types.lazyAttrsOf packageSubmodule;
+      apply = packages:
+        lib.mapAttrs
+          (k: v:
+            (lib.evalModules {
+              modules = [ v ];
+              specialArgs = { inherit pkgs; };
+            }).config
+          )
+          packages;
       description = ''
         Set of local packages in the project repository.
 
