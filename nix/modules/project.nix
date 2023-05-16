@@ -199,7 +199,7 @@ in
       nonLocalPackageSettingsOverlay = self: super:
         lib.mapAttrs
           (name: cfg:
-            cfg.apply (
+            cfg.apply self super (
               if cfg.root == null
               then if lib.hasAttr name super
               then super."${name}"
@@ -217,10 +217,10 @@ in
           )
           nonLocalPackageSettings;
 
-      localPackagesOverlay = self: _:
+      localPackagesOverlay = self: super:
         let
           build-haskell-package = import ../build-haskell-package.nix {
-            inherit pkgs lib self;
+            inherit pkgs lib self super;
             inherit (config) log;
           };
         in

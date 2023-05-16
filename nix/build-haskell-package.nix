@@ -1,7 +1,10 @@
 # Like callCabal2nix, but does more:
 # - Source filtering (to prevent parent content changes causing rebuilds)
 # - Always build from cabal's sdist for release-worthiness
-{ pkgs, lib, self, log, ... }:
+#
+# This function can only be called from inside a Haskell overlay, whose 'self'
+# and 'super' are accessible in args here.
+{ pkgs, lib, self, super, log, ... }:
 
 let
   fromSdist = self.buildFromCabalSdist or
@@ -34,5 +37,5 @@ lib.pipe pkgCfg.root
     fromSdist
     (x: log.traceDebug "${name}.fromSdist ${x.outPath}" x)
 
-    pkgCfg.apply
+    (pkgCfg.apply self super)
   ]

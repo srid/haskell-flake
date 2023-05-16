@@ -1,8 +1,23 @@
+# TODO: Can we refactor this module by decomposing the individual options?
+#
+# Esp. to decouple removeReferencesTo, either in this repo or in user repo.
 { project, lib, pkgs, ... }:
 let
   inherit (lib)
     mkOption
     types;
+
+  # Wrap a type such that we can pass *optional* 'self' and 'super' arguments.
+  # This is poor man's module system, which we cannot use for whatever reason.
+  withSelfSuper = t:
+    types.either t (types.functionTo (types.functionTo t));
+  applySelfSuper = self: super: f:
+    if builtins.isFunction f then f self super else f;
+  selfSuperDescription = ''
+
+    Optionally accepts arguments 'self' and 'super' reflecting the Haskell
+    overlay arguments.
+  '';
 in
 { config, ... }: {
   options = {
@@ -78,10 +93,10 @@ in
     };
 
     extraBuildDepends = mkOption {
-      type = types.nullOr (types.listOf types.package);
+      type = types.nullOr (withSelfSuper (types.listOf types.package));
       description = ''
         Extra build dependencies for the package.
-      '';
+      '' + selfSuperDescription;
       default = null;
     };
 
@@ -90,7 +105,7 @@ in
     # user to define these 'custom' options? Are NixOS modules flexible enough
     # for that?
     removeReferencesTo = mkOption {
-      type = types.listOf types.package;
+      type = withSelfSuper (types.listOf types.package);
       description = ''
         Packages to remove references to.
 
@@ -100,12 +115,12 @@ in
         cf. 
         - https://github.com/NixOS/nixpkgs/pull/204675
         - https://srid.ca/remove-references-to
-      '';
+      '' + selfSuperDescription;
       default = [ ];
     };
 
     apply = mkOption {
-      type = types.functionTo types.package;
+      type = types.functionTo (types.functionTo (types.functionTo types.package));
       internal = true;
       # FIXME: why can't we set this when using project-modules.nix?
       # readOnly = true;
@@ -114,7 +129,10 @@ in
         
         `pkgs.haskell.lib.compose` is used to apply the override.
       '';
-      default = with pkgs.haskell.lib.compose;
+      default = self: super: with pkgs.haskell.lib.compose;
+        let
+          selfSupered = applySelfSuper self super;
+        in
         lib.flip lib.pipe (
           lib.optional (config.check != null)
             (if config.check then doCheck else dontCheck)
@@ -132,7 +150,7 @@ in
             (if config.executableProfiling then enableExecutableProfiling else disableExecutableProfiling)
           ++
           lib.optional (config.extraBuildDepends != null && config.extraBuildDepends != [ ])
-            (addBuildDepends config.extraBuildDepends)
+            (addBuildDepends (selfSupered config.extraBuildDepends))
           ++
           lib.optional (config.removeReferencesTo != [ ])
             (
@@ -151,7 +169,7 @@ in
                     '';
                   });
               in
-              removeReferencesTo config.removeReferencesTo
+              removeReferencesTo (selfSupered config.removeReferencesTo)
             )
         );
     };
