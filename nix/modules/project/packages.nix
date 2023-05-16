@@ -17,6 +17,7 @@ in
   options = {
     packages = lib.mkOption {
       type = types.lazyAttrsOf types.deferredModule;
+      default = { };
       apply = packages:
         let
           packages' =
