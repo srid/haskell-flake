@@ -201,10 +201,12 @@ in
           (name: cfg:
             cfg.apply (
               if cfg.root == null
+              then if lib.hasAttr name super
               then super."${name}"
-              else 
+              else config.log.throwError "Your 'packages' has configured an unknown package: ${name} (does not exist in basePackages)"
+              else
               # TODO: Should we use build-haskell-packages.nix here?
-              self.callCabal2nix name cfg.root {}
+                self.callCabal2nix name cfg.root { }
             )
           )
           nonLocalPackageSettings;
