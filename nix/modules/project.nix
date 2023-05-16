@@ -199,7 +199,13 @@ in
       nonLocalPackageSettingsOverlay = self: super:
         lib.mapAttrs
           (name: cfg:
-            cfg.apply super."${name}"
+            cfg.apply (
+              if cfg.root == null
+              then super."${name}"
+              else 
+              # TODO: Should we use build-haskell-packages.nix here?
+              self.callCabal2nix name cfg.root {}
+            )
           )
           nonLocalPackageSettings;
 
@@ -212,18 +218,17 @@ in
         in
         lib.mapAttrs build-haskell-package localPackages;
 
-      finalOverlay = lib.composeManyExtensions
-        [
-          # The order here matters.
-          #
-          # User's overrides (cfg.overrides) is applied **last** so
-          # as to give them maximum control over the final package
-          # set used.
-          localPackagesOverlay
-          nonLocalPackageSettingsOverlay
-          (pkgs.haskell.lib.packageSourceOverrides config.source-overrides)
-          config.overrides
-        ];
+      finalOverlay = lib.composeManyExtensions [
+        # The order here matters.
+        #
+        # User's overrides (cfg.overrides) is applied **last** so
+        # as to give them maximum control over the final package
+        # set used.
+        localPackagesOverlay
+        nonLocalPackageSettingsOverlay
+        (pkgs.haskell.lib.packageSourceOverrides config.source-overrides)
+        config.overrides
+      ];
 
       buildPackageInfo = name: value: {
         package = finalPackages.${name};
