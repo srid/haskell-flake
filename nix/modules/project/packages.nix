@@ -4,7 +4,7 @@ let
   inherit (lib)
     types;
 
-  packageSubmodule = import ./package.nix { inherit lib pkgs; };
+  packageSubmodule = import ./package.nix { inherit project lib pkgs; };
 
   # Merge the list of attrset of modules.
   mergeModuleAttrs =

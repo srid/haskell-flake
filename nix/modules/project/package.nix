@@ -1,4 +1,4 @@
-{ lib, pkgs, ... }:
+{ project, lib, pkgs, ... }:
 let
   inherit (lib)
     mkOption
@@ -12,6 +12,21 @@ in
         Path containing the Haskell package's `.cabal` file.
       '';
       default = null;
+    };
+
+    local = mkOption {
+      type = types.bool;
+      description = ''
+        Whether this package is local to the flake.
+      '';
+      internal = true;
+      readOnly = true;
+      default =
+        config.root != null &&
+        lib.strings.hasPrefix "${project.config.projectRoot}" "${config.root}";
+      defaultText = ''
+        Computed automatically if package 'root' is under 'projectRoot'.
+      '';
     };
 
     # cabal2nix stuff goes here.

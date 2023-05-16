@@ -181,24 +181,17 @@ in
     let
       inherit (config.outputs) finalPackages;
 
-      t = x: builtins.trace x x;
-
-      packages = config.packages;
-
-      isLocalPackage = cfg:
-        cfg.root != null && lib.strings.hasPrefix (t "${config.projectRoot}") (t "${cfg.root}");
-
       # Subet of config.packages that are local to the project.
       localPackages =
-        lib.pipe packages [
-          (lib.filterAttrs (_: isLocalPackage))
+        lib.pipe config.packages [
+          (lib.filterAttrs (_: cfg: cfg.local))
           (x:
             let x' = lib.mapAttrs (_: y: builtins.removeAttrs y [ "apply" ]) x;
             in config.log.traceDebug "localPackages: ${builtins.toJSON x'}" x)
         ];
       nonLocalPackageSettings =
-        lib.pipe packages [
-          (lib.filterAttrs (_: x: ! isLocalPackage x))
+        lib.pipe config.packages [
+          (lib.filterAttrs (_: x: ! x.local))
           # TODO: print everything but 'apply'
           # (x: config.log.traceDebug "nonLocalPackageSettings: ${builtins.toJSON x}" x)
         ];
