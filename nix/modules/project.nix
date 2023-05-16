@@ -192,10 +192,9 @@ in
       localPackages =
         lib.pipe packages [
           (lib.filterAttrs (_: isLocalPackage))
-          /* (x:
+          (x:
             let x' = lib.mapAttrs (_: y: builtins.removeAttrs y [ "apply" ]) x;
             in config.log.traceDebug "localPackages: ${builtins.toJSON x'}" x)
-            */
         ];
       nonLocalPackageSettings =
         lib.pipe packages [

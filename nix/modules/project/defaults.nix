@@ -38,7 +38,7 @@ in
         lib.pipe config.projectRoot [
           haskell-parsers.findPackagesInCabalProject
           (lib.mapAttrs (_: path: { root = path; }))
-          # (x: config.log.traceDebug "config.haskellProjects.${name}.defaults.packages = ${builtins.toJSON x}" x)
+          (x: config.log.traceDebug "config.haskellProjects.${name}.defaults.packages = ${builtins.toJSON x}" x)
         ];
     };
   };
