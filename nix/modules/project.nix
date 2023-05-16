@@ -183,7 +183,6 @@ in
 
       t = x: builtins.trace x x;
 
-      # FIXME: Won't merge with module attr values.
       packages = config.packages;
 
       isLocalPackage = cfg:
