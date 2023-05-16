@@ -59,6 +59,11 @@ in
       type = types.functionTo types.package;
       internal = true;
       readOnly = true;
+      description = ''
+        A function that applies all the overrides in this module.
+        
+        `pkgs.haskell.lib.compose` is used to apply the override.
+      '';
       default = with pkgs.haskell.lib.compose;
         lib.flip lib.pipe (
           lib.optional (config.check != null)
