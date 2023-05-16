@@ -7,11 +7,8 @@ let
   packageSubmodule = import ./package.nix { inherit lib pkgs; };
 
   # Merge the list of attrset of modules.
-  mergeModuleAttrs = attrs:
-    lib.zipAttrsWith
-      (k: vs:
-        { imports = vs; })
-      attrs;
+  mergeModuleAttrs =
+    lib.zipAttrsWith (k: vs: { imports = vs; });
 in
 {
   options = {
