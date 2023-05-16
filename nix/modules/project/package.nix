@@ -7,9 +7,11 @@ in
 { config, ... }: {
   options = {
     root = mkOption {
-      type = types.nullOr types.path;
+      type = types.nullOr (types.either types.string types.path);
       description = ''
         Path containing the Haskell package's `.cabal` file.
+
+        Or version string for a version in Hackage.
       '';
       default = null;
     };

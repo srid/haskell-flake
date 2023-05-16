@@ -205,8 +205,14 @@ in
               then super."${name}"
               else config.log.throwError "Your 'packages' has configured an unknown package: ${name} (does not exist in basePackages)"
               else
-              # TODO: Should we use build-haskell-packages.nix here?
-                self.callCabal2nix name cfg.root { }
+                (if builtins.typeOf cfg.root == "string"
+                then
+                  self.callHackage
+                # TODO: Should we use build-haskell-packages.nix here?
+                else self.callCabal2nix)
+                  name
+                  cfg.root
+                  { }
             )
           )
           nonLocalPackageSettings;
