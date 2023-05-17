@@ -17,20 +17,20 @@ in
       default = null;
     };
 
-    local = mkOption {
-      type = types.bool;
+    localTo = mkOption {
+      type = types.functionTo types.bool;
       description = ''
-        Whether this package is local to the flake.
+        Whether this package is local to a projectRoot.
       '';
       internal = true;
       # FIXME: why can't we set this when using project-modules.nix?
       # readOnly = true;
-      default =
+      default = projectRoot:
         let
           t = x: builtins.trace x x;
         in
         config.root != null &&
-        lib.strings.hasPrefix (t "${project.config.projectRoot}") "${config.root}";
+        lib.strings.hasPrefix (t "${projectRoot}") "${config.root}";
       defaultText = ''
         Computed automatically if package 'root' is under 'projectRoot'.
       '';

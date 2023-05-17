@@ -184,14 +184,24 @@ in
       # Subet of config.packages that are local to the project.
       localPackages =
         lib.pipe config.packages [
-          (lib.filterAttrs (_: cfg: cfg.local))
+          (lib.filterAttrs (_: cfg: cfg.localTo config.projectRoot))
           (x:
-            let x' = lib.mapAttrs (_: y: builtins.removeAttrs y [ "apply" ]) x;
-            in config.log.traceDebug "localPackages: ${builtins.toJSON x'}" x)
+            let
+              x' = lib.mapAttrs
+                (_: y:
+                  {
+                    inherit (y.settings) check;
+                  } # builtins.removeAttrs y.settings [ "custom" "impl" "removeReferencesTo" ]
+                  // {
+                    inherit (y) root;
+                  })
+                x;
+            in
+            config.log.traceDebug "localPackages: ${builtins.toJSON x'}" x)
         ];
       nonLocalPackageSettings =
         lib.pipe config.packages [
-          (lib.filterAttrs (_: x: ! x.local))
+          (lib.filterAttrs (_: x: ! x.localTo config.projectRoot))
           # TODO: print everything but 'apply'
           # (x: config.log.traceDebug "nonLocalPackageSettings: ${builtins.toJSON x}" x)
         ];
@@ -211,7 +221,7 @@ in
                 (if isPathUnderNixStore cfg.root
                 then
                 # TODO: Should we use build-haskell-packages.nix here?
-                  (builtins.trace "callCabal2nix" self.callCabal2nix)
+                  (builtins.trace "callCabal2nix: ${cfg.root}" self.callCabal2nix)
                 else (builtins.trace "callHackage: ${cfg.root} / ${builtins.typeOf cfg.root}" self.callHackage))
                   name
                   cfg.root
