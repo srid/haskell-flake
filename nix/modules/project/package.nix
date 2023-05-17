@@ -9,15 +9,24 @@ let
 
   # Wrap a type such that we can pass *optional* 'self' and 'super' arguments.
   # This is poor man's module system, which we cannot use for whatever reason.
-  withSelfSuper = t:
-    types.either t (types.functionTo (types.functionTo t));
-  applySelfSuper = self: super: f:
-    if builtins.isFunction f then f self super else f;
-  selfSuperDescription = ''
+  mkSelfSuperOption = attrs:
+    let
+      withSelfSuper = t:
+        types.either t (types.functionTo (types.functionTo t));
+      selfSuperDescription = ''
 
     Optionally accepts arguments 'self' and 'super' reflecting the Haskell
     overlay arguments.
   '';
+    in
+    mkOption (attrs // {
+      type = types.nullOr (withSelfSuper attrs.type);
+      description = attrs.description + selfSuperDescription;
+      default = null;
+    });
+  applySelfSuper = self: super: f:
+    if builtins.isFunction f then f self super else f;
+
 in
 { config, ... }: {
   options = {
@@ -92,20 +101,19 @@ in
       default = null;
     };
 
-    extraBuildDepends = mkOption {
-      type = types.nullOr (withSelfSuper (types.listOf types.package));
+    extraBuildDepends = mkSelfSuperOption {
+      type = types.listOf types.package;
       description = ''
         Extra build dependencies for the package.
-      '' + selfSuperDescription;
-      default = null;
+      '';
     };
 
     # Additional functionality not in nixpkgs
     # TODO: Instead of baking this in haskell-flake, can we instead allow the
     # user to define these 'custom' options? Are NixOS modules flexible enough
     # for that?
-    removeReferencesTo = mkOption {
-      type = withSelfSuper (types.listOf types.package);
+    removeReferencesTo = mkSelfSuperOption {
+      type = types.listOf types.package;
       description = ''
         Packages to remove references to.
 
@@ -115,8 +123,7 @@ in
         cf. 
         - https://github.com/NixOS/nixpkgs/pull/204675
         - https://srid.ca/remove-references-to
-      '' + selfSuperDescription;
-      default = [ ];
+      '';
     };
 
     apply = mkOption {
@@ -149,10 +156,10 @@ in
           lib.optional (config.executableProfiling != null)
             (if config.executableProfiling then enableExecutableProfiling else disableExecutableProfiling)
           ++
-          lib.optional (config.extraBuildDepends != null && config.extraBuildDepends != [ ])
+          lib.optional (config.extraBuildDepends != null)
             (addBuildDepends (selfSupered config.extraBuildDepends))
           ++
-          lib.optional (config.removeReferencesTo != [ ])
+          lib.optional (config.removeReferencesTo != null)
             (
               let
                 # Remove the given references from drv's executables.
