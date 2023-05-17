@@ -1,4 +1,4 @@
-{ pkgs, lib, mkCabalSettingOptions, ... }:
+{ lib, mkCabalSettingOptions, ... }:
 
 let
   inherit (lib)
@@ -14,9 +14,9 @@ in
     description = ''
       Packages to remove references to.
 
-      This is useful to ditch data dependencies, from your Haskell executable,
-      that are not needed at runtime.
-
+      This is useful to ditch unnecessary data dependencies from your Haskell
+      executable so as to reduce its closure size.
+      
       cf. 
       - https://github.com/NixOS/nixpkgs/pull/204675
       - https://srid.ca/remove-references-to
@@ -24,9 +24,6 @@ in
     impl = disallowedReferences: drv:
       drv.overrideAttrs (old: rec {
         inherit disallowedReferences;
-        # Ditch data dependencies that are not needed at runtime.
-        # cf. https://github.com/NixOS/nixpkgs/pull/204675
-        # cf. https://srid.ca/remove-references-to
         postInstall = (old.postInstall or "") + ''
           ${lib.concatStrings (map (e: "echo Removing reference to: ${e}\n") disallowedReferences)}
           ${lib.concatStrings (map (e: "remove-references-to -t ${e} $out/bin/*\n") disallowedReferences)}

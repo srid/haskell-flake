@@ -61,17 +61,15 @@ in
       # readOnly = true;
       description = ''
         A function that applies all the 'settings' in this module.
-        
-        `pkgs.haskell.lib.compose` is used to apply the overrides.
       '';
-      default = self: super:
+      default = self: super: p:
         let
           implList = lib.pipe config.settings.impl [
             lib.attrValues
             (lib.concatMap (impl: impl self super))
           ];
         in
-        lib.flip lib.pipe implList;
+        lib.pipe p implList;
     };
   };
 }
