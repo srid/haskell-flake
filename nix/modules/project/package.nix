@@ -3,12 +3,24 @@ let
   inherit (lib)
     mkOption
     types;
+  haskellSourceType = lib.mkOptionType {
+    name = "haskellSource";
+    description = ''
+      Path to Haskell package source, or version from Hackage.
+    '';
+    check = path:
+      let
+        isPathUnderNixStore = path: builtins.hasContext (builtins.toString path);
+      in
+      isPathUnderNixStore path || builtins.isString path;
+    merge = lib.mergeOneOption;
+  };
 in
 { config, ... }: {
   options = {
     # TODO: Rename this to 'source'?
     root = mkOption {
-      type = types.nullOr (types.either types.path types.string);
+      type = types.nullOr haskellSourceType;
       description = ''
         Path containing the Haskell package's `.cabal` file.
 
