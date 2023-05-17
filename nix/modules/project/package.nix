@@ -64,7 +64,12 @@ in
     settings = mkOption {
       default = { };
       type = types.submoduleWith {
-        specialArgs = { inherit pkgs lib; };
+        specialArgs = {
+          inherit pkgs lib;
+        } // (import ./settings/lib.nix {
+          inherit lib;
+          config = config.settings;
+        });
         modules = [
           {
             imports = [
