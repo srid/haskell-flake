@@ -63,73 +63,67 @@ in
     # cabal2nix stuff goes here.
     settings = mkOption {
       default = { };
-      type = types.submodule {
-        options = {
-          check = mkOption {
-            type = types.nullOr types.bool;
-            description = ''
-              Whether to run cabal tests as part of the nix build
-            '';
-            default = null;
-          };
+      type = types.submoduleWith {
+        specialArgs = { inherit pkgs lib; };
+        modules = [
+          {
+            imports = [
+              ./settings
+            ];
+            options = {
 
-          haddock = mkOption {
-            type = types.nullOr types.bool;
-            description = ''
-              Whether to generate haddock documentation as part of the nix build
-            '';
-            default = null;
-          };
+              haddock = mkOption {
+                type = types.nullOr types.bool;
+                description = ''
+                  Whether to generate haddock documentation as part of the nix build
+                '';
+                default = null;
+              };
 
-          justStaticExecutables = mkOption {
-            type = types.bool;
-            description = ''
-              Link executables statically against haskell libs to reduce closure size
-            '';
-            default = false;
-          };
+              justStaticExecutables = mkOption {
+                type = types.bool;
+                description = ''
+                  Link executables statically against haskell libs to reduce closure size
+                '';
+                default = false;
+              };
 
-          libraryProfiling = mkOption {
-            type = types.nullOr types.bool;
-            description = ''
-              Whether to build the library with profiling enabled
-            '';
-            default = null;
-          };
+              libraryProfiling = mkOption {
+                type = types.nullOr types.bool;
+                description = ''
+                  Whether to build the library with profiling enabled
+                '';
+                default = null;
+              };
 
-          executableProfiling = mkOption {
-            type = types.nullOr types.bool;
-            description = ''
-              Whether to build executables with profiling enabled
-            '';
-            default = null;
-          };
+              executableProfiling = mkOption {
+                type = types.nullOr types.bool;
+                description = ''
+                  Whether to build executables with profiling enabled
+                '';
+                default = null;
+              };
 
-          extraBuildDepends = mkSelfSuperOption {
-            type = types.listOf types.package;
-            description = ''
-              Extra build dependencies for the package.
-            '';
-          };
+              # Additional functionality not in nixpkgs
+              # TODO: Instead of baking this in haskell-flake, can we instead allow the
+              # user to define these 'custom' options? Are NixOS modules flexible enough
+              # for that?
+              removeReferencesTo = mkSelfSuperOption {
+                type = types.listOf types.package;
+                description = ''
+                  Packages to remove references to.
 
-          # Additional functionality not in nixpkgs
-          # TODO: Instead of baking this in haskell-flake, can we instead allow the
-          # user to define these 'custom' options? Are NixOS modules flexible enough
-          # for that?
-          removeReferencesTo = mkSelfSuperOption {
-            type = types.listOf types.package;
-            description = ''
-              Packages to remove references to.
+                  This is useful to ditch data dependencies, from your Haskell executable,
+                  that are not needed at runtime.
 
-              This is useful to ditch data dependencies, from your Haskell executable,
-              that are not needed at runtime.
-
-              cf. 
-              - https://github.com/NixOS/nixpkgs/pull/204675
-              - https://srid.ca/remove-references-to
-            '';
-          };
-        };
+                  cf. 
+                  - https://github.com/NixOS/nixpkgs/pull/204675
+                  - https://srid.ca/remove-references-to
+                '';
+              };
+            };
+          }
+        ];
       };
     };
 
@@ -149,8 +143,9 @@ in
           settings = config.settings;
         in
         lib.flip lib.pipe (
-          lib.optional (settings.check != null)
-            (if settings.check then doCheck else dontCheck)
+          (settings.impl.check self super)
+          ++
+          (settings.impl.extraBuildDepends self super)
           ++
           lib.optional (settings.haddock != null)
             (if settings.haddock then doHaddock else dontHaddock)
@@ -163,9 +158,6 @@ in
           ++
           lib.optional (settings.executableProfiling != null)
             (if settings.executableProfiling then enableExecutableProfiling else disableExecutableProfiling)
-          ++
-          lib.optional (settings.extraBuildDepends != null)
-            (addBuildDepends (selfSupered settings.extraBuildDepends))
           ++
           lib.optional (settings.removeReferencesTo != null)
             (
