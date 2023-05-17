@@ -6,12 +6,12 @@ let
 in
 {
   options = mkCabalSettingOptions {
-    name = "check";
+    name = "libraryProfiling";
     type = types.bool;
     description = ''
-      Whether to run cabal tests as part of the nix build
+      Build the library for profiling by default.
     '';
     impl = enable: with pkgs.haskell.lib.compose;
-      if enable then doCheck else dontCheck;
+      if enable then enableLibraryProfiling else disableLibraryProfiling;
   };
 }

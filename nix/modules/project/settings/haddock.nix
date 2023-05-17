@@ -6,12 +6,12 @@ let
 in
 {
   options = mkCabalSettingOptions {
-    name = "check";
+    name = "haddock";
     type = types.bool;
     description = ''
-      Whether to run cabal tests as part of the nix build
+      Whether to build the haddock documentation.
     '';
-    impl = enable: with pkgs.haskell.lib.compose;
-      if enable then doCheck else dontCheck;
+    impl = haddock: with pkgs.haskell.lib.compose;
+      if haddock then doHaddock else dontHaddock;
   };
 }

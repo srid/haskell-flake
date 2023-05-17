@@ -6,12 +6,12 @@ let
 in
 {
   options = mkCabalSettingOptions {
-    name = "check";
+    name = "justStaticExecutables";
     type = types.bool;
     description = ''
-      Whether to run cabal tests as part of the nix build
+      Link executables statically against haskell libs to reduce closure size
     '';
     impl = enable: with pkgs.haskell.lib.compose;
-      if enable then doCheck else dontCheck;
+      if enable then justStaticExecutables else x: x;
   };
 }

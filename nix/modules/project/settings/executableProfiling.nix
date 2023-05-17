@@ -6,12 +6,12 @@ let
 in
 {
   options = mkCabalSettingOptions {
-    name = "check";
+    name = "executableProfiling";
     type = types.bool;
     description = ''
-      Whether to run cabal tests as part of the nix build
+      Build the executable with profiling enabled.
     '';
     impl = enable: with pkgs.haskell.lib.compose;
-      if enable then doCheck else dontCheck;
+      if enable then enableExecutableProfiling else disableExecutableProfiling;
   };
 }

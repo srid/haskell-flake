@@ -8,7 +8,12 @@ in
 {
   imports = [
     ./check.nix
+    ./haddock.nix
+    ./libraryProfiling.nix
+    ./executableProfiling.nix
     ./extraBuildDepends.nix
+    ./justStaticExecutables.nix
+    ./removeReferencesTo.nix
   ];
 
   options.settings.impl = mkOption {
