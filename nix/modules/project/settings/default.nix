@@ -14,6 +14,7 @@ in
     ./extraBuildDepends.nix
     ./justStaticExecutables.nix
     ./removeReferencesTo.nix
+    ./custom.nix
   ];
 
   options.settings.impl = mkOption {
