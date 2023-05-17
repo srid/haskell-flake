@@ -17,11 +17,12 @@ in
     ./custom.nix
   ];
 
-  options.settings.impl = mkOption {
+  options.impl = mkOption {
     type = types.submodule { };
     internal = true;
     readOnly = true;
-    hidden = true;
+    # hidden = true;
+    default = { };
     description = ''
       Implementation for options in 'settings'
     '';
