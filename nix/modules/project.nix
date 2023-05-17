@@ -197,6 +197,13 @@ in
         ];
 
       nonLocalPackageSettingsOverlay = self: super:
+        let
+          # XXX: Is there a non-hacky way to do this?
+          isReallyStorePath = path:
+            # `inputs.foo + /bar` is actually of type string, so we need this hack.
+            builtins.isPath path || (builtins.typeOf path == "string" &&
+            lib.strings.hasPrefix "/nix/" path);
+        in
         lib.mapAttrs
           (name: cfg:
             cfg.apply self super (
@@ -205,11 +212,11 @@ in
               then super."${name}"
               else config.log.throwError "Your 'packages' has configured an unknown package: ${name} (does not exist in basePackages)"
               else
-                (if builtins.typeOf cfg.root == "string"
+                (if isReallyStorePath cfg.root
                 then
-                  self.callHackage
                 # TODO: Should we use build-haskell-packages.nix here?
-                else self.callCabal2nix)
+                  (builtins.trace "callCabal2nix" self.callCabal2nix)
+                else (builtins.trace "callHackage: ${cfg.root} / ${builtins.typeOf cfg.root}" self.callHackage))
                   name
                   cfg.root
                   { }
