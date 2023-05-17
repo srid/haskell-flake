@@ -198,11 +198,7 @@ in
 
       nonLocalPackageSettingsOverlay = self: super:
         let
-          # XXX: Is there a non-hacky way to do this?
-          isReallyStorePath = path:
-            # `inputs.foo + /bar` is actually of type string, so we need this hack.
-            builtins.isPath path || (builtins.typeOf path == "string" &&
-            lib.strings.hasPrefix "/nix/" path);
+          isPathUnderNixStore = path: builtins.hasContext (builtins.toString path);
         in
         lib.mapAttrs
           (name: cfg:
@@ -212,7 +208,7 @@ in
               then super."${name}"
               else config.log.throwError "Your 'packages' has configured an unknown package: ${name} (does not exist in basePackages)"
               else
-                (if isReallyStorePath cfg.root
+                (if isPathUnderNixStore cfg.root
                 then
                 # TODO: Should we use build-haskell-packages.nix here?
                   (builtins.trace "callCabal2nix" self.callCabal2nix)
