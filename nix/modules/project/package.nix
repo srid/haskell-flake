@@ -30,6 +30,7 @@ let
 in
 { config, ... }: {
   options = {
+    # TODO: Rename this to 'source'?
     root = mkOption {
       type = types.nullOr (types.either types.path types.string);
       description = ''
@@ -60,106 +61,113 @@ in
     };
 
     # cabal2nix stuff goes here.
+    settings = mkOption {
+      default = { };
+      type = types.submodule {
+        options = {
+          check = mkOption {
+            type = types.nullOr types.bool;
+            description = ''
+              Whether to run cabal tests as part of the nix build
+            '';
+            default = null;
+          };
 
-    check = mkOption {
-      type = types.nullOr types.bool;
-      description = ''
-        Whether to run cabal tests as part of the nix build
-      '';
-      default = null;
+          haddock = mkOption {
+            type = types.nullOr types.bool;
+            description = ''
+              Whether to generate haddock documentation as part of the nix build
+            '';
+            default = null;
+          };
+
+          justStaticExecutables = mkOption {
+            type = types.bool;
+            description = ''
+              Link executables statically against haskell libs to reduce closure size
+            '';
+            default = false;
+          };
+
+          libraryProfiling = mkOption {
+            type = types.nullOr types.bool;
+            description = ''
+              Whether to build the library with profiling enabled
+            '';
+            default = null;
+          };
+
+          executableProfiling = mkOption {
+            type = types.nullOr types.bool;
+            description = ''
+              Whether to build executables with profiling enabled
+            '';
+            default = null;
+          };
+
+          extraBuildDepends = mkSelfSuperOption {
+            type = types.listOf types.package;
+            description = ''
+              Extra build dependencies for the package.
+            '';
+          };
+
+          # Additional functionality not in nixpkgs
+          # TODO: Instead of baking this in haskell-flake, can we instead allow the
+          # user to define these 'custom' options? Are NixOS modules flexible enough
+          # for that?
+          removeReferencesTo = mkSelfSuperOption {
+            type = types.listOf types.package;
+            description = ''
+              Packages to remove references to.
+
+              This is useful to ditch data dependencies, from your Haskell executable,
+              that are not needed at runtime.
+
+              cf. 
+              - https://github.com/NixOS/nixpkgs/pull/204675
+              - https://srid.ca/remove-references-to
+            '';
+          };
+        };
+      };
     };
 
-    haddock = mkOption {
-      type = types.nullOr types.bool;
-      description = ''
-        Whether to generate haddock documentation as part of the nix build
-      '';
-      default = null;
-    };
-
-    justStaticExecutables = mkOption {
-      type = types.bool;
-      description = ''
-        Link executables statically against haskell libs to reduce closure size
-      '';
-      default = false;
-    };
-
-    libraryProfiling = mkOption {
-      type = types.nullOr types.bool;
-      description = ''
-        Whether to build the library with profiling enabled
-      '';
-      default = null;
-    };
-
-    executableProfiling = mkOption {
-      type = types.nullOr types.bool;
-      description = ''
-        Whether to build executables with profiling enabled
-      '';
-      default = null;
-    };
-
-    extraBuildDepends = mkSelfSuperOption {
-      type = types.listOf types.package;
-      description = ''
-        Extra build dependencies for the package.
-      '';
-    };
-
-    # Additional functionality not in nixpkgs
-    # TODO: Instead of baking this in haskell-flake, can we instead allow the
-    # user to define these 'custom' options? Are NixOS modules flexible enough
-    # for that?
-    removeReferencesTo = mkSelfSuperOption {
-      type = types.listOf types.package;
-      description = ''
-        Packages to remove references to.
-
-        This is useful to ditch data dependencies, from your Haskell executable,
-        that are not needed at runtime.
-
-        cf. 
-        - https://github.com/NixOS/nixpkgs/pull/204675
-        - https://srid.ca/remove-references-to
-      '';
-    };
-
-    apply = mkOption {
+    applySettings = mkOption {
       type = types.functionTo (types.functionTo (types.functionTo types.package));
       internal = true;
       # FIXME: why can't we set this when using project-modules.nix?
       # readOnly = true;
       description = ''
-        A function that applies all the overrides in this module.
+        A function that applies all the 'settings' in this module.
         
-        `pkgs.haskell.lib.compose` is used to apply the override.
+        `pkgs.haskell.lib.compose` is used to apply the overrides.
       '';
       default = self: super: with pkgs.haskell.lib.compose;
         let
           selfSupered = applySelfSuper self super;
+          settings = config.settings;
         in
         lib.flip lib.pipe (
-          lib.optional (config.check != null)
-            (if config.check then doCheck else dontCheck)
+          lib.optional (settings.check != null)
+            (if settings.check then doCheck else dontCheck)
           ++
-          lib.optional (config.haddock != null)
-            (if config.haddock then doHaddock else dontHaddock)
+          lib.optional (settings.haddock != null)
+            (if settings.haddock then doHaddock else dontHaddock)
           ++
-          lib.optional config.justStaticExecutables
+          lib.optional settings.justStaticExecutables
             justStaticExecutables
           ++
-          lib.optional (config.libraryProfiling != null)
-            (if config.libraryProfiling then enableLibraryProfiling else disableLibraryProfiling)
+          lib.optional (settings.libraryProfiling != null)
+            (if settings.libraryProfiling then enableLibraryProfiling else disableLibraryProfiling)
           ++
-          lib.optional (config.executableProfiling != null)
-            (if config.executableProfiling then enableExecutableProfiling else disableExecutableProfiling)
+          lib.optional (settings.executableProfiling != null)
+            (if settings.executableProfiling then enableExecutableProfiling else disableExecutableProfiling)
           ++
-          lib.optional (config.extraBuildDepends != null)
-            (addBuildDepends (selfSupered config.extraBuildDepends))
+          lib.optional (settings.extraBuildDepends != null)
+            (addBuildDepends (selfSupered settings.extraBuildDepends))
           ++
-          lib.optional (config.removeReferencesTo != null)
+          lib.optional (settings.removeReferencesTo != null)
             (
               let
                 # Remove the given references from drv's executables.
@@ -176,7 +184,7 @@ in
                     '';
                   });
               in
-              removeReferencesTo (selfSupered config.removeReferencesTo)
+              removeReferencesTo (selfSupered settings.removeReferencesTo)
             )
         );
     };

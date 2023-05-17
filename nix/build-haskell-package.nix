@@ -37,5 +37,5 @@ lib.pipe pkgCfg.root
     fromSdist
     (x: log.traceDebug "${name}.fromSdist ${x.outPath}" x)
 
-    (pkgCfg.apply self super)
+    (pkgCfg.applySettings self super)
   ]

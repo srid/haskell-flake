@@ -202,7 +202,7 @@ in
         in
         lib.mapAttrs
           (name: cfg:
-            cfg.apply self super (
+            cfg.applySettings self super (
               if cfg.root == null
               then if lib.hasAttr name super
               then super."${name}"
