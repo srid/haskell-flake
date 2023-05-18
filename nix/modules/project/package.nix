@@ -3,20 +3,19 @@ let
   inherit (lib)
     mkOption
     types;
+  # TODO: DRY
+  isPathUnderNixStore = path: builtins.hasContext (builtins.toString path);
   haskellSourceType = lib.mkOptionType {
     name = "haskellSource";
     description = ''
       Path to Haskell package source, or version from Hackage.
     '';
     check = path:
-      let
-        isPathUnderNixStore = path: builtins.hasContext (builtins.toString path);
-      in
       isPathUnderNixStore path || builtins.isString path;
     merge = lib.mergeOneOption;
   };
 in
-{ config, ... }: {
+{ name, config, ... }: {
   options = {
     # TODO: Rename this to 'source'?
     root = mkOption {
@@ -29,6 +28,29 @@ in
       default = null;
     };
 
+    cabal.executables = mkOption {
+      type = types.nullOr (types.listOf types.string);
+      description = ''
+        List of executable names found in the cabal file of the package.
+        
+        The value is null if 'root' option is Hackage version.
+      '';
+      default =
+        let
+          haskell-parsers = import ../../haskell-parsers {
+            inherit pkgs lib;
+            throwError = msg: config.log.throwError ''
+              Unable to determine executable names for package ${name}:
+
+                ${msg}
+            '';
+          };
+        in
+        if isPathUnderNixStore config.root
+        then haskell-parsers.getCabalExecutables config.root
+        else null; # cfg.root is Hackage version; nothing to do.
+    };
+
     localTo = mkOption {
       type = types.functionTo types.bool;
       description = ''
@@ -38,11 +60,9 @@ in
       # FIXME: why can't we set this when using project-modules.nix?
       # readOnly = true;
       default = projectRoot:
-        let
-          t = x: builtins.trace x x;
-        in
         config.root != null &&
-        lib.strings.hasPrefix (t "${projectRoot}") "${config.root}";
+        isPathUnderNixStore config.root &&
+        lib.strings.hasPrefix "${projectRoot}" "${config.root}";
       defaultText = ''
         Computed automatically if package 'root' is under 'projectRoot'.
       '';
@@ -51,6 +71,9 @@ in
     # cabal2nix stuff goes here.
     settings = mkOption {
       default = { };
+      description = ''
+        Overrides for an individual Haskell package.
+      '';
       type = types.submoduleWith {
         specialArgs = {
           inherit pkgs lib;

@@ -1,5 +1,11 @@
 # Revision history for haskell-flake
 
+## Unreleased
+
+- ??: Enriched `packages` option to support modular overrides, deprecating `overrides` and `source-overrides` options in the process.
+  - Add `package.<name>.cabal.executables` to specify executables in a package. This auto-detected by parsing the Cabal file.
+
+
 ## `master`
 
 - #134: Add `autoWire` option to control generation of flake outputs

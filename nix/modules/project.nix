@@ -254,17 +254,6 @@ in
       buildPackageInfo = name: value: {
         package = finalPackages.${name};
         exes =
-          let
-            haskell-parsers = import ../haskell-parsers {
-              inherit pkgs lib;
-              throwError = msg: config.log.throwError ''
-                Unable to determine executable names for package ${name}:
-
-                  ${msg}
-              '';
-            };
-            exeNames = haskell-parsers.getCabalExecutables value.root;
-          in
           lib.listToAttrs
             (map
               (exe:
@@ -272,7 +261,7 @@ in
                   program = "${lib.getBin finalPackages.${name}}/bin/${exe}";
                 }
               )
-              exeNames
+              value.cabal.executables
             );
       };
 
