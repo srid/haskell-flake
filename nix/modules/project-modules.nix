@@ -16,7 +16,7 @@ in
               A lazy attrset of `haskellProjects.<name>` modules that can be
               imported in other flakes.
             '';
-            defaultText = ''
+            defaultText = lib.literalMD ''
               Package and dependency information for this project exposed for reuse
               in another flake, when using this project as a Haskell dependency.
 

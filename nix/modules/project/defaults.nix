@@ -40,6 +40,9 @@ in
           (lib.mapAttrs (_: path: { root = path; }))
           (x: config.log.traceDebug "config.haskellProjects.${name}.defaults.packages = ${builtins.toJSON x}" x)
         ];
+      defaultText = lib.literalMD ''
+        Scanned from `projectRoot`.
+      '';
     };
   };
 }
