@@ -191,7 +191,7 @@ in
                   inherit (y.settings) check;
                 } # builtins.removeAttrs y.settings [ "custom" "impl" "removeReferencesTo" ]
                 // {
-                  inherit (y) root;
+                  inherit (y) root local cabal;
                 })
               x;
           in
@@ -203,44 +203,35 @@ in
           (lib.filterAttrs (_: cfg: cfg.local))
           (tracePackageSettings "localPackages")
         ];
-      nonLocalPackageSettings =
-        lib.pipe config.packages [
-          (lib.filterAttrs (_: x: ! x.local))
-          (tracePackageSettings "nonLocalPackageSettings")
-        ];
 
-      nonLocalPackageSettingsOverlay = self: super:
+      packagesOverlay = self: super:
         let
           isPathUnderNixStore = path: builtins.hasContext (builtins.toString path);
-        in
-        lib.mapAttrs
-          (name: cfg:
-            cfg.applySettings self super (
-              if cfg.root == null
-              then if lib.hasAttr name super
-              then super."${name}"
-              else config.log.throwError "Your 'packages' has configured an unknown package: ${name} (does not exist in basePackages)"
-              else
-                (if isPathUnderNixStore cfg.root
-                then
-                # TODO: Should we use build-haskell-packages.nix here?
-                  (builtins.trace "callCabal2nix: ${cfg.root}" self.callCabal2nix)
-                else (builtins.trace "callHackage: ${cfg.root} / ${builtins.typeOf cfg.root}" self.callHackage))
-                  name
-                  cfg.root
-                  { }
-            )
-          )
-          nonLocalPackageSettings;
-
-      localPackagesOverlay = self: super:
-        let
           build-haskell-package = import ../build-haskell-package.nix {
             inherit pkgs lib self super;
             inherit (config) log;
           };
         in
-        lib.mapAttrs build-haskell-package localPackages;
+        lib.mapAttrs
+          (name: cfg:
+            let
+              pkg =
+                if cfg.root == null
+                then if lib.hasAttr name super
+                then config.log.traceDebug "overlay.super: ${name}" super."${name}"
+                else config.log.throwError "Your 'packages' has configured an unknown package: ${name} (does not exist in basePackages)"
+                else
+                  if isPathUnderNixStore cfg.root
+                  then
+                    config.log.traceDebug "overlay.callCabal2nix(build-haskell-package): ${cfg.root}"
+                      (build-haskell-package name cfg.root)
+                  else
+                    config.log.traceDebug "overlay.callHackage: ${cfg.root} / ${builtins.typeOf cfg.root}"
+                      (self.callHackage name cfg.root { });
+            in
+            cfg.applySettings self super pkg
+          )
+          config.packages;
 
       finalOverlay = lib.composeManyExtensions [
         # The order here matters.
@@ -248,8 +239,7 @@ in
         # User's overrides (cfg.overrides) is applied **last** so
         # as to give them maximum control over the final package
         # set used.
-        localPackagesOverlay
-        nonLocalPackageSettingsOverlay
+        packagesOverlay
         (pkgs.haskell.lib.packageSourceOverrides config.source-overrides)
         config.overrides
       ];

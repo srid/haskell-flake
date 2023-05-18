@@ -22,8 +22,8 @@ let
     };
 in
 
-name: pkgCfg:
-lib.pipe pkgCfg.root
+name: root:
+lib.pipe root
   [
     # Avoid rebuilding because of changes in parent directories
     (mkNewStorePath "source-${name}")
@@ -36,6 +36,4 @@ lib.pipe pkgCfg.root
     # for release-worthiness.
     fromSdist
     (x: log.traceDebug "${name}.fromSdist ${x.outPath}" x)
-
-    (pkgCfg.applySettings self super)
   ]
