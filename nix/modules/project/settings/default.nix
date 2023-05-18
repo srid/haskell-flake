@@ -20,8 +20,7 @@ in
   options.impl = mkOption {
     type = types.submodule { };
     internal = true;
-    readOnly = true;
-    # hidden = true;
+    visible = false;
     default = { };
     description = ''
       Implementation for options in 'settings'
