@@ -58,6 +58,8 @@ in
       '';
       internal = true;
       readOnly = true;
+      # We use 'apply' rather than 'default' to make this evaluation lazy at
+      # call site (which could be different projectRoot)
       apply = _:
         config.root != null &&
         isPathUnderNixStore config.root &&
