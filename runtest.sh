@@ -13,8 +13,7 @@ TESTS=(
   ./test/simple
   ./test/with-subdir
   ./test/project-module
-  # FIXME: why is doc failing on projectRoot option?
-  # ./doc
+  ./doc
 )
 
 for testDir in "${TESTS[@]}" 
