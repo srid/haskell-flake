@@ -94,7 +94,7 @@ in
       devShell = finalPackages.shellFor (mkShellArgs // {
         packages = p:
           let
-            localPackages = (lib.filterAttrs (k: v: v.localTo config.projectRoot) config.packages);
+            localPackages = (lib.filterAttrs (k: v: v.local) config.packages);
           in
           map
             (name: p."${name}")

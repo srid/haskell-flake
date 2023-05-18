@@ -51,18 +51,17 @@ in
         else null; # cfg.root is Hackage version; nothing to do.
     };
 
-    localTo = mkOption {
-      type = types.functionTo types.bool;
+    local = mkOption {
+      type = types.bool;
       description = ''
-        Whether this package is local to a projectRoot.
+        Whether this package is local to the current `projectRoot`.
       '';
       internal = true;
-      # FIXME: why can't we set this when using project-modules.nix?
-      # readOnly = true;
-      default = projectRoot:
+      readOnly = true;
+      apply = _:
         config.root != null &&
         isPathUnderNixStore config.root &&
-        lib.strings.hasPrefix "${projectRoot}" "${config.root}";
+        lib.strings.hasPrefix "${project.config.projectRoot}" "${config.root}";
       defaultText = ''
         Computed automatically if package 'root' is under 'projectRoot'.
       '';

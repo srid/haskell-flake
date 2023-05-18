@@ -200,12 +200,12 @@ in
       # Subet of config.packages that are local to the project.
       localPackages =
         lib.pipe config.packages [
-          (lib.filterAttrs (_: cfg: cfg.localTo config.projectRoot))
+          (lib.filterAttrs (_: cfg: cfg.local))
           (tracePackageSettings "localPackages")
         ];
       nonLocalPackageSettings =
         lib.pipe config.packages [
-          (lib.filterAttrs (_: x: ! x.localTo config.projectRoot))
+          (lib.filterAttrs (_: x: ! x.local))
           (tracePackageSettings "nonLocalPackageSettings")
         ];
 
