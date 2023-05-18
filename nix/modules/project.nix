@@ -181,42 +181,32 @@ in
     let
       inherit (config.outputs) finalPackages;
 
+      # TODO: finish implementing this.
+      tracePackageSettings = k:
+        (x:
+          let
+            x' = lib.mapAttrs
+              (_: y:
+                {
+                  inherit (y.settings) check;
+                } # builtins.removeAttrs y.settings [ "custom" "impl" "removeReferencesTo" ]
+                // {
+                  inherit (y) root;
+                })
+              x;
+          in
+          config.log.traceDebug "${k}: ${builtins.toJSON x'}" x);
+
       # Subet of config.packages that are local to the project.
       localPackages =
         lib.pipe config.packages [
           (lib.filterAttrs (_: cfg: cfg.localTo config.projectRoot))
-          (x:
-            let
-              x' = lib.mapAttrs
-                (_: y:
-                  {
-                    inherit (y.settings) check;
-                  } # builtins.removeAttrs y.settings [ "custom" "impl" "removeReferencesTo" ]
-                  // {
-                    inherit (y) root;
-                  })
-                x;
-            in
-            config.log.traceDebug "localPackages: ${builtins.toJSON x'}" x)
+          (tracePackageSettings "localPackages")
         ];
       nonLocalPackageSettings =
         lib.pipe config.packages [
           (lib.filterAttrs (_: x: ! x.localTo config.projectRoot))
-          # TODO: print everything but 'apply'
-          (x:
-            let
-              x' = lib.mapAttrs
-                (_: y:
-                  {
-                    inherit (y.settings) check;
-                  } # builtins.removeAttrs y.settings [ "custom" "impl" "removeReferencesTo" ]
-                  // {
-                    inherit (y) root;
-                  })
-                x;
-            in
-            config.log.traceDebug "nonLocalPackageSettings: ${builtins.toJSON x'}" x)
-          # (x: config.log.traceDebug "nonLocalPackageSettings: ${builtins.toJSON x}" x)
+          (tracePackageSettings "nonLocalPackageSettings")
         ];
 
       nonLocalPackageSettingsOverlay = self: super:
