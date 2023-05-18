@@ -204,34 +204,54 @@ in
           (tracePackageSettings "localPackages")
         ];
 
-      packagesOverlay = self: super:
-        let
-          isPathUnderNixStore = path: builtins.hasContext (builtins.toString path);
-          build-haskell-package = import ../build-haskell-package.nix {
-            inherit pkgs lib self super;
-            inherit (config) log;
-          };
-        in
-        lib.mapAttrs
-          (name: cfg:
-            let
-              pkg =
-                if cfg.root == null
-                then if lib.hasAttr name super
-                then config.log.traceDebug "overlay.super: ${name}" super."${name}"
-                else config.log.throwError "Your 'packages' has configured an unknown package: ${name} (does not exist in basePackages)"
-                else
-                  if isPathUnderNixStore cfg.root
-                  then
-                    config.log.traceDebug "overlay.callCabal2nix(build-haskell-package): ${cfg.root}"
-                      (build-haskell-package name cfg.root)
+      # We create *two* overlays, so that the latter settings overlay can access
+      # the passthru stored in the first overlay.
+      packagesOverlays = {
+        sources = self: super:
+          let
+            isPathUnderNixStore = path: builtins.hasContext (builtins.toString path);
+            build-haskell-package = import ../build-haskell-package.nix {
+              inherit pkgs lib self super;
+              inherit (config) log;
+            };
+          in
+          lib.mapAttrs
+            (name: cfg:
+              let
+                pkg =
+                  if cfg.root == null
+                  then if lib.hasAttr name super
+                  then config.log.traceDebug "overlay.super: ${name}" super."${name}"
+                  else config.log.throwError "Unknown package: ${name} (does not exist in basePackages)"
                   else
-                    config.log.traceDebug "overlay.callHackage: ${cfg.root} / ${builtins.typeOf cfg.root}"
-                      (self.callHackage name cfg.root { });
-            in
-            cfg.applySettings self super pkg
-          )
-          config.packages;
+                    if isPathUnderNixStore cfg.root
+                    then
+                      config.log.traceDebug "overlay.callCabal2nix(build-haskell-package): ${cfg.root}"
+                        (build-haskell-package name cfg.root)
+                    else
+                      config.log.traceDebug "overlay.callHackage: ${cfg.root} / ${builtins.typeOf cfg.root}"
+                        (self.callHackage name cfg.root { });
+              in
+              # Add haskell-flake's metadata to the package's passthru.
+                # This is useful in 'settings' overrides.
+                # Eg: super.${name}.passthru.haskell-flake.cabal.executables != [ ];
+              pkg.overrideAttrs (oa: {
+                passthru = (oa.passthru or { }) // {
+                  haskell-flake = {
+                    inherit (cfg) cabal;
+                  };
+                };
+              })
+            )
+            config.packages;
+
+        settings = self: super:
+          lib.mapAttrs
+            (name: cfg:
+              cfg.applySettings self super super.${name}
+            )
+            config.packages;
+      };
 
       finalOverlay = lib.composeManyExtensions [
         # The order here matters.
@@ -239,7 +259,8 @@ in
         # User's overrides (cfg.overrides) is applied **last** so
         # as to give them maximum control over the final package
         # set used.
-        packagesOverlay
+        packagesOverlays.sources
+        packagesOverlays.settings
         (pkgs.haskell.lib.packageSourceOverrides config.source-overrides)
         config.overrides
       ];
