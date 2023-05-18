@@ -91,12 +91,11 @@ in
     applySettings = mkOption {
       type = types.functionTo (types.functionTo (types.functionTo types.package));
       internal = true;
-      # FIXME: why can't we set this when using project-modules.nix?
-      # readOnly = true;
+      readOnly = true;
       description = ''
         A function that applies all the 'settings' in this module.
       '';
-      default = self: super: p:
+      apply = _: self: super: p:
         let
           implList = lib.pipe config.settings.impl [
             lib.attrValues
