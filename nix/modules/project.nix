@@ -203,6 +203,19 @@ in
         lib.pipe config.packages [
           (lib.filterAttrs (_: x: ! x.localTo config.projectRoot))
           # TODO: print everything but 'apply'
+          (x:
+            let
+              x' = lib.mapAttrs
+                (_: y:
+                  {
+                    inherit (y.settings) check;
+                  } # builtins.removeAttrs y.settings [ "custom" "impl" "removeReferencesTo" ]
+                  // {
+                    inherit (y) root;
+                  })
+                x;
+            in
+            config.log.traceDebug "nonLocalPackageSettings: ${builtins.toJSON x'}" x)
           # (x: config.log.traceDebug "nonLocalPackageSettings: ${builtins.toJSON x}" x)
         ];
 
