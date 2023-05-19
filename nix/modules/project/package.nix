@@ -69,7 +69,6 @@ in
       '';
     };
 
-    # cabal2nix stuff goes here.
     settings = mkOption {
       default = { };
       description = ''
@@ -86,24 +85,6 @@ in
           ./settings
         ];
       };
-    };
-
-    applySettings = mkOption {
-      type = types.functionTo (types.functionTo (types.functionTo types.package));
-      internal = true;
-      # FIXME: why can't we set this when using project-modules.nix?
-      # readOnly = true;
-      description = ''
-        A function that applies all the 'settings' in this module.
-      '';
-      default = self: super: p:
-        let
-          implList = lib.pipe config.settings.impl [
-            lib.attrValues
-            (lib.concatMap (impl: impl self super))
-          ];
-        in
-        lib.pipe p implList;
     };
   };
 }

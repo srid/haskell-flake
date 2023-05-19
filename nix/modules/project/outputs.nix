@@ -146,11 +146,15 @@ in
             config.packages;
 
         settings = self: super:
-          lib.mapAttrs
-            (name: cfg:
-              cfg.applySettings self super super.${name}
-            )
-            config.packages;
+          let
+            applySettingsFor = name: cfg:
+              lib.pipe super.${name} (
+                lib.concatMap
+                  (impl: impl self super)
+                  (lib.attrValues cfg.settings.impl)
+              );
+          in
+          lib.mapAttrs applySettingsFor config.packages;
       };
 
       finalOverlay = lib.composeManyExtensions [
