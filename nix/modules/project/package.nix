@@ -82,11 +82,9 @@ in
           inherit lib;
           config = config.settings;
         });
-        modules = [{
-          imports = [
-            ./settings
-          ];
-        }];
+        modules = [
+          ./settings
+        ];
       };
     };
 
