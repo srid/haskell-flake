@@ -69,22 +69,6 @@ in
       '';
     };
 
-    settings = mkOption {
-      default = { };
-      description = ''
-        Overrides for an individual Haskell package.
-      '';
-      type = types.submoduleWith {
-        specialArgs = {
-          inherit pkgs lib;
-        } // (import ./settings/lib.nix {
-          inherit lib;
-          config = config.settings;
-        });
-        modules = [
-          ./settings
-        ];
-      };
-    };
+
   };
 }

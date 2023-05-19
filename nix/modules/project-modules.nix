@@ -37,9 +37,9 @@ in
         config.haskellFlakeProjectModules =
           let
             defaults = {
-              packages = { pkgs, lib, ... }: withSystem pkgs.system ({ config, ... }: {
+              output = { pkgs, lib, ... }: withSystem pkgs.system ({ config, ... }: {
                 inherit (config.haskellProjects.default)
-                  packages;
+                  packages settings;
               });
             };
           in

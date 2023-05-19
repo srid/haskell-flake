@@ -88,7 +88,7 @@ in
             x' = lib.mapAttrs
               (_: y:
                 {
-                  inherit (y.settings) check;
+                  # inherit (y.settings) check;
                 } # builtins.removeAttrs y.settings [ "custom" "impl" "removeReferencesTo" ]
                 // {
                   inherit (y) root local cabal;
@@ -129,7 +129,7 @@ in
                       config.log.traceDebug "overlay.callCabal2nix(build-haskell-package): ${cfg.root}"
                         (build-haskell-package name cfg.root)
                     else
-                      config.log.traceDebug "overlay.callHackage: ${cfg.root} / ${builtins.typeOf cfg.root}"
+                      config.log.traceDebug "overlay.callHackage: ${name}-${cfg.root} / ${builtins.typeOf cfg.root}"
                         (self.callHackage name cfg.root { });
               in
               # Add haskell-flake's metadata to the package's passthru.
@@ -148,13 +148,13 @@ in
         settings = self: super:
           let
             applySettingsFor = name: cfg:
-              lib.pipe super.${name} (
+              lib.pipe super.${(config.log.traceDebug "settings for ${name} / ${builtins.toJSON (lib.attrNames cfg.settings)} ${builtins.toJSON cfg.settings.check}" name)} (
                 lib.concatMap
                   (impl: impl self super)
                   (lib.attrValues cfg.settings.impl)
               );
           in
-          lib.mapAttrs applySettingsFor config.packages;
+          lib.mapAttrs applySettingsFor config.settings;
       };
 
       finalOverlay = lib.composeManyExtensions [
