@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-- ??: Enriched `packages` option to support modular overrides, deprecating `overrides` and `source-overrides` options in the process.
+- ??: Enriched `packages` option to support modular overrides, removing `overrides` and `source-overrides` options in the process.
   - Add `package.<name>.cabal.executables` to specify executables in a package. This auto-detected by parsing the Cabal file.
 
 

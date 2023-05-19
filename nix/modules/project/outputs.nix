@@ -156,13 +156,9 @@ in
       finalOverlay = lib.composeManyExtensions [
         # The order here matters.
         #
-        # User's overrides (cfg.overrides) is applied **last** so
-        # as to give them maximum control over the final package
-        # set used.
+        # settings overlay is applied last.
         packagesOverlays.sources
         packagesOverlays.settings
-        (pkgs.haskell.lib.packageSourceOverrides config.source-overrides)
-        config.overrides
       ];
 
       buildPackageInfo = name: value: {
