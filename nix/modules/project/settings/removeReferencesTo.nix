@@ -1,4 +1,4 @@
-{ lib, mkCabalSettingOptions, ... }:
+{ config, lib, mkCabalSettingOptions, ... }:
 
 let
   inherit (lib)
@@ -9,6 +9,7 @@ in
   # user to define these 'custom' options? Are NixOS modules flexible enough
   # for that?
   options = mkCabalSettingOptions {
+    inherit config;
     name = "removeReferencesTo";
     type = types.listOf types.package;
     description = ''

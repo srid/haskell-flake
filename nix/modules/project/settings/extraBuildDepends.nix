@@ -1,4 +1,4 @@
-{ pkgs, lib, mkCabalSettingOptions, ... }:
+{ config, pkgs, lib, mkCabalSettingOptions, ... }:
 
 let
   inherit (lib)
@@ -8,6 +8,7 @@ let
 in
 {
   options = mkCabalSettingOptions {
+    inherit config;
     name = "extraBuildDepends";
     type = listOf types.package;
     description = ''

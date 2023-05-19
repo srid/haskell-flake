@@ -1,4 +1,4 @@
-{ pkgs, lib, mkCabalSettingOptions, ... }:
+{ config, pkgs, lib, mkCabalSettingOptions, ... }:
 
 let
   inherit (lib)
@@ -6,6 +6,7 @@ let
 in
 {
   options = mkCabalSettingOptions {
+    inherit config;
     name = "haddock";
     type = types.bool;
     description = ''

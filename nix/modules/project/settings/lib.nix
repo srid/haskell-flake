@@ -1,4 +1,4 @@
-{ config, lib, ... }:
+{ lib, ... }:
 
 let
   inherit (lib)
@@ -6,7 +6,7 @@ let
     types;
   inherit (types)
     functionTo listOf;
-  mkImplOption = name: f: mkOption {
+  mkImplOption = config: name: f: mkOption {
     # self: super: -> [ pkg -> pkg ]
     type = functionTo (functionTo (listOf (functionTo types.package)));
     description = ''
@@ -47,11 +47,11 @@ let
   #
   # The user sets the former, whereas the latter provides the list of functions
   # to apply on the package (as implementation for this setting).
-  mkCabalSettingOptions = { name, type, description, impl }: {
+  mkCabalSettingOptions = { config, name, type, description, impl }: {
     "${name}" = mkSelfSuperOption {
       inherit type description;
     };
-    impl."${name}" = mkImplOption name impl;
+    impl."${name}" = mkImplOption config name impl;
   };
 in
 {

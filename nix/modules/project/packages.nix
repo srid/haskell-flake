@@ -9,26 +9,6 @@ let
   # Merge the list of attrset of modules.
   mergeModuleAttrs =
     lib.zipAttrsWith (k: vs: { imports = vs; });
-
-  settingsSubmodule = { config, lib, pkgs, ... }: {
-    options.settings = lib.mkOption {
-      default = { };
-      description = ''
-        Overrides for an individual Haskell package.
-      '';
-      type = types.submoduleWith {
-        specialArgs = {
-          inherit pkgs lib;
-        } // (import ./settings/lib.nix {
-          inherit lib;
-          config = config.settings;
-        });
-        modules = [
-          ./settings
-        ];
-      };
-    };
-  };
 in
 {
   options = {
@@ -73,8 +53,10 @@ in
         lib.mapAttrs
           (k: v:
             (lib.evalModules {
-              modules = [ settingsSubmodule v ];
-              specialArgs = { inherit pkgs; };
+              modules = [ ./settings v ];
+              specialArgs = { inherit pkgs lib; } // (import ./settings/lib.nix {
+                inherit lib;
+              });
             }).config
           )
           settings;

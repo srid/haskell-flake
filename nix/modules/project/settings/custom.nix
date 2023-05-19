@@ -1,4 +1,4 @@
-{ lib, mkCabalSettingOptions, ... }:
+{ config, lib, mkCabalSettingOptions, ... }:
 
 let
   inherit (lib)
@@ -6,6 +6,7 @@ let
 in
 {
   options = mkCabalSettingOptions {
+    inherit config;
     name = "custom";
     type = types.functionTo types.raw;
     description = ''

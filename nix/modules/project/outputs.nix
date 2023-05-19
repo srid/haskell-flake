@@ -148,10 +148,10 @@ in
         settings = self: super:
           let
             applySettingsFor = name: cfg:
-              lib.pipe super.${(config.log.traceDebug "settings for ${name} / ${builtins.toJSON (lib.attrNames cfg.settings)} ${builtins.toJSON cfg.settings.check}" name)} (
+              lib.pipe super.${name} (
                 lib.concatMap
                   (impl: impl self super)
-                  (lib.attrValues cfg.settings.impl)
+                  (lib.attrValues cfg.impl)
               );
           in
           lib.mapAttrs applySettingsFor config.settings;
