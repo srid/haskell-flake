@@ -11,6 +11,7 @@ in
   imports = [
     ./project/defaults.nix
     ./project/packages.nix
+    ./project/settings
     ./project/devshell.nix
     ./project/outputs.nix
   ];

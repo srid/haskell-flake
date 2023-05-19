@@ -34,7 +34,9 @@ in
           packages';
 
       description = ''
-        Set of local packages in the project repository.
+        Additional packages to add to `basePackages`.
+
+        Local packages are added automatically:
 
         If you have a `cabal.project` file (under `projectRoot`), those packages
         are automatically discovered. Otherwise, the top-level .cabal file is
@@ -44,22 +46,6 @@ in
         `cabal.project`. Specifically it requires an explicit list of package
         directories under the "packages" option.
       '';
-    };
-
-    settings = lib.mkOption {
-      type = types.lazyAttrsOf types.deferredModule;
-      default = { };
-      apply = settings:
-        lib.mapAttrs
-          (k: v:
-            (lib.evalModules {
-              modules = [ ./settings v ];
-              specialArgs = { inherit pkgs lib; } // (import ./settings/lib.nix {
-                inherit lib;
-              });
-            }).config
-          )
-          settings;
     };
   };
 }
