@@ -68,7 +68,5 @@ in
         Computed automatically if package 'root' is under 'projectRoot'.
       '';
     };
-
-
   };
 }

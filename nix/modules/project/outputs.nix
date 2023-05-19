@@ -82,26 +82,34 @@ in
       inherit (config.outputs) finalPackages;
 
       # TODO: finish implementing this.
-      tracePackageSettings = k:
+      tracePackages = k:
         (x:
           let
             x' = lib.mapAttrs
               (_: y:
                 {
-                  # inherit (y.settings) check;
-                } # builtins.removeAttrs y.settings [ "custom" "impl" "removeReferencesTo" ]
-                // {
                   inherit (y) root local cabal;
                 })
               x;
           in
           config.log.traceDebug "${k}: ${builtins.toJSON x'}" x);
 
+      traceSettings = k:
+        (x:
+          let
+            x' = lib.mapAttrs
+              (_: y:
+                lib.attrNames y)
+              x;
+          in
+          config.log.traceDebug "${k}: ${builtins.toJSON x'}" x);
+
+
       # Subet of config.packages that are local to the project.
       localPackages =
         lib.pipe config.packages [
           (lib.filterAttrs (_: cfg: cfg.local))
-          (tracePackageSettings "localPackages")
+          (tracePackages "localPackages")
         ];
 
       # We create *two* overlays, so that the latter settings overlay can access
@@ -154,7 +162,7 @@ in
                   (lib.attrValues cfg.impl)
               );
           in
-          lib.mapAttrs applySettingsFor config.settings;
+          lib.mapAttrs applySettingsFor (traceSettings "settings" config.settings);
       };
 
       finalOverlay = lib.composeManyExtensions [
