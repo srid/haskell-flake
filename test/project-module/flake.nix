@@ -20,7 +20,7 @@
       ];
       perSystem = { self', pkgs, ... }: {
         haskellProjects.default = {
-          imports = [ inputs.haskell-multi-nix.haskellFlakeProjectModules.output ];
+          imports = [ inputs.haskell-multi-nix.haskellFlakeProjectModules.packages ];
         };
         packages.default = self'.packages.haskell-flake-test;
       };
