@@ -43,5 +43,8 @@ in
           }).config
         )
         settings;
+    description = ''
+      Overrides for packages in `basePackages` and `packages`.
+    '';
   };
 }
