@@ -64,4 +64,8 @@ use flake
 
 As a result of this whenever you change a `.cabal` file, direnv will reload the environment. If you are using VSCode, you will see a notification that the environment has changed, prompting you to restart it.
 
+## External Links
+
+- [Effortless dev environments with Nix and direnv](https://determinate.systems/posts/nix-direnv)
+
 [nix-direnv]: https://github.com/nix-community/nix-direnv
