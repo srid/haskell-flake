@@ -20,23 +20,17 @@ in
               Package and dependency information for this project exposed for reuse
               in another flake, when using this project as a Haskell dependency.
 
-              A 'default' module is provided that exports the `packages` and
-              `settings` options to the consuming flake, in effect to use this
-              flake's Haskell package as a dependency re-using its overrides.
+              The 'output' module of the default project is included by default,
+              returning `defaults.outputProjectModule`.
             '';
             default = { };
           };
 
-        config.haskellFlakeProjectModules =
-          let
-            defaults = {
-              output = { pkgs, lib, ... }: withSystem pkgs.system ({ config, ... }: {
-                inherit (config.haskellProjects.default)
-                  packages settings;
-              });
-            };
-          in
-          defaults;
+        config.haskellFlakeProjectModules = {
+          output = { pkgs, lib, ... }: withSystem pkgs.system ({ config, ... }:
+            config.haskellProjects."default".defaults.outputProjectModule
+          );
+        };
       }];
     };
   };

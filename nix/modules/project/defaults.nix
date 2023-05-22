@@ -20,6 +20,7 @@ in
           hlint;
       };
     };
+
     packages = mkOption {
       type = types.lazyAttrsOf types.deferredModule;
       description = ''Local packages scanned from projectRoot'';
@@ -55,6 +56,19 @@ in
         `cabal.project`. Specifically it requires an explicit list of package
         directories under the "packages" option.
       '';
+    };
+
+    outputProjectModule = mkOption {
+      type = types.deferredModule;
+      description = ''
+        A haskell-flake project module that exports the `packages` and
+        `settings` options to the consuming flake. This enables the use of this
+        flake's Haskell package as a dependency, re-using its overrides.
+      '';
+      default = {
+        inherit (config)
+          packages settings;
+      };
     };
   };
 }
