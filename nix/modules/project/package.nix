@@ -19,14 +19,13 @@ in
 { name, config, ... }: {
   options = {
     source = mkOption {
-      type = types.nullOr haskellSourceType;
+      type = haskellSourceType;
       description = ''
         Source refers to a Haskell package defined by one of the following:
 
         - Path containing the Haskell package's `.cabal` file.
         - Hackage version string
       '';
-      default = null;
     };
 
     cabal.executables = mkOption {

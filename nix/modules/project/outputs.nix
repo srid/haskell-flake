@@ -95,18 +95,13 @@ in
               inherit (config) log;
             };
             getOrMkPackage = name: cfg:
-              if cfg.source == null
+              if isPathUnderNixStore cfg.source
               then
-                super."${name}" or
-                  config.log.throwError "Unknown package: ${name} (does not exist in basePackages)"
+                config.log.traceDebug "${name}.callCabal2nix ${cfg.source}"
+                  (build-haskell-package name cfg.source)
               else
-                if isPathUnderNixStore cfg.source
-                then
-                  config.log.traceDebug "${name}.callCabal2nix ${cfg.source}"
-                    (build-haskell-package name cfg.source)
-                else
-                  config.log.traceDebug "${name}.callHackage ${cfg.source}"
-                    (self.callHackage name cfg.source { });
+                config.log.traceDebug "${name}.callHackage ${cfg.source}"
+                  (self.callHackage name cfg.source { });
           in
           lib.mapAttrs getOrMkPackage config.packages;
 
