@@ -40,7 +40,7 @@ in
         let
           haskell-parsers = import ../../haskell-parsers {
             inherit pkgs lib;
-            throwError = msg: config.log.throwError ''
+            throwError = msg: project.config.log.throwError ''
               Unable to determine executable names for package ${name}:
 
                 ${msg}

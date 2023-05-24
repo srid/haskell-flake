@@ -29,10 +29,10 @@ in
         in
         tracePackages "${name}.packages:apply" (
           lib.mapAttrs
-            (k: v:
+            (name: v:
               (lib.evalModules {
                 modules = [ packageSubmodule v ];
-                specialArgs = { inherit pkgs; };
+                specialArgs = { inherit name pkgs; };
               }).config
             )
             packages');
