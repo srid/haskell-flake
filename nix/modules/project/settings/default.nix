@@ -6,6 +6,8 @@ let
   settingsSubmodule = {
     imports = [
       ./check.nix
+      ./jailbreak.nix
+      ./broken.nix
       ./haddock.nix
       ./libraryProfiling.nix
       ./executableProfiling.nix
