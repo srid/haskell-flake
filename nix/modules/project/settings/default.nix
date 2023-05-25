@@ -48,23 +48,41 @@ in
     '';
   };
 
-  options.evalSettings = lib.mkOption {
-    type = types.functionTo types.raw;
-    default = settings: self: super:
-      traceSettings "${name}.settings:apply.keys"
+  options.settingsOverlay = lib.mkOption {
+    type = types.functionTo (types.functionTo types.raw);
+    description = ''
+      The Haskell overlay computed from `settings` modules.
+    '';
+    internal = true;
+    default = self: super:
+      let
+        applySettingsFor = name: cfg:
+          lib.pipe super.${name} (
+            # TODO: Do we care about the *order* of overrides?
+            # Might be relevant for the 'custom' option.
+            lib.concatMap
+              (impl: impl)
+              (lib.attrValues cfg.impl)
+          );
+        evalSettingsModule = name: mod:
+          (lib.evalModules {
+            modules = [
+              settingsSubmodule
+              mod
+            ];
+            specialArgs = {
+              inherit name pkgs lib self super;
+            }
+            // (import ./lib.nix {
+              inherit lib self super;
+            });
+          }).config;
+      in
+      traceSettings "${name}.settings.keys"
         (lib.mapAttrs
           (k: v:
-            self: super: (lib.evalModules {
-              modules = [ settingsSubmodule v ];
-              specialArgs = {
-                inherit pkgs lib self super;
-                name = k;
-              }
-              // (import ./lib.nix {
-                inherit lib self super;
-              });
-            }).config
+            applySettingsFor k (evalSettingsModule k v)
           )
-          settings);
+          project.config.settings);
   };
 }

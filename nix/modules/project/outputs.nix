@@ -106,19 +106,7 @@ in
           lib.mapAttrs getOrMkPackage config.packages;
 
         # Overlay for `config.settings`
-        settings = self: super:
-          let
-            applySettingsFor = name: cfg:
-              lib.pipe super.${name} (
-                # TODO: Do we care about the *order* of overrides?
-                # Might be relevant for the 'custom' option.
-                lib.concatMap
-                  (impl: impl)
-                  (lib.attrValues (cfg self super).impl)
-              );
-          in
-          lib.mapAttrs applySettingsFor 
-            (config.evalSettings config.settings self super);
+        settings = config.settingsOverlay;
       };
 
       finalOverlay = lib.composeManyExtensions [
