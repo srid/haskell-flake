@@ -117,7 +117,8 @@ in
                   (lib.attrValues (cfg self super).impl)
               );
           in
-          lib.mapAttrs applySettingsFor config.settings;
+          lib.mapAttrs applySettingsFor 
+            (config.evalSettings config.settings self super);
       };
 
       finalOverlay = lib.composeManyExtensions [

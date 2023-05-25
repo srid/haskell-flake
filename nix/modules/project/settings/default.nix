@@ -37,7 +37,20 @@ in
   options.settings = lib.mkOption {
     type = types.lazyAttrsOf types.deferredModule;
     default = { };
-    apply = settings:
+    description = ''
+      Overrides for packages in `basePackages` and `packages`.
+
+      Attr values are modules that take the following arguments:
+
+      - name: The key of the attr value.
+      - self/super: The 'self' and 'super' (aka. 'final' and 'prev') used in the Haskell overlauy.
+      - pkgs: Nixpkgs instance of the module user (import'er).
+    '';
+  };
+
+  options.evalSettings = lib.mkOption {
+    type = types.functionTo types.raw;
+    default = settings: self: super:
       traceSettings "${name}.settings:apply.keys"
         (lib.mapAttrs
           (k: v:
@@ -53,14 +66,5 @@ in
             }).config
           )
           settings);
-    description = ''
-      Overrides for packages in `basePackages` and `packages`.
-
-      Attr values are modules that take the following arguments:
-
-      - name: The key of the attr value.
-      - self/super: The 'self' and 'super' (aka. 'final' and 'prev') used in the Haskell overlauy.
-      - pkgs: Nixpkgs instance of the module user (import'er).
-    '';
   };
 }
