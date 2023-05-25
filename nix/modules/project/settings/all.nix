@@ -6,6 +6,9 @@ let
   }) mkCabalSettingOptions;
 in
 {
+  # TODO: This list contains the most often used functions. We should complete
+  # it with what's left in 
+  # https://github.com/NixOS/nixpkgs/blob/master/pkgs/development/haskell-modules/lib/compose.nix
   imports = with pkgs.haskell.lib.compose; [
     {
       options = mkCabalSettingOptions {
@@ -57,6 +60,33 @@ in
 
     {
       options = mkCabalSettingOptions {
+        name = "coverage";
+        type = types.bool;
+        description = ''
+               Modifies thae haskell package to disable the generation
+          and installation of a coverage report.
+        '';
+        impl = enable:
+          if enable then doCoverage else dontCoverage;
+      };
+    }
+
+    {
+      options = mkCabalSettingOptions {
+        name = "benchmark";
+        type = types.bool;
+        description = ''
+          Enables dependency checking and compilation
+          for benchmarks listed in the package description file.
+          Benchmarks are, however, not executed at the moment.
+        '';
+        impl = enable:
+          if enable then doBenchmark else dontBenchmark;
+      };
+    }
+
+    {
+      options = mkCabalSettingOptions {
         name = "libraryProfiling";
         type = types.bool;
         description = ''
@@ -87,6 +117,28 @@ in
           Extra build dependencies for the package.
         '';
         impl = addBuildDepends;
+      };
+    }
+
+    {
+      options = mkCabalSettingOptions {
+        name = "extraConfigureFlags";
+        type = types.listOf types.string;
+        description = ''
+          Extra flags to pass to 'cabal configure'
+        '';
+        impl = appendConfigureFlags;
+      };
+    }
+
+    {
+      options = mkCabalSettingOptions {
+        name = "patches";
+        type = types.listOf types.path;
+        description = ''
+          A list of patches to apply to the package.
+        '';
+        impl = appendPatches;
       };
     }
 
