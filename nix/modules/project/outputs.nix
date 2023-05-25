@@ -79,40 +79,16 @@ in
   };
   config =
     let
-      inherit (config.outputs) finalPackages;
-
       # Subet of config.packages that are local to the project.
       localPackages =
         lib.filterAttrs (_: cfg: cfg.local) config.packages;
 
-      packagesOverlays = {
-        # Overlay for `config.packages`
-        sources = self: super:
-          let
-            isPathUnderNixStore = path: builtins.hasContext (builtins.toString path);
-            build-haskell-package = import ../../build-haskell-package.nix {
-              inherit pkgs lib self super;
-              inherit (config) log;
-            };
-            getOrMkPackage = name: cfg:
-              if isPathUnderNixStore cfg.source
-              then
-                config.log.traceDebug "${name}.callCabal2nix ${cfg.source}"
-                  (build-haskell-package name cfg.source)
-              else
-                config.log.traceDebug "${name}.callHackage ${cfg.source}"
-                  (self.callHackage name cfg.source { });
-          in
-          lib.mapAttrs getOrMkPackage config.packages;
-
-        # Overlay for `config.settings`
-        settings = config.settingsOverlay;
-      };
-
       finalOverlay = lib.composeManyExtensions [
-        packagesOverlays.sources
-        packagesOverlays.settings
+        config.packagesOverlay
+        config.settingsOverlay
       ];
+
+      finalPackages = config.basePackages.extend finalOverlay;
 
       buildPackageInfo = name: value: {
         package = finalPackages.${name};
@@ -131,9 +107,7 @@ in
     in
     {
       outputs = {
-        inherit finalOverlay;
-
-        finalPackages = config.basePackages.extend finalOverlay;
+        inherit finalOverlay finalPackages;
 
         packages = lib.mapAttrs buildPackageInfo localPackages;
 

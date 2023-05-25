@@ -43,5 +43,30 @@ in
         Local packages are added automatically (see `config.defaults.packages`):
       '';
     };
+
+    packagesOverlay = lib.mkOption {
+      type = types.functionTo (types.functionTo types.raw);
+      description = ''
+        The Haskell overlay computed from `packages` modules.
+      '';
+      internal = true;
+      default = self: super:
+        let
+          inherit (project.config) log;
+          isPathUnderNixStore = path: builtins.hasContext (builtins.toString path);
+          build-haskell-package = import ../../build-haskell-package.nix {
+            inherit pkgs lib self super log;
+          };
+          getOrMkPackage = name: cfg:
+            if isPathUnderNixStore cfg.source
+            then
+              log.traceDebug "${name}.callCabal2nix ${cfg.source}"
+                (build-haskell-package name cfg.source)
+            else
+              log.traceDebug "${name}.callHackage ${cfg.source}"
+                (self.callHackage name cfg.source { });
+        in
+        lib.mapAttrs getOrMkPackage project.config.packages;
+    };
   };
 }
