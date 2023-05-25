@@ -10,7 +10,7 @@ in
 { name, config, ... }: {
   options = {
     source = mkOption {
-      type = import ../../types/haskell-source-type.nix { inherit lib; };
+      type = import ../../../types/haskell-source-type.nix { inherit lib; };
       description = ''
         Source refers to a Haskell package defined by one of the following:
 

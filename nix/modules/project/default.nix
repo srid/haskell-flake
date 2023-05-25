@@ -9,11 +9,11 @@ let
 in
 {
   imports = [
-    ./project/defaults.nix
-    ./project/packages.nix
-    ./project/settings
-    ./project/devshell.nix
-    ./project/outputs.nix
+    ./defaults.nix
+    ./packages
+    ./settings
+    ./devshell.nix
+    ./outputs.nix
   ];
   options = {
     projectRoot = mkOption {
@@ -51,7 +51,7 @@ in
     };
     log = mkOption {
       type = types.attrsOf (types.functionTo types.raw);
-      default = import ../logging.nix {
+      default = import ../../logging.nix {
         name = config.projectFlakeName + "#haskellProjects." + name;
         inherit (config) debug;
       };

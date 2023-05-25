@@ -45,7 +45,7 @@ in
     };
 
     packagesOverlay = lib.mkOption {
-      type = import ../../types/haskell-overlay-type.nix { inherit lib; };
+      type = import ../../../types/haskell-overlay-type.nix { inherit lib; };
       description = ''
         The Haskell overlay computed from `packages` modules.
       '';
@@ -54,7 +54,7 @@ in
         let
           inherit (project.config) log;
           isPathUnderNixStore = path: builtins.hasContext (builtins.toString path);
-          build-haskell-package = import ../../build-haskell-package.nix {
+          build-haskell-package = import ../../../build-haskell-package.nix {
             inherit pkgs lib self super log;
           };
           getOrMkPackage = name: cfg:
