@@ -14,7 +14,6 @@ let
       ./extraBuildDepends.nix
       ./justStaticExecutables.nix
       ./separateBinOutput.nix
-      ./removeReferencesTo.nix
       ./custom.nix
     ];
 
