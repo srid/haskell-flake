@@ -81,7 +81,10 @@ in
       traceSettings "${name}.settings.keys"
         (lib.mapAttrs
           (k: v:
-            applySettingsFor k (evalSettingsModule k v)
+            lib.pipe v [
+              (evalSettingsModule k)
+              (applySettingsFor k)
+            ]
           )
           project.config.settings);
   };
