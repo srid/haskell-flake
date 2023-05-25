@@ -35,7 +35,12 @@ let
 in
 {
   options.settings = lib.mkOption {
-    type = types.lazyAttrsOf types.deferredModule;
+    type = types.lazyAttrsOf (types.submoduleWith {
+      specialArgs = { inherit pkgs lib; } // (import ./lib.nix {
+        inherit lib;
+      });
+      modules = [ settingsSubmodule ];
+    });
     default = { };
     description = ''
       Overrides for packages in `basePackages` and `packages`.
@@ -64,28 +69,8 @@ in
               (impl: impl)
               (lib.attrValues cfg.impl)
           );
-        evalSettingsModule = name: mod:
-          (lib.evalModules {
-            modules = [
-              settingsSubmodule
-              mod
-            ];
-            specialArgs = {
-              inherit name pkgs lib;
-            }
-            // (import ./lib.nix {
-              inherit lib;
-            });
-          }).config;
       in
       traceSettings "${name}.settings.keys"
-        (lib.mapAttrs
-          (k: v:
-            lib.pipe v [
-              (evalSettingsModule k)
-              (applySettingsFor k)
-            ]
-          )
-          project.config.settings);
+        (lib.mapAttrs applySettingsFor project.config.settings);
   };
 }
