@@ -3,32 +3,6 @@ project@{ name, pkgs, lib, ... }:
 let
   inherit (lib)
     types;
-  settingsSubmodule = {
-    imports = [
-      ./check.nix
-      ./jailbreak.nix
-      ./broken.nix
-      ./haddock.nix
-      ./libraryProfiling.nix
-      ./executableProfiling.nix
-      ./extraBuildDepends.nix
-      ./justStaticExecutables.nix
-      ./separateBinOutput.nix
-      ./custom.nix
-    ];
-
-    # This submodule will be populated as `options.impl.${name}` for each of the
-    # imports above. The implementation for this is in lib.nix.
-    options.impl = lib.mkOption {
-      type = types.submodule { };
-      internal = true;
-      visible = false;
-      default = { };
-      description = ''
-        Implementation for options in 'settings'
-      '';
-    };
-  };
   traceSettings = k: x:
     # Since attrs values are modules, we log only the keys.
     project.config.log.traceDebug "${k} ${builtins.toJSON (lib.attrNames x)}" x;
@@ -39,7 +13,7 @@ in
       specialArgs = { inherit pkgs lib; } // (import ./lib.nix {
         inherit lib;
       });
-      modules = [ settingsSubmodule ];
+      modules = [ ./all.nix ];
     });
     default = { };
     description = ''

@@ -1,5 +1,5 @@
 # Provides the `mkCabalSettingOptions` helper for defining settings.<name>.???.
-{ lib, ... }:
+{ lib, config ? null, ... }:
 
 let
   inherit (lib)
@@ -8,7 +8,7 @@ let
   inherit (types)
     functionTo listOf;
 
-  mkImplOption = config: name: f: mkOption {
+  mkImplOption = name: f: mkOption {
     # [ pkg -> pkg ]
     type = listOf (functionTo types.package);
     description = ''
@@ -22,6 +22,7 @@ let
         (f cfg);
   };
 
+
   mkNullableOption = attrs:
     mkOption (attrs // {
       type = types.nullOr attrs.type;
@@ -32,11 +33,11 @@ let
   #
   # The user sets the former, whereas the latter provides the list of functions
   # to apply on the package (as implementation for this setting).
-  mkCabalSettingOptions = { config, name, type, description, impl }: {
+  mkCabalSettingOptions = { name, type, description, impl }: {
     "${name}" = mkNullableOption {
       inherit type description;
     };
-    impl."${name}" = mkImplOption config name impl;
+    impl."${name}" = mkImplOption name impl;
   };
 in
 {
