@@ -26,7 +26,7 @@ in
         description = ''
           Remove version bounds from this package's cabal file.
         '';
-        impl = enable: with pkgs.haskell.lib.compose;
+        impl = enable:
           if enable then doJailbreak else dontJailbreak;
       };
     }
@@ -38,7 +38,7 @@ in
         description = ''
           Whether to mark the package as broken
         '';
-        impl = enable: with pkgs.haskell.lib.compose;
+        impl = enable:
           if enable then markBroken else unmarkBroken;
       };
     }
@@ -50,8 +50,8 @@ in
         description = ''
           Whether to build the haddock documentation.
         '';
-        impl = haddock: with pkgs.haskell.lib.compose;
-          if haddock then doHaddock else dontHaddock;
+        impl = enable:
+          if enable then doHaddock else dontHaddock;
       };
     }
 
@@ -62,7 +62,7 @@ in
         description = ''
           Build the library for profiling by default.
         '';
-        impl = enable: with pkgs.haskell.lib.compose;
+        impl = enable:
           if enable then enableLibraryProfiling else disableLibraryProfiling;
       };
     }
@@ -74,7 +74,7 @@ in
         description = ''
           Build the executable with profiling enabled.
         '';
-        impl = enable: with pkgs.haskell.lib.compose;
+        impl = enable:
           if enable then enableExecutableProfiling else disableExecutableProfiling;
       };
     }
@@ -86,7 +86,7 @@ in
         description = ''
           Extra build dependencies for the package.
         '';
-        impl = pkgs.haskell.lib.compose.addBuildDepends;
+        impl = addBuildDepends;
       };
     }
 
@@ -97,7 +97,7 @@ in
         description = ''
           Link executables statically against haskell libs to reduce closure size
         '';
-        impl = enable: with pkgs.haskell.lib.compose;
+        impl = enable:
           if enable then justStaticExecutables else x: x;
       };
     }
@@ -110,7 +110,7 @@ in
           Create two outputs for this Haskell package -- 'out' and 'bin'. This is
           useful to separate out the binary with a reduced closure size.
         '';
-        impl = enable: with pkgs.haskell.lib.compose;
+        impl = enable:
           let
             disableSeparateBinOutput =
               overrideCabal (drv: { enableSeparateBinOutput = false; });
