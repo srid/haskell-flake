@@ -45,7 +45,7 @@ in
     };
 
     packagesOverlay = lib.mkOption {
-      type = types.functionTo (types.functionTo types.raw);
+      type = import ../../types/haskell-overlay-type.nix { inherit lib; };
       description = ''
         The Haskell overlay computed from `packages` modules.
       '';

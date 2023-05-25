@@ -6,20 +6,11 @@ let
     types;
   # TODO: DRY
   isPathUnderNixStore = path: builtins.hasContext (builtins.toString path);
-  haskellSourceType = lib.mkOptionType {
-    name = "haskellSource";
-    description = ''
-      Path to Haskell package source, or version from Hackage.
-    '';
-    check = path:
-      isPathUnderNixStore path || builtins.isString path;
-    merge = lib.mergeOneOption;
-  };
 in
 { name, config, ... }: {
   options = {
     source = mkOption {
-      type = haskellSourceType;
+      type = import ../../types/haskell-source-type.nix { inherit lib; };
       description = ''
         Source refers to a Haskell package defined by one of the following:
 
