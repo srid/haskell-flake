@@ -13,7 +13,8 @@ TESTS=(
   ./test/simple
   ./test/with-subdir
   ./test/project-module
-  ./doc
+  # Disabled due to https://github.com/hercules-ci/flake.parts-website/issues/332
+  # ./doc
 )
 
 for testDir in "${TESTS[@]}" 
