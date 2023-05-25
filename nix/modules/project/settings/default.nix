@@ -54,7 +54,7 @@ in
       The Haskell overlay computed from `settings` modules.
     '';
     internal = true;
-    default = self: super:
+    default = _self: super:
       let
         applySettingsFor = name: cfg:
           lib.pipe super.${name} (
@@ -71,10 +71,10 @@ in
               mod
             ];
             specialArgs = {
-              inherit name pkgs lib self super;
+              inherit name pkgs lib;
             }
             // (import ./lib.nix {
-              inherit lib self super;
+              inherit lib;
             });
           }).config;
       in
