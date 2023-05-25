@@ -11,9 +11,9 @@ A "project" in haskell-flake primarily serves the purpose of developing Haskell 
 ```nix
 {
   haskellProjects.ghc810 = {
-    packages = {};  # No local packages
-    devShell.enable = false;
-    autoWire = [ ];  # Don't wire any flake outputs
+    defaults.packages = {};  # Disable scanning for local package
+    devShell.enable = false; # Disable devShells
+    autoWire = [ ];          # Don't wire any flake outputs
 
     # Start from nixpkgs's ghc8107 package set
     basePackages = pkgs.haskell.packages.ghc8107;
@@ -59,7 +59,7 @@ In your *actual* haskell project, you can use this package set (`config.haskellP
 }
 ```
 
-Finally you can externalized this `ghc810` package set as either a flake-parts module or as a [[modules|haskell-flake module]], and import it in multiple repositories.
+Finally, you can externalize this `ghc810` package set as either a flake-parts module or as a [[modules|haskell-flake module]], and thereon import it from multiple repositories.
 
 ## Examples
 
