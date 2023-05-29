@@ -17,8 +17,11 @@ in
       Attr values are submodules that take the following arguments:
 
       - `name`: Package name
+      - `package`: The reference to the package in `packages` option if it exists, null otherwise.
       - `self`/`super`: The 'self' and 'super' (aka. 'final' and 'prev') used in the Haskell overlay.
       - `pkgs`: Nixpkgs instance of the module user (import'er).
+
+      Default settings are defined in `project.config.defaults.settings` which can be overriden.
     '';
   };
 
@@ -33,9 +36,19 @@ in
         applySettingsFor = name: mod:
           let
             cfg = (lib.evalModules {
-              modules = [ ./all.nix mod ];
+              modules = [
+                # Settings spec
+                ./all.nix
+
+                # Default settings
+                project.config.defaults.settings
+
+                # User module
+                mod
+              ];
               specialArgs = {
                 inherit name pkgs self super;
+                package = project.config.packages.${name} or null;
               } // (import ./lib.nix {
                 inherit lib;
                 # NOTE: Recursively referring generated config in lib.nix.

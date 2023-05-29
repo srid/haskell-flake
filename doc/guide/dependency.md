@@ -34,7 +34,7 @@ In Nix, it is possible to use an exact package built from an arbitrary source (G
             ema.source = inputs.ema;
           };
           settings = {
-            ema = {
+            ema = {  # This module can take `{self, super, ...}` args, optionally.
               check = false;
             };
           };

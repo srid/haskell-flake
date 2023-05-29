@@ -58,6 +58,25 @@ in
       '';
     };
 
+    settings = mkOption {
+      type = types.deferredModule;
+      description = ''
+        Sensible defaults for local packages
+      '';
+      default = { name, package, config, ... }: lib.optionalAttrs (package.local or false) {
+        # Disabling haddock and profiling is mainly to speed up Nix builds.
+        haddock = lib.mkDefault false; # Because, this is end-user software. No need for library docs.
+        libraryProfiling = lib.mkDefault false; # Avoid double-compilation.
+        separateBinOutput = lib.mkDefault (package.cabal.executables != [ ]); # Reduce closure size
+      };
+      defaultText = ''
+        Settings suitable for end user software
+
+        - Speed up builds by disabling haddock and library profiling.
+        - Separate bin output (for reduced closure size when using `getBin` in apps)
+      '';
+    };
+
     projectModules.output = mkOption {
       type = types.deferredModule;
       description = ''

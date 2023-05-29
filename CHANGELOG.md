@@ -6,6 +6,7 @@
   - Add `package.<name>.cabal.executables` referring to the executables in a package. This is auto-detected by parsing the Cabal file.
   - Add `projectFlakeName` option (useful in debug logging prefix)
   - `flake.haskellFlakeProjectModules`: Dropped all defaults, except the `output` module, which now exports `packages` and `settings`. Added a `defaults.projectModules.output` that allows the user to override this module, or directly access the generated module.
+  - Add `project.config.defaults.settings` defining sensible defaults for most Haskell apps.
 
 ## 0.3.0 (May 22, 2023)
 
