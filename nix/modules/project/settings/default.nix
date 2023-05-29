@@ -19,11 +19,11 @@ in
     description = ''
       Overrides for packages in `basePackages` and `packages`.
 
-      Attr values are modules that take the following arguments:
+      Attr values are submodules that take the following arguments:
 
-      - name: The key of the attr value.
-      - self/super: The 'self' and 'super' (aka. 'final' and 'prev') used in the Haskell overlauy.
-      - pkgs: Nixpkgs instance of the module user (import'er).
+      - `name`: Package name
+      - `self`/`super`: The 'self' and 'super' (aka. 'final' and 'prev') used in the Haskell overlay.
+      - `pkgs`: Nixpkgs instance of the module user (import'er).
     '';
   };
 

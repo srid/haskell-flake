@@ -41,6 +41,8 @@ in
         Additional packages to add to `basePackages`.
 
         Local packages are added automatically (see `config.defaults.packages`):
+
+        You can also override the source for existing packages here.
       '';
     };
 

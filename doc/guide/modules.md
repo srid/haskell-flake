@@ -18,8 +18,8 @@ Let's say you have two repositories -- `common` and `myapp`. The `common` reposi
         cabal-fmt
         ormolu;
     };
-    source-overrides = {
-      mylib = inputs.mylib;
+    packages = {
+      mylib.source = inputs.mylib;
     };
   };
 }
@@ -58,11 +58,9 @@ By default, haskell-flake will generate the following modules for the "default" 
 
 | Module | Contents |
 | -- | -- |
-| `haskellFlakeProjectModules.input` | Dependency overrides only |
-| `haskellFlakeProjectModules.local` | Local packages only |
 | `haskellFlakeProjectModules.output` | Local packages & dependency overrides |
 
-The idea here being that you can "connect" two Haskell projects such that they depend on one another while reusing the overrides from one place. For example, if you have a project "foo" that depends on "bar" and if "foo"'s flake.nix has "bar" as its input, then in "foo"'s `haskellProject.default` entry you can import "bar" as follows:
+The idea here being that you can "connect" two Haskell projects such that they depend on one another while reusing the overrides (`packages` and `settings`) from one place. For example, if you have a project "foo" that depends on "bar" and if "foo"'s flake.nix has "bar" as its input, then in "foo"'s `haskellProject.default` entry you can import "bar" as follows:
 
 ```nix
 # foo's flake.nix's perSystem
@@ -78,13 +76,9 @@ The idea here being that you can "connect" two Haskell projects such that they d
 }
 ```
 
-By importing "bar"'s `output` project module, you automatically get the overrides from "bar" (unless you use the `local` module) as well as the local packages[^bar]. This way you don't have to duplicate the `overrides` and manually specify the `source-overrides` in "foo"'s flake.nix.
+By importing "bar"'s `output` project module, you automatically get the overrides from "bar" as well as the local packages. This way you don't have to duplicate the `settings` and manually specify the `packages.<name>.source` in "foo"'s flake.nix.
 
-[^bar]: Local packages come from the `packages` option. So this is typically the "bar" package itself for single-package projects; or all the local projects if it is a multi-package project.
 
 ## Examples
 
-- https://github.com/srid/nixpkgs-140774-workaround
-- [shared-kernel](https://github.com/nammayatri/shared-kernel/blob/591bdc1c87b3f80b57a3c3849414bd106a1f8365/flake.nix#L24-L26) importing [euler-hs overrides](https://github.com/juspay/euler-hs/blob/168dc51f8a68e4bf52de6c691343afa594f933a9/flake.nix#L31-L52) and local packages.
-
-- https://github.com/juspay/prometheus-haskell/pull/3
+- https://github.com/nammayatri/nammayatri (imports `shared-kernel` which in turn imports `euler-hs`)
