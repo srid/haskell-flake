@@ -133,6 +133,32 @@ in
 
     {
       options = mkCabalSettingOptions {
+        name = "extraBuildFlags";
+        type = types.listOf types.string;
+        description = ''
+          Extra flags to pass to 'cabal build'
+        '';
+        impl = appendBuildFlags;
+      };
+    }
+
+    {
+      options = mkCabalSettingOptions {
+        name = "removeConfigureFlags";
+        type = types.listOf types.string;
+        description = ''
+          Flags to remove from the default flags passed to 'cabal configure'
+        '';
+        impl = 
+          let 
+            removeConfigureFlags = flags: drv:
+              lib.foldl (lib.flip removeConfigureFlag) drv flags;
+          in removeConfigureFlags;
+      };
+    }
+
+    {
+      options = mkCabalSettingOptions {
         name = "patches";
         type = types.listOf types.path;
         description = ''
