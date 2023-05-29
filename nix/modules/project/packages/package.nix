@@ -28,7 +28,7 @@ in
       '';
       default =
         let
-          haskell-parsers = import ../../haskell-parsers {
+          haskell-parsers = import ../../../haskell-parsers {
             inherit pkgs lib;
             throwError = msg: project.config.log.throwError ''
               Unable to determine executable names for package ${name}:
