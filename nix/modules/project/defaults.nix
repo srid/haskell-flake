@@ -70,13 +70,12 @@ in
     settings.default = mkOption {
       type = types.deferredModule;
       description = ''
-        Default settings for all packages in `packages` as well as packages
-        configured in `settings`.
+        Default settings for all local packages in `packages` option.
       '';
       default =
         let
           localSettings = { name, package, config, ... }:
-            lib.optionalAttrs (package.local or false) {
+            lib.optionalAttrs (package.localToFlake or false) {
               # Disabling haddock and profiling is mainly to speed up Nix builds.
               haddock = lib.mkDefault false; # Because, this is end-user software. No need for library docs.
               libraryProfiling = lib.mkDefault false; # Avoid double-compilation.

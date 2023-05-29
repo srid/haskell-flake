@@ -59,5 +59,20 @@ in
         Computed automatically if package 'source' is under 'projectRoot'.
       '';
     };
+
+    localToFlake = mkOption {
+      type = types.bool;
+      description = ''
+        Whether this package is local to the flake it is defined in.
+      '';
+      internal = true;
+      default =
+        config.source != null &&
+        isPathUnderNixStore config.source &&
+        lib.strings.hasPrefix "${project.config.projectRoot}" "${config.source}";
+      defaultText = ''
+        Computed automatically if package 'source' is under 'projectRoot'.
+      '';
+    };
   };
 }
