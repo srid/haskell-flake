@@ -1,12 +1,17 @@
 source ../common.sh
 set -euxo pipefail
 
+rm -f result result-bin
+
 # First, build the flake
 logHeader "Testing nix build"
 nix build ${OVERRIDE_ALL}
 
 # Test defaults.settings module behaviour, viz: separateBinOutput
-test -f result-bin/bin/haskell-flake-test
+test -f result-bin/bin/haskell-flake-test || {
+    echo "ERROR: separateBinOutput (from defaults.settings) not in effect"
+    exit 1
+}
 
 # Run the devshell test script in a nix develop shell.
 logHeader "Testing nix devshell"
