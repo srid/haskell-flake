@@ -58,7 +58,7 @@ in
       '';
     };
 
-    outputProjectModule = mkOption {
+    projectModules.output = mkOption {
       type = types.deferredModule;
       description = ''
         A haskell-flake project module that exports the `packages` and

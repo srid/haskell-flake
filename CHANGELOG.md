@@ -5,7 +5,7 @@
 - #162: Removed `overrides` and `source-overrides`. Use `packages` to specify your source overrides; use `settings` to override individual packages in modular fashion.
   - Add `package.<name>.cabal.executables` referring to the executables in a package. This is auto-detected by parsing the Cabal file.
   - Add `projectFlakeName` option (useful in debug logging prefix)
-  - `flake.haskellFlakeProjectModules`: Dropped all defaults, except the `output` module, which now exports `packages` and `settings`. Added a `defaults.outputProjectModule` that allows the user to override this module, or directly access the generated module.
+  - `flake.haskellFlakeProjectModules`: Dropped all defaults, except the `output` module, which now exports `packages` and `settings`. Added a `defaults.projectModules.output` that allows the user to override this module, or directly access the generated module.
 
 ## 0.3.0 (May 22, 2023)
 

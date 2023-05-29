@@ -21,14 +21,14 @@ in
               in another flake, when using this project as a Haskell dependency.
 
               The 'output' module of the default project is included by default,
-              returning `defaults.outputProjectModule`.
+              returning `defaults.projectModules.output`.
             '';
             default = { };
           };
 
         config.haskellFlakeProjectModules = {
           output = { pkgs, lib, ... }: withSystem pkgs.system ({ config, ... }:
-            config.haskellProjects."default".defaults.outputProjectModule
+            config.haskellProjects."default".defaults.projectModules.output
           );
         };
       }];
