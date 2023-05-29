@@ -9,12 +9,7 @@ let
 in
 {
   options.settings = lib.mkOption {
-    type = types.lazyAttrsOf (types.submoduleWith {
-      specialArgs = { inherit pkgs lib; } // (import ./lib.nix {
-        inherit lib;
-      });
-      modules = [ ./all.nix ];
-    });
+    type = types.lazyAttrsOf types.deferredModule;
     default = { };
     description = ''
       Overrides for packages in `basePackages` and `packages`.
@@ -33,9 +28,21 @@ in
       The Haskell overlay computed from `settings` modules.
     '';
     internal = true;
-    default = _self: super:
+    default = self: super:
       let
-        applySettingsFor = name: cfg:
+        applySettingsFor = name: mod:
+          let
+            cfg = (lib.evalModules {
+              modules = [ ./all.nix mod ];
+              specialArgs = {
+                inherit name pkgs self super;
+              } // (import ./lib.nix {
+                inherit lib;
+                # NOTE: Recursively referring generated config in lib.nix.
+                config = cfg;
+              });
+            }).config;
+          in
           lib.pipe super.${name} (
             # TODO: Do we care about the *order* of overrides?
             # Might be relevant for the 'custom' option.

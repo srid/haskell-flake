@@ -1,5 +1,5 @@
 # Provides the `mkCabalSettingOptions` helper for defining settings.<name>.???.
-{ lib, config ? null, ... }:
+{ lib, config, ... }:
 
 let
   inherit (lib)

@@ -19,11 +19,19 @@
         inputs.haskell-flake.flakeModule
         inputs.check-flake.flakeModule
       ];
-      flake.haskellFlakeProjectModules.default = { pkgs, ... }: {
+      flake.haskellFlakeProjectModules.default = { pkgs, lib, ... }: {
         packages = {
           # This is purposefully incorrect (pointing to ./.) because we
           # expect it to be overriden in perSystem below.
           foo.source = ./.;
+        };
+        settings = {
+          # Test that self and super are passed
+          foo = { self, super, ... }: {
+            custom = _: builtins.seq 
+              (lib.assertMsg (lib.hasAttr "ghc" self) "self is bad") 
+              super.foo;
+          };
         };
         devShell = {
           tools = hp: {
