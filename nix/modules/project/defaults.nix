@@ -67,10 +67,11 @@ in
       '';
     };
 
-    settings = mkOption {
+    settings.default = mkOption {
       type = types.deferredModule;
       description = ''
-        Sensible defaults for local packages
+        Default settings for all packages in `packages` as well as packages
+        configured in `settings`.
       '';
       default =
         let
@@ -89,7 +90,7 @@ in
         in
         if config.defaults.enable then localSettings else { };
       defaultText = ''
-        Settings suitable for end user software
+        Settings suitable for local packages
 
         - Speed up builds by disabling haddock and library profiling.
         - Separate bin output (for reduced closure size when using `getBin` in apps)

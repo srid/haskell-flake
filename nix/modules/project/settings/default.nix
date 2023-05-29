@@ -42,7 +42,8 @@ in
   options.settingsOverlay = lib.mkOption {
     type = import ../../../types/haskell-overlay-type.nix { inherit lib; };
     description = ''
-      The Haskell overlay computed from `settings` modules.
+      The Haskell overlay computed from `settings` modules, as well as
+      `defaults.settings.default` module.
     '';
     internal = true;
     default = self: super:
@@ -55,7 +56,7 @@ in
                 ./all.nix
 
                 # Default settings
-                project.config.defaults.settings
+                project.config.defaults.settings.default
 
                 # User module
                 mod
