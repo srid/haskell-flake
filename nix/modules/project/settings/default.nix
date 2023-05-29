@@ -16,6 +16,15 @@ in
   options.settings = lib.mkOption {
     type = types.lazyAttrsOf types.deferredModule;
     default = { };
+    apply = settings:
+      # Polyfill local packages; because overlay's defaults setting merge requires it.
+      let
+        localPackages = 
+          lib.pipe project.config.packages [
+            (lib.filterAttrs (name: p: p.local))
+            (lib.mapAttrs (_: _: {}))
+          ];
+        in localPackages // settings;
     description = ''
       Overrides for packages in `basePackages` and `packages`.
 

@@ -1,4 +1,5 @@
 .vscode
 .direnv
 result
+result-*
 dist-newstyle
