@@ -14,9 +14,11 @@ let
     });
 in
 {
-  # TODO: This list contains the most often used functions. We should complete
-  # it with what's left in 
+  # NOTE: These settings are based on the functions in:
   # https://github.com/NixOS/nixpkgs/blob/master/pkgs/development/haskell-modules/lib/compose.nix
+  #
+  # Some functions (like checkUnusedPackages) are not included here, but we
+  # probably should, especially if there is demand.
   imports = with pkgs.haskell.lib.compose; cabalSettingsFrom {
     check = {
       type = types.bool;
@@ -41,6 +43,18 @@ in
       '';
       impl = enable:
         if enable then markBroken else unmarkBroken;
+    };
+    brokenVersions = {
+      type = types.attrsOf types.string;
+      description = ''
+        List of versions that are known to be broken.
+      '';
+      impl = versions: 
+        let
+          markBrokenVersions = vs: drv:
+            builtins.foldl' markBrokenVersion drv vs;
+        in
+        markBrokenVersions versions;
     };
     haddock = {
       type = types.bool;
@@ -85,12 +99,72 @@ in
       impl = enable:
         if enable then enableExecutableProfiling else disableExecutableProfiling;
     };
+    sharedExecutables = {
+      type = types.bool;
+      description = ''
+        Build the executables as shared libraries.
+      '';
+      impl = enable:
+        if enable then enableSharedExecutables else disableSharedExecutables;
+    };
+    sharedLibraries = {
+      type = types.bool;
+      description = ''
+        Build the libraries as shared libraries.
+      '';
+      impl = enable:
+        if enable then enableSharedLibraries else disableSharedLibraries;
+    };
+    deadCodeElimination = {
+      type = types.bool;
+      description = ''
+        Enable dead code elimination.
+      '';
+      impl = enable:
+        if enable then enableDeadCodeElimination else disableDeadCodeElimination;
+    };
+    staticLibraries = {
+      type = types.bool;
+      description = ''
+        Build the libraries as static libraries.
+      '';
+      impl = enable:
+        if enable then enableStaticLibraries else disableStaticLibraries;
+    };
     extraBuildDepends = {
       type = types.listOf types.package;
       description = ''
         Extra build dependencies for the package.
       '';
       impl = addBuildDepends;
+    };
+    extraBuildTools = {
+      type = types.listOf types.package;
+      description = ''
+        Extra build tools for the package.
+      '';
+      impl = addBuildTools;
+    };
+    extraTestToolDepends = {
+      type = types.listOf types.package;
+      description = ''
+        Extra test tool dependencies for the package.
+      '';
+      impl = addTestToolDepends;
+    };
+    extraPkgconfigDepends = {
+      type = types.listOf types.package;
+      description = ''
+        Extra pkgconfig dependencies for the package.
+      '';
+      impl = addPkgconfigDepends;
+    };
+    extraSetupDepends = {
+      type = types.listOf types.package;
+      description = ''
+        Extra setup dependencies for the package.
+      '';
+      impl = addSetupDepends;
     };
     extraConfigureFlags = {
       type = types.listOf types.string;
@@ -114,9 +188,23 @@ in
       impl =
         let
           removeConfigureFlags = flags: drv:
-            lib.foldl (lib.flip removeConfigureFlag) drv flags;
+            builtins.foldl' removeConfigureFlag drv flags;
         in
         removeConfigureFlags;
+    };
+    cabalFlags = {
+      type = types.attrsOf types.bool;
+      description = ''
+        Cabal flags to enable or disable explicitly.
+      '';
+      impl = flags: drv:
+        let
+          enabled = lib.filterAttrs (_: v: v) flags;
+          disabled = lib.filterAttrs (_: v: !v) flags;
+          enableCabalFlags = fs: drv: builtins.foldl' enableCabalFlag drv fs;
+          disableCabalFlags = fs: drv: builtins.foldl' disableCabalFlag drv fs;
+        in
+          lib.pipe drv [enableCabalFlag disableCabalFlag];
     };
     patches = {
       type = types.listOf types.path;
@@ -146,6 +234,75 @@ in
         in
         if enable then enableSeparateBinOutput else disableSeparateBinOutput;
     };
+    buildTargets = {
+      type = types.listOf types.string;
+      description = ''
+        A list of targets to build.
+
+        By default all cabal executable targets are built.
+      '';
+      impl = setBuildTargets;
+    };
+    hyperlinkSource = {
+      type = types.bool;
+      description = ''
+        Whether to hyperlink the source code in the generated documentation.
+      '';
+      impl = enable:
+        if enable then doHyperlinkSource else dontHyperlinkSource;
+    };
+    disableHardening = {
+      type = types.bool;
+      description = ''
+        Disable hardening flags for the package.
+      '';
+      impl = enable:
+        if enable then disableHardening else x: x;
+    };
+    strip = {
+      type = types.bool;
+      description = ''
+        Let Nix strip the binary files.
+        
+        This removes debugging symbols.
+      '';
+      impl = enable:
+        if enable then doStrip else dontStrip;
+    };
+    enableDWARFDebugging = {
+      type = types.bool;
+      description = ''
+        Enable DWARF debugging.
+      '';
+      impl = enable:
+        if enable then enableDWARFDebugging else x: x;
+    };
+    disableOptimization = {
+      type = types.bool;
+      description = ''
+         Disable core optimizations, significantly speeds up build time
+      '';
+      impl = enable:
+        if enable then disableOptimization else x: x;
+    };
+    failOnAllWarnings = {
+      type = types.bool;
+      description = ''
+        Turn on most of the compiler warnings and fail the build if any of them occur
+      '';
+      impl = enable:
+        if enable then failOnAllWarnings else x: x;
+    };
+    triggerRebuild = {
+      type = types.raw;
+      description = ''
+        Add a dummy command to trigger a build despite an equivalent earlier
+        build that is present in the store or cache.  
+      '';
+      impl = triggerRebuild;
+    };
+
+    # When none of the above settings is suitable:
     custom = {
       type = types.functionTo types.package;
       description = ''
