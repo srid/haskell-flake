@@ -9,10 +9,18 @@ let
 in
 {
   options.defaults = {
+    enable = mkOption {
+      type = types.bool;
+      description = ''
+        Whether to enable haskell-flake's default settings for this project.
+      '';
+      default = true;
+    };
+
     devShell.tools = mkOption {
       type = functionTo (types.attrsOf (types.nullOr types.package));
       description = ''Build tools always included in devShell'';
-      default = hp: with hp; {
+      default = hp: with hp; lib.optionalAttrs config.defaults.enable {
         inherit
           cabal-install
           haskell-language-server
@@ -36,15 +44,16 @@ in
               Please specify the `packages` option manually or change your project configuration (cabal.project).
             '';
           };
+          localPackages = lib.pipe config.projectRoot [
+            haskell-parsers.findPackagesInCabalProject
+            (lib.mapAttrs (_: path: {
+              # The rest of the module options are not defined, because we'll use
+              # the submodule defaults.
+              source = path;
+            }))
+          ];
         in
-        lib.pipe config.projectRoot [
-          haskell-parsers.findPackagesInCabalProject
-          (lib.mapAttrs (_: path: {
-            # The rest of the module options are not defined, because we'll use
-            # the submodule defaults.
-            source = path;
-          }))
-        ];
+        lib.optionalAttrs config.defaults.enable localPackages;
       apply = x:
         config.log.traceDebug "defaults.packages = ${builtins.toJSON x}" x;
       defaultText = lib.literalMD ''
@@ -63,12 +72,17 @@ in
       description = ''
         Sensible defaults for local packages
       '';
-      default = { name, package, config, ... }: lib.optionalAttrs (package.local or false) {
-        # Disabling haddock and profiling is mainly to speed up Nix builds.
-        haddock = lib.mkDefault false; # Because, this is end-user software. No need for library docs.
-        libraryProfiling = lib.mkDefault false; # Avoid double-compilation.
-        separateBinOutput = lib.mkDefault (package.cabal.executables != [ ]); # Reduce closure size
-      };
+      default =
+        let
+          localSettings = { name, package, config, ... }:
+            lib.optionalAttrs (package.local or false) {
+              # Disabling haddock and profiling is mainly to speed up Nix builds.
+              haddock = lib.mkDefault false; # Because, this is end-user software. No need for library docs.
+              libraryProfiling = lib.mkDefault false; # Avoid double-compilation.
+              separateBinOutput = lib.mkDefault (package.cabal.executables != [ ]); # Reduce closure size
+            };
+        in
+        if config.defaults.enable then localSettings else { };
       defaultText = ''
         Settings suitable for end user software
 
@@ -84,7 +98,7 @@ in
         `settings` options to the consuming flake. This enables the use of this
         flake's Haskell package as a dependency, re-using its overrides.
       '';
-      default = {
+      default = lib.optionalAttrs config.defaults.enable {
         inherit (config)
           packages settings;
       };
