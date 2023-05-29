@@ -45,6 +45,8 @@
         haskellProjects.default = {
           # Multiple modules should be merged correctly.
           imports = [ self.haskellFlakeProjectModules.default ];
+          # Debug logging should work.
+          debug = true;
           packages = {
             # Because the module being imported above also defines a root for
             # the 'foo' package, we must override it here using `lib.mkForce`.

@@ -3,9 +3,14 @@ project@{ name, pkgs, lib, ... }:
 let
   inherit (lib)
     types;
-  traceSettings = k: x:
-    # Since attrs values are modules, we log only the keys.
-    project.config.log.traceDebug "${k} ${builtins.toJSON (lib.attrNames x)}" x;
+  traceSettings = hpkg: x:
+    let
+      # Convert the settings config (x) to be stripped of functions, so we can
+      # convert it to JSON for logging.
+      xSanitized = lib.filterAttrs (s: v: 
+        !(builtins.isFunction v) && !(s == "impl") && v != null) x;
+    in
+    project.config.log.traceDebug "settings.${hpkg} ${builtins.toJSON xSanitized}" x;
 in
 {
   options.settings = lib.mkOption {
@@ -61,10 +66,9 @@ in
             # Might be relevant for the 'custom' option.
             lib.concatMap
               (impl: impl)
-              (lib.attrValues cfg.impl)
+              (lib.attrValues (traceSettings name cfg).impl)
           );
       in
-      traceSettings "${name}.settings.keys"
-        (lib.mapAttrs applySettingsFor project.config.settings);
+        lib.mapAttrs applySettingsFor project.config.settings;
   };
 }
