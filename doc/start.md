@@ -37,6 +37,7 @@ In addition, compared to using plain nixpkgs, haskell-flake supports:
 
 - Auto-detection of local packages based on `cabal.project` file (via [haskell-parsers](https://github.com/srid/haskell-flake/tree/master/nix/haskell-parsers))
 - Parse executables from `.cabal` file 
+- Modular interface to `pkgs.haskell.lib.compose.*` (via `packages` and `settings` submodules)
 - Composition of dependency overrides, and other project settings, via [[modules]]
 
 ## Next steps

@@ -1,5 +1,15 @@
 # Revision history for haskell-flake
 
+## `master`
+
+- #162: **Completely new way to override Haskell packages**: removed `overrides` and `source-overrides`. Use `packages` to specify your source overrides; use `settings` to override individual packages in modular fashion (like NixOS modules). Additional changes include:
+  - Add `package.<name>.cabal.executables` referring to the executables in a package. This is auto-detected by parsing the Cabal file.
+  - Add `packages.<name>.local.*` to determine of a package is a local package or not.
+  - Add `projectFlakeName` option (useful in debug logging prefix)
+  - `flake.haskellFlakeProjectModules`: Dropped all defaults, except the `output` module, which now exports `packages` and `settings`. Added a `defaults.projectModules.output` option that allows the user to override this module, or directly access the generated module.
+  - Add `project.config.defaults.settings.default` defining sensible defaults for local packages.
+  - Add `project.config.defaults.enable` to turn off all default settings en masse.
+
 ## 0.3.0 (May 22, 2023)
 
 - #134: Add `autoWire` option to control generation of flake outputs

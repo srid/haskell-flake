@@ -68,9 +68,13 @@ in
   getCabalExecutables = path:
     let
       cabalFile = traversal.findSingleCabalFile path;
-      res = parser.parseCabalExecutableNames (builtins.readFile (lib.concatStrings [ path "/" cabalFile ]));
     in
-    if res.type == "success"
-    then res.value
-    else throwError "Failed to parse ${cabalFile}: ${builtins.toJSON res}";
+    if cabalFile != null then
+      let res = parser.parseCabalExecutableNames (builtins.readFile (lib.concatStrings [ path "/" cabalFile ]));
+      in
+      if res.type == "success"
+      then res.value
+      else throwError "Failed to parse ${cabalFile}: ${builtins.toJSON res}"
+    else
+      throwError "No .cabal file found under ${path}";
 }

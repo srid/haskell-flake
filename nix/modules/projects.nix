@@ -15,7 +15,7 @@ in
         type = types.attrsOf (types.submoduleWith {
           specialArgs = { inherit pkgs self; };
           modules = [
-            ./project.nix
+            ./project
           ];
         });
       };

@@ -11,9 +11,9 @@ A "project" in haskell-flake primarily serves the purpose of developing Haskell 
 ```nix
 {
   haskellProjects.ghc810 = {
-    packages = {};  # No local packages
-    devShell.enable = false;
-    autoWire = [ ];  # Don't wire any flake outputs
+    defaults.packages = {};  # Disable scanning for local package
+    devShell.enable = false; # Disable devShells
+    autoWire = [ ];          # Don't wire any flake outputs
 
     # Start from nixpkgs's ghc8107 package set
     basePackages = pkgs.haskell.packages.ghc8107;
@@ -26,41 +26,41 @@ You can access this package set as `config.haskellProjects.ghc810.outputs.finalP
 ```nix
 {
   haskellProjects.ghc810 = {
-    packages = {};  # No local packages
+    defaults.packages = {};  # No local packages
     devShell.enable = false;
 
     basePackages = pkgs.haskell.packages.ghc8107;
 
-    source-overrides = {
+    packages = {
       # New packages from flake inputs
-      mylib = inputs.mylib;
+      mylib.source = inputs.mylib;
       # Dependencies from Hackage
-      aeson = "1.5.6.0";
-      dhall = "1.35.0";
+      aeson.source = "1.5.6.0";
+      dhall.source = "1.35.0";
     };
-    overrides = self: super: with pkgs.haskell.lib; {
-       aeson = doJailbreak super.aeson;
+    settings = {
+       aeson.jailbreak = true;
     };
   };
 }
 ```
 
-This will create a package set that overrides the `aeson` and `dhall` packages using the specified versions from Hackage, but with the `aeson` package having the `doJailbreak` flag set (which relaxes its Cabal constraints).  It also adds the `mylib` package which exists neither in nixpkgs nor in Hackage, but comes from somewhere arbitrary and specified as flake input.
+This will create a package set that overrides the `aeson` and `dhall` packages using the specified versions from Hackage, but with the `aeson` package having the `jailbreak` flag set (which relaxes its Cabal constraints).  It also adds the `mylib` package which exists neither in nixpkgs nor in Hackage, but comes from somewhere arbitrary and specified as flake input.
 
 In your *actual* haskell project, you can use this package set (`config.haskellProjects.ghc810.outputs.finalPackages`) as its base package set:
 
 ```nix
 {
   haskellProjects.myproject = {
-    packages.mypackage = ./.;
+    packages.mypackage.source = ./.;
 
     basePackages = config.haskellProjects.ghc810.outputs.finalPackages;
   };
 }
 ```
 
-Finally you can externalized this `ghc810` package set as either a flake-parts module or as a [[modules|haskell-flake module]], and import it in multiple repositories.
+Finally, you can externalize this `ghc810` package set as either a flake-parts module or as a [[modules|haskell-flake module]], and thereon import it from multiple repositories.
 
 ## Examples
 
-- https://github.com/nammayatri/common/pull/3/files
+- https://github.com/nammayatri/common/pull/11/files
