@@ -6,6 +6,12 @@ let
     types;
   # TODO: DRY
   isPathUnderNixStore = path: builtins.hasContext (builtins.toString path);
+
+  # Whether the 'path' is local to `project.config.projectRoot`
+  localToProject = path:
+    path != null &&
+    isPathUnderNixStore path &&
+    lib.strings.hasPrefix "${project.config.projectRoot}" "${path}";
 in
 { name, config, ... }: {
   options = {
@@ -42,36 +48,34 @@ in
         else null; # cfg.source is Hackage version; nothing to do.
     };
 
-    local = mkOption {
+    local.toCurrentProject = mkOption {
       type = types.bool;
       description = ''
-        Whether this package is local to the current `projectRoot`.
+        Whether this package is local to the project that is importing it.
       '';
       internal = true;
       readOnly = true;
       # We use 'apply' rather than 'default' to make this evaluation lazy at
       # call site (which could be different projectRoot)
       apply = _:
-        config.source != null &&
-        isPathUnderNixStore config.source &&
-        lib.strings.hasPrefix "${project.config.projectRoot}" "${config.source}";
+        localToProject config.source;
       defaultText = ''
-        Computed automatically if package 'source' is under 'projectRoot'.
+        Computed automatically if package 'source' is under 'projectRoot' of the
+        importing project.
       '';
     };
 
-    localToFlake = mkOption {
+    local.toDefinedProject = mkOption {
       type = types.bool;
       description = ''
-        Whether this package is local to the flake it is defined in.
+        Whether this package is local to the project it is defined in.
       '';
       internal = true;
       default =
-        config.source != null &&
-        isPathUnderNixStore config.source &&
-        lib.strings.hasPrefix "${project.config.projectRoot}" "${config.source}";
+        localToProject config.source;
       defaultText = ''
-        Computed automatically if package 'source' is under 'projectRoot'.
+        Computed automatically if package 'source' is under 'projectRoot' of the
+        defining project.
       '';
     };
   };

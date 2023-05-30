@@ -70,12 +70,22 @@ in
     settings.default = mkOption {
       type = types.deferredModule;
       description = ''
-        Default settings for all local packages in `packages` option.
+        Default settings for all packages in `packages` option.
+      '';
+      defaultText = ''
+        - Speed up builds by disabling haddock and library profiling.
+        - Separate bin output (for reduced closure size when using `getBin` in apps)
+
+        This uses `local.toDefinedProject` option to determine which packages to
+        override. Thus, it applies to both local packages as well as
+        transitively imported packags that are local to that flake (managed by
+        haskell-flake). The goal being to use the same configuration
+        consistently for all packages using haskell-flake.
       '';
       default =
         let
           localSettings = { name, package, config, ... }:
-            lib.optionalAttrs (package.localToFlake or false) {
+            lib.optionalAttrs (package.local.toDefinedProject or false) {
               # Disabling haddock and profiling is mainly to speed up Nix builds.
               haddock = lib.mkDefault false; # Because, this is end-user software. No need for library docs.
               libraryProfiling = lib.mkDefault false; # Avoid double-compilation.
@@ -88,12 +98,6 @@ in
             };
         in
         if config.defaults.enable then localSettings else { };
-      defaultText = ''
-        Settings suitable for local packages
-
-        - Speed up builds by disabling haddock and library profiling.
-        - Separate bin output (for reduced closure size when using `getBin` in apps)
-      '';
     };
 
     projectModules.output = mkOption {

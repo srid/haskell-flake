@@ -81,7 +81,7 @@ in
     let
       # Subet of config.packages that are local to the project.
       localPackages =
-        lib.filterAttrs (_: cfg: cfg.local) config.packages;
+        lib.filterAttrs (_: cfg: cfg.local.toCurrentProject) config.packages;
 
       finalOverlay = lib.composeManyExtensions [
         config.packagesOverlay
