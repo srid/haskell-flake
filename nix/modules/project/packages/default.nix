@@ -52,12 +52,12 @@ in
         The Haskell overlay computed from `packages` modules.
       '';
       internal = true;
-      default = self: super:
+      default = self: _super:
         let
           inherit (project.config) log;
           isPathUnderNixStore = path: builtins.hasContext (builtins.toString path);
           build-haskell-package = import ../../../build-haskell-package.nix {
-            inherit pkgs lib self super log;
+            inherit pkgs lib self log;
           };
           getOrMkPackage = name: cfg:
             if isPathUnderNixStore cfg.source

@@ -1,10 +1,15 @@
 # Like callCabal2nix, but does more:
 # - Source filtering (to prevent parent content changes causing rebuilds)
 # - Always build from cabal's sdist for release-worthiness
+# - Logs what it's doing (based on 'log' option)
 #
-# This function can only be called from inside a Haskell overlay, whose 'self'
-# and 'super' are accessible in args here.
-{ pkgs, lib, self, super, log, ... }:
+{ pkgs
+, lib
+# 'self' refers to the Haskell package set context.
+, self
+, log
+, ...
+}:
 
 let
   fromSdist = self.buildFromCabalSdist or
