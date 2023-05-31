@@ -7,8 +7,10 @@ let
     let
       # Convert the settings config (x) to be stripped of functions, so we can
       # convert it to JSON for logging.
-      xSanitized = lib.filterAttrs (s: v: 
-        !(builtins.isFunction v) && !(s == "impl") && v != null) x;
+      xSanitized = lib.filterAttrs
+        (s: v:
+          !(builtins.isFunction v) && !(s == "impl") && v != null)
+        x;
     in
     project.config.log.traceDebug "settings.${hpkg} ${builtins.toJSON xSanitized}" x;
 in
@@ -19,9 +21,10 @@ in
     apply = settings:
       # Polyfill 'packages'; because overlay's defaults setting merge requires it.
       let
-        packagesEmptySettings = 
-          lib.mapAttrs (_: _: {}) project.config.packages;
-        in packagesEmptySettings // settings;
+        packagesEmptySettings =
+          lib.mapAttrs (_: _: { }) project.config.packages;
+      in
+      packagesEmptySettings // settings;
     description = ''
       Overrides for packages in `basePackages` and `packages`.
 
@@ -76,6 +79,6 @@ in
               (lib.attrValues (traceSettings name cfg).impl)
           );
       in
-        lib.mapAttrs applySettingsFor project.config.settings;
+      lib.mapAttrs applySettingsFor project.config.settings;
   };
 }

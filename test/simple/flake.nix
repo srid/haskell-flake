@@ -28,8 +28,8 @@
         settings = {
           # Test that self and super are passed
           foo = { self, super, ... }: {
-            custom = _: builtins.seq 
-              (lib.assertMsg (lib.hasAttr "ghc" self) "self is bad") 
+            custom = _: builtins.seq
+              (lib.assertMsg (lib.hasAttr "ghc" self) "self is bad")
               super.foo;
           };
         };

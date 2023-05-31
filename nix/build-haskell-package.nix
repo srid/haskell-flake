@@ -5,7 +5,7 @@
 #
 { pkgs
 , lib
-# 'self' refers to the Haskell package set context.
+  # 'self' refers to the Haskell package set context.
 , self
 , log
 , ...

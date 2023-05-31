@@ -49,7 +49,7 @@ in
       description = ''
         List of versions that are known to be broken.
       '';
-      impl = versions: 
+      impl = versions:
         let
           markBrokenVersions = vs: drv:
             builtins.foldl' markBrokenVersion drv vs;
@@ -204,7 +204,7 @@ in
           enableCabalFlags = fs: drv: builtins.foldl' enableCabalFlag drv fs;
           disableCabalFlags = fs: drv: builtins.foldl' disableCabalFlag drv fs;
         in
-          lib.pipe drv [enableCabalFlag disableCabalFlag];
+        lib.pipe drv [ enableCabalFlag disableCabalFlag ];
     };
     patches = {
       type = types.listOf types.path;
@@ -280,7 +280,7 @@ in
     disableOptimization = {
       type = types.bool;
       description = ''
-         Disable core optimizations, significantly speeds up build time
+        Disable core optimizations, significantly speeds up build time
       '';
       impl = enable:
         if enable then disableOptimization else x: x;
