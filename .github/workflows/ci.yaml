@@ -22,7 +22,6 @@ jobs:
         id: test
         run: |
           nix run nixpkgs#bash runtest.sh
-
   www:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/master'
