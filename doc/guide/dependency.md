@@ -65,6 +65,6 @@ In Nix, it is possible to use an exact package built from an arbitrary source (G
 }
 ```
 
-[[project-modules]] export both `packages` and `settings` options for reuse in downstream Haskell projects.
+[[modules]] export both `packages` and `settings` options for reuse in downstream Haskell projects.
 
 [nixpkgs]: https://zero-to-nix.com/concepts/nixpkgs
