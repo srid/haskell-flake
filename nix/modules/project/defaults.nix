@@ -111,6 +111,7 @@ in
         inherit (config)
           packages settings;
       };
+      defaultText = lib.literalMD ''a generated module'';
     };
   };
 }
