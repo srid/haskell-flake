@@ -65,6 +65,14 @@ In Nix, it is possible to use an exact package built from an arbitrary source (G
 }
 ```
 
+## Exporting and sharing settings
+
 [[modules]] export both `packages` and `settings` options for reuse in downstream Haskell projects.
+
+## Examples
+
+- [Emanote overrides](https://github.com/srid/emanote/commit/5b24bd04f94e03afe66ee01da723e4a05d854953): also demonstrates how to add a *new* setting option (`removeReferencesTo`).
+
+
 
 [nixpkgs]: https://zero-to-nix.com/concepts/nixpkgs
