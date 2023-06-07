@@ -7,9 +7,9 @@ rm -f result result-bin
 logHeader "Testing nix build"
 nix build ${OVERRIDE_ALL}
 
-# Test defaults.settings module behaviour, viz: separateBinOutput
-test -f result-bin/bin/haskell-flake-test || {
-    echo "ERROR: separateBinOutput (from defaults.settings) not in effect"
+# Test defaults.settings module behaviour, viz: haddock
+nix build ${OVERRIDE_ALL} .#default^doc && {
+    echo "ERROR: dontHaddock (from defaults.settings) not in effect"
     exit 1
 }
 
