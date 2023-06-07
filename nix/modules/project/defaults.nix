@@ -73,8 +73,7 @@ in
         Default settings for all packages in `packages` option.
       '';
       defaultText = ''
-        - Speed up builds by disabling haddock and library profiling.
-        - Separate bin output (for reduced closure size when using `getBin` in apps)
+        Speed up builds by disabling haddock and library profiling.
 
         This uses `local.toDefinedProject` option to determine which packages to
         override. Thus, it applies to both local packages as well as
@@ -89,12 +88,6 @@ in
               # Disabling haddock and profiling is mainly to speed up Nix builds.
               haddock = lib.mkDefault false; # Because, this is end-user software. No need for library docs.
               libraryProfiling = lib.mkDefault false; # Avoid double-compilation.
-              separateBinOutput = lib.mkDefault (
-                # Reduce closure size
-                if package.cabal.executables == [ ]
-                then null
-                else true
-              );
             };
         in
         if config.defaults.enable then localSettings else { };
