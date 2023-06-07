@@ -226,6 +226,9 @@ in
       description = ''
         Create two outputs for this Haskell package -- 'out' and 'bin'. This is
         useful to separate out the binary with a reduced closure size.
+
+        WARNING: This can lead to cyclic references; see
+        https://github.com/srid/haskell-flake/issues/167
       '';
       impl = enable:
         let
