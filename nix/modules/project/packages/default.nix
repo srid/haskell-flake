@@ -55,12 +55,11 @@ in
       default = self: _super:
         let
           inherit (project.config) log;
-          isPathUnderNixStore = path: builtins.hasContext (builtins.toString path);
           build-haskell-package = import ../../../build-haskell-package.nix {
             inherit pkgs lib self log;
           };
           getOrMkPackage = name: cfg:
-            if isPathUnderNixStore cfg.source
+            if lib.types.path.check cfg.source
             then
               log.traceDebug "${name}.callCabal2nix ${cfg.source}"
                 (build-haskell-package name cfg.source)
