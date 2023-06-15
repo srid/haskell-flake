@@ -4,19 +4,17 @@ let
   inherit (lib)
     mkOption
     types;
-  # TODO: DRY
-  isPathUnderNixStore = path: builtins.hasContext (builtins.toString path);
 
   # Whether the 'path' is local to `project.config.projectRoot`
   localToProject = path:
     path != null &&
-    isPathUnderNixStore path &&
+    lib.types.path.check path &&
     lib.strings.hasPrefix "${project.config.projectRoot}" "${path}";
 in
 { name, config, ... }: {
   options = {
     source = mkOption {
-      type = import ../../../types/haskell-source-type.nix { inherit lib; };
+      type = with types; either path str;
       description = ''
         Source refers to a Haskell package defined by one of the following:
 
@@ -43,7 +41,7 @@ in
             '';
           };
         in
-        if isPathUnderNixStore config.source
+        if lib.types.path.check config.source
         then haskell-parsers.getCabalExecutables config.source
         else null; # cfg.source is Hackage version; nothing to do.
     };
