@@ -57,6 +57,15 @@ let
           };
         '';
       };
+
+      includeBenchmarkDeps = mkOption {
+        type = types.bool;
+        description = ''
+          Whether to include benchmark dependencies in the development shell.
+          You should set this to `true` if you have a `benchmark` defined in your package's cabal file.
+        '';
+        default = false;
+      };
     };
   };
 in
@@ -100,6 +109,7 @@ in
             (name: p."${name}")
             (lib.attrNames localPackages);
         withHoogle = true;
+        doBenchmark = config.devShell.includeBenchmarkDeps;
         extraDependencies = p:
           let o = mkShellArgs.extraDependencies or (_: { }) p;
           in o // {
