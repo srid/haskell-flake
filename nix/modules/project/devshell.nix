@@ -57,6 +57,26 @@ let
           };
         '';
       };
+
+      benchmark = mkOption {
+        type = types.bool;
+        description = ''
+          Whether to include benchmark dependencies in the development shell.
+          The value of this option will set the corresponding `doBenchmark` flag in the
+          `shellFor` derivation.
+        '';
+        default = false;
+      };
+
+      hoogle = mkOption {
+        type = types.bool;
+        default = true;
+        description = ''
+          Whether to include Hoogle in the development shell.
+          The value of this option will set the corresponding `withHoogle` flag in the
+          `shellFor` derivation.
+        '';
+      };
     };
   };
 in
@@ -99,7 +119,8 @@ in
           map
             (name: p."${name}")
             (lib.attrNames localPackages);
-        withHoogle = true;
+        withHoogle = config.devShell.hoogle;
+        doBenchmark = config.devShell.benchmark;
         extraDependencies = p:
           let o = mkShellArgs.extraDependencies or (_: { }) p;
           in o // {
