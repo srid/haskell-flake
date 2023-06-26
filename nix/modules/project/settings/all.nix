@@ -199,12 +199,11 @@ in
       '';
       impl = flags: drv:
         let
-          enabled = lib.filterAttrs (_: v: v) flags;
-          disabled = lib.filterAttrs (_: v: !v) flags;
-          enableCabalFlags = fs: drv: builtins.foldl' enableCabalFlag drv fs;
-          disableCabalFlags = fs: drv: builtins.foldl' disableCabalFlag drv fs;
+          fns = lib.flip lib.mapAttrsToList flags (flag: enabled:
+            (if enabled then enableCabalFlag else disableCabalFlag) flag
+          );
         in
-        lib.pipe drv [ enableCabalFlag disableCabalFlag ];
+        lib.pipe drv fns;
     };
     patches = {
       type = types.listOf types.path;

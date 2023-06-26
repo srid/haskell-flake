@@ -52,6 +52,11 @@
             # the 'foo' package, we must override it here using `lib.mkForce`.
             foo.source = lib.mkForce (inputs.haskell-multi-nix + /foo);
           };
+          settings = {
+            foo = {
+              cabalFlags.blah = true;
+            };
+          };
           devShell = {
             tools = hp: {
               # Adding a tool should make it available in devshell.
