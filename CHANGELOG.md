@@ -10,6 +10,7 @@
   - Add `project.config.defaults.settings.default` defining sensible defaults for local packages.
   - Add `project.config.defaults.enable` to turn off all default settings en masse.
   - Regressions in this PR: #169
+- #175: `devShell`: Add options `benchmark` (to enable benchmark dependencies) and `hoogle` (whether to include Hoogle in development shell)
 
 ## 0.3.0 (May 22, 2023)
 
