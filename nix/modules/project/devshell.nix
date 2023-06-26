@@ -70,6 +70,7 @@ let
 
       hoogle = mkOption {
         type = types.bool;
+        default = true;
         description = ''
           Whether to include Hoogle in the development shell.
           The value of this option will set the corresponding `withHoogle` flag in the
@@ -119,7 +120,7 @@ in
             (name: p."${name}")
             (lib.attrNames localPackages);
         withHoogle = config.devShell.hoogle;
-        doBenchmark = config.devShell.includeBenchmarkDeps;
+        doBenchmark = config.devShell.benchmark;
         extraDependencies = p:
           let o = mkShellArgs.extraDependencies or (_: { }) p;
           in o // {
