@@ -35,14 +35,17 @@ In Nix, it is possible to use an exact package built from an arbitrary source (G
           };
           settings = {
             ema = {  # This module can take `{self, super, ...}` args, optionally.
-              check = false;
+              check = false;     # Disable running tests
+              haddock = false;   # Disable building haddock documentation
+              jailbreak = true;  # Ignore cabal constraints
+              patches = [ ./patches/ema-bug-fix.patch ];
+              cabalFlags.with-generics = true;
             };
           };
         };
       };
     }
     ```
-    We use `check = false` here to disable running tests.
 1. Re-run the nix shell (`nix develop`).
 
 ### [nixpkgs] functions
