@@ -4,7 +4,8 @@
     flake-parts.url = "github:hercules-ci/flake-parts";
     flake-root.url = "github:srid/flake-root";
     mission-control.url = "github:Platonic-Systems/mission-control";
-    treefmt-nix.url = "github:numtide/treefmt-nix";
+    # treefmt-nix.url = "github:numtide/treefmt-nix";
+    treefmt-nix.url = "github:srid/treefmt-nix/patch-3";
 
     haskell-flake = { };
   };
@@ -18,6 +19,7 @@
       ];
       perSystem = { pkgs, lib, config, ... }: {
         treefmt.config = {
+          projectRoot = ../.;
           projectRootFile = "README.md";
           programs.nixpkgs-fmt.enable = true;
         };
