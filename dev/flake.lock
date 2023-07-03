@@ -112,15 +112,16 @@
         "nixpkgs": "nixpkgs_2"
       },
       "locked": {
-        "lastModified": 1688026376,
-        "narHash": "sha256-qJmkr9BWDpqblk4E9/rCsAEl39y2n4Ycw6KRopvpUcY=",
-        "owner": "numtide",
+        "lastModified": 1688417423,
+        "narHash": "sha256-xY85NutldAhNtLMgMx1gouvCY8UF23ogH1XqRV7aTs4=",
+        "owner": "srid",
         "repo": "treefmt-nix",
-        "rev": "df3f32b0cc253dfc7009b7317e8f0e7ccd70b1cf",
+        "rev": "a7a9ccfc7d6783ab17738ca4ef40eb582a40feb9",
         "type": "github"
       },
       "original": {
-        "owner": "numtide",
+        "owner": "srid",
+        "ref": "patch-3",
         "repo": "treefmt-nix",
         "type": "github"
       }
