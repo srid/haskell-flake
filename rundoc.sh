@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 
 if [ -z "$1" ]; then
-  nix run github:srid/emanote -- -L ./doc
+  nix run github:srid/emanote -- -L ./docs
 else
   # Renders the docs, prints the location of the docs, opens the docs if possible
   #

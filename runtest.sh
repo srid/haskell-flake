@@ -13,7 +13,7 @@ TESTS=(
   ./test/simple
   ./test/with-subdir
   ./test/project-module
-  ./doc
+  ./docs
 )
 
 for testDir in "${TESTS[@]}" 
