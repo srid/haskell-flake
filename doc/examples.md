@@ -1,6 +1,6 @@
 ---
-slug: examples
-order: 100
+sidebar_position: 50
+slug: /haskell/examples
 ---
 
 # Examples

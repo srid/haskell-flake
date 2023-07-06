@@ -1,3 +1,7 @@
+---
+slug: /haskell/ref
+---
+
 # Reference
 
 Documentation on all module options provided by `haskell-flake` can be found here: https://flake.parts/options/haskell-flake.html

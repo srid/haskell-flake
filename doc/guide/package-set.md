@@ -1,5 +1,5 @@
 ---
-slug: package-set
+slug: /haskell/package-set
 ---
 
 # Creating package sets

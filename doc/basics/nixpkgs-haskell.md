@@ -1,5 +1,5 @@
 ---
-slug: nixpkgs-haskell
+slug: /haskell/nixpkgs
 ---
 
 # Nixifying a Haskell project using nixpkgs

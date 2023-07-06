@@ -1,5 +1,5 @@
 ---
-slug: devshell
+slug: /haskell/devshell
 ---
 
 # DevShell

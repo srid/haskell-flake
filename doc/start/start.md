@@ -1,5 +1,5 @@
 ---
-order: -10
+sidebar_position: 1
 ---
 
 # Getting Started
@@ -10,7 +10,7 @@ Before using `haskell-flake` you must first [[nix|install Nix with Flakes enable
 
 To use `haskell-flake` in an *existing* Haskell project, run:
 
-```sh
+```bash
 nix flake init -t github:srid/haskell-flake
 ```
 
@@ -20,7 +20,7 @@ Open the generated `flake.nix` and change `self'.packages.example` to use your p
 
 To create a *new* Haskell project, instead, run:
 
-```sh
+```bash
 mkdir example && cd ./example
 nix flake init -t github:srid/haskell-flake#example
 ```
@@ -42,4 +42,4 @@ In addition, compared to using plain nixpkgs, haskell-flake supports:
 
 ## Next steps
 
-Visit [[guide]] for more details, and [[ref]] for module options. If you are new to Nix, see [[basics]]. See [[howto]] for tangential topics.
+Visit [guide](../guide) for more details, and [[ref]] for module options. If you are new to Nix, see [[basics]]. See [[howto]] for tangential topics.

@@ -22,26 +22,3 @@ jobs:
         id: test
         run: |
           nix run nixpkgs#bash runtest.sh
-  www:
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/master'
-    steps:
-      - uses: actions/checkout@v3
-      - uses: nixbuild/nix-quick-install-action@v21
-        with:
-          nix_conf: |
-            experimental-features = nix-command flakes
-            access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
-      - uses: cachix/cachix-action@v12
-        with:
-          name: srid
-      - name: Build the website
-        run: |
-          mkdir ./www
-          nix --accept-flake-config run github:srid/emanote -- -L ./doc gen ./www
-      - name: Deploy to gh-pages 🚀
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./www/
-          cname: haskell.flake.page
