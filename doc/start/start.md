@@ -42,4 +42,4 @@ In addition, compared to using plain nixpkgs, haskell-flake supports:
 
 ## Next steps
 
-Visit [guide](../guide) for more details, and [[ref]] for module options. If you are new to Nix, see [[basics]]. See [[howto]] for tangential topics.
+Visit [guide](/haskell/guide) for more details, and [[ref]] for module options. If you are new to Nix, see [[basics]]. See [[howto]] for tangential topics.
