@@ -1,4 +1,5 @@
 ---
+slug: /haskell/start
 sidebar_position: 1
 ---
 
