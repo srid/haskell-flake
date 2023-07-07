@@ -1,5 +1,5 @@
 ---
-slug: package-set
+slug: /haskell-flake/package-set
 ---
 
 # Creating package sets

@@ -1,6 +1,0 @@
-
-# Guide
-
-```query
-path:./*
-```

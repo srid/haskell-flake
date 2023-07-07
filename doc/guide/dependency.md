@@ -1,5 +1,5 @@
 ---
-slug: dependency
+slug: /haskell-flake/dependency
 ---
 
 # Overriding dependencies
@@ -70,7 +70,7 @@ In Nix, it is possible to use an exact package built from an arbitrary source (G
 
 ## Exporting and sharing settings
 
-[[modules]] export both `packages` and `settings` options for reuse in downstream Haskell projects.
+[Project modules](/haskell-flake/modules) export both `packages` and `settings` options for reuse in downstream Haskell projects.
 
 ## Examples
 

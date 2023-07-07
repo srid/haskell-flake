@@ -1,5 +1,5 @@
 ---
-slug: modules
+slug: /haskell-flake/modules
 ---
 
 # Project modules

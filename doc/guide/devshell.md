@@ -1,5 +1,5 @@
 ---
-slug: devshell
+slug: /haskell-flake/devshell
 ---
 
 # DevShell
@@ -26,7 +26,7 @@ While `mkShellArgs` is a convenient way to extend the Haskell devShell, sometime
 
 The devShell of a haskell-flake project is exposed in the `config.haskellProjects.<name>.outputs.devShell` attribute. You can pass this devShell to the `inputsFrom` argument of a [`mkShell`][mkShell] function in order to include the Haskell devShell in another devShell. The same technique can be used to compose devShells created by other flake-parts modules. 
 
-For example, [in haskell-template](https://github.com/srid/haskell-template/blob/fc263b19e4ef02710ffc61fc656aec6c1a873974/flake.nix#L96-L102), we create a top-level devShell that merges the devShell of the haskell-flake project, the devShell of [mission-control](https://github.com/Platonic-Systems/mission-control) and the devShell of [flake-root](https://github.com/srid/flake-root) as follows::
+For example, [in haskell-template](https://github.com/srid/haskell-template/blob/fc263b19e4ef02710ffc61fc656aec6c1a873974/flake.nix#L96-L102), we create a top-level devShell that merges the devShell of the haskell-flake project, the devShell of [mission-control](/mission-control) and the devShell of [flake-root](https://github.com/srid/flake-root) as follows::
 
 ```nix
 {
