@@ -1,5 +1,5 @@
 ---
-slug: /haskell/devshell
+slug: /haskell-flake/devshell
 ---
 
 # DevShell

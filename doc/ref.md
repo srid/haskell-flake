@@ -1,5 +1,5 @@
 ---
-slug: /haskell/ref
+slug: /haskell-flake/ref
 ---
 
 # Reference

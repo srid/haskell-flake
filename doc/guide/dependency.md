@@ -1,5 +1,5 @@
 ---
-slug: /haskell/dependency
+slug: /haskell-flake/dependency
 ---
 
 # Overriding dependencies
