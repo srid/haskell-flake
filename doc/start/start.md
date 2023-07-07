@@ -5,7 +5,7 @@ sidebar_position: 1
 
 # Getting Started
 
-Before using `haskell-flake` you must first [[nix|install Nix with Flakes enabled]].
+Before using `haskell-flake` you must first [install Nix](/install).
 
 ## Existing projects
 
@@ -43,4 +43,4 @@ In addition, compared to using plain nixpkgs, haskell-flake supports:
 
 ## Next steps
 
-Visit [guide](/haskell-flake/guide) for more details, and [[ref]] for module options. If you are new to Nix, see [[basics]]. See [[howto]] for tangential topics.
+Visit [Guide](/haskell-flake/guide) for more details, and [Reference](/haskell-flake/ref) for module options. 

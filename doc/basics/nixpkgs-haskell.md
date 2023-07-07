@@ -4,16 +4,11 @@ slug: /haskell-flake/nixpkgs
 
 # Nixifying a Haskell project using nixpkgs
 
-:::{.more}
-If you are new to Nix or flakes, read [[nix-rapid]] first.
-:::
-
-This tutorial enables you to write a flake using nothing but [nixpkgs] to nixify an existing Haskell project. The tutorial serves a pedagogic purpose; in the real-world scenario, we recommend that you use haskell-flake (see [[start]]).
+This tutorial enables you to write a flake using nothing but [nixpkgs] to nixify an existing Haskell project. The tutorial serves a pedagogic purpose; in the real-world scenario, we recommend that you use [haskell-flake](/haskell-flake).
 
 [nixpkgs] provides two important functions for developing Haskell projects that we'll extensively use here. They are `callCabal2nix` and `shellFor`, and are described below.
 
-:::{.more}
-To learn more:
+:::info To learn more
 - [Official manual](https://nixos.org/manual/nixpkgs/unstable/#haskell)
 :::
 
@@ -41,8 +36,7 @@ This derivation produced the following outputs:
 
 ### Overlays
 
-:::{.more}
-To learn more:
+:::info To learn more
 - [NixOS Wiki on Overlays](https://nixos.wiki/wiki/Overlays)
 - [Overlay implementation in fixed-points.nix](https://github.com/NixOS/nixpkgs/blob/master/lib/fixed-points.nix)
 :::
@@ -82,8 +76,7 @@ A Haskell development environment can be provided in one of the two ways. The na
 
 ### Haskell shell
 
-:::{.more}
-To learn more:
+:::info To learn more
 - [Official manual on `shellFor`](https://nixos.org/manual/nixpkgs/unstable/#haskell-shellFor)
 :::
 
