@@ -6,7 +6,7 @@ A [`flake-parts`](https://flake.parts/) module to make Haskell development [simp
 
 ## Documentation
 
-https://haskell.flake.page/
+https://zero-to-flakes.com/haskell-flake
 
 ## Discussion
 
