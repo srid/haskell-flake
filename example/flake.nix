@@ -16,10 +16,10 @@
         haskellProjects.default = {
           # The base package set representing a specific GHC version.
           # By default, this is pkgs.haskellPackages.
-          # You may also create your own. See https://haskell.flake.page/package-set
+          # You may also create your own. See https://zero-to-flakes.com/haskell-flake/package-set
           # basePackages = pkgs.haskellPackages;
 
-          # Extra package information. See https://haskell.flake.page/dependency
+          # Extra package information. See https://zero-to-flakes.com/haskell-flake/dependency
           #
           # Note that local packages are automatically included in `packages`
           # (defined by `defaults.packages` option).
