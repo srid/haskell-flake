@@ -45,7 +45,7 @@ in
         if enable then markBroken else unmarkBroken;
     };
     brokenVersions = {
-      type = types.attrsOf types.string;
+      type = types.attrsOf types.str;
       description = ''
         List of versions that are known to be broken.
       '';
@@ -167,21 +167,21 @@ in
       impl = addSetupDepends;
     };
     extraConfigureFlags = {
-      type = types.listOf types.string;
+      type = types.listOf types.str;
       description = ''
         Extra flags to pass to 'cabal configure'
       '';
       impl = appendConfigureFlags;
     };
     extraBuildFlags = {
-      type = types.listOf types.string;
+      type = types.listOf types.str;
       description = ''
         Extra flags to pass to 'cabal build'
       '';
       impl = appendBuildFlags;
     };
     removeConfigureFlags = {
-      type = types.listOf types.string;
+      type = types.listOf types.str;
       description = ''
         Flags to remove from the default flags passed to 'cabal configure'
       '';
@@ -237,7 +237,7 @@ in
         if enable then enableSeparateBinOutput else disableSeparateBinOutput;
     };
     buildTargets = {
-      type = types.listOf types.string;
+      type = types.listOf types.str;
       description = ''
         A list of targets to build.
 
