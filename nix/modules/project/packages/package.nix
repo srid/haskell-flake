@@ -24,7 +24,7 @@ in
     };
 
     cabal.executables = mkOption {
-      type = types.nullOr (types.listOf types.string);
+      type = types.nullOr (types.listOf types.str);
       description = ''
         List of executable names found in the cabal file of the package.
         
