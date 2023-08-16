@@ -97,6 +97,7 @@ in
             (map
               (exe:
                 lib.nameValuePair exe {
+                  type = "app";
                   program = "${lib.getBin finalPackages.${name}}/bin/${exe}";
                 }
               )
