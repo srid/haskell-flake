@@ -1,6 +1,6 @@
 # Revision history for haskell-flake
 
-## `master`
+## `0.4.0 (Aug 22, 2023`
 
 - #162: **Completely new way to override Haskell packages**: removed `overrides` and `source-overrides`. Use `packages` to specify your source overrides; use `settings` to override individual packages in modular fashion (like NixOS modules). Additional changes include:
   - Add `package.<name>.cabal.executables` referring to the executables in a package. This is auto-detected by parsing the Cabal file.
