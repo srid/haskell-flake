@@ -4,17 +4,21 @@ slug: /haskell-flake/dependency
 
 # Overriding dependencies
 
-Haskell libraries ultimately come from [Hackage](https://hackage.haskell.org/), and [nixpkgs] contains [most of these](https://nixpkgs.haskell.page/). Adding a library to your project usually involves modifying the `.cabal` file and restart the nix shell:
+Haskell libraries ultimately come from [Hackage](https://hackage.haskell.org/), and [nixpkgs] contains [most of these](https://nixpkgs.haskell.page/). Adding a library to your project involves modifying the `.cabal` file and restarting the nix shell. The process is typically as follows:
 
 1. Identify the package name from Hackage. Let's say you want to use [`ema`](https://hackage.haskell.org/package/ema)
 2. Add the package, `ema`, to the `.cabal` file under [the `build-depends` section](https://cabal.readthedocs.io/en/3.4/cabal-package.html#pkg-field-build-depends).
 3. Exit and restart the nix shell (`nix develop`). 
 
-Step (3) above will try to fetch the package from the Haskell package set in [nixpkgs] (the one that is pinned in `flake.lock`). For various reasons, this package may be either missing or marked as broken. In such cases, you will have to override the package locally in the project (see the next section).
+Step (3) above will try to fetch the package from the Haskell package set in [nixpkgs] (`pkgs.haskellPackages` by default). For various reasons, this package may be either missing or marked as "broken". In such cases, you will have to override the package locally in the project (see the next section).
 
-## Overriding a Haskell package in Nix
+## Overriding a Haskell package source {#source}
 
-In Nix, it is possible to use an exact package built from an arbitrary source (Git repo or local directory). If you want to use the `master` branch of the [ema](https://hackage.haskell.org/package/ema) library, for instance, you can do it as follows:
+In Nix, it is possible to use an exact package built from an arbitrary source - which can be a Git repo, local directory or a Hackage version. 
+
+### Using a Git repo {#path}
+
+If you want to use the `master` branch of the [ema](https://hackage.haskell.org/package/ema) library, for instance, you can do it as follows:
 
 1. Add a flake input pointing to the ema Git repo in `flake.nix`: 
     ```nix
@@ -33,26 +37,12 @@ In Nix, it is possible to use an exact package built from an arbitrary source (G
           packages = {
             ema.source = inputs.ema;
           };
-          settings = {
-            ema = {  # This module can take `{self, super, ...}` args, optionally.
-              check = false;     # Disable running tests
-              haddock = false;   # Disable building haddock documentation
-              jailbreak = true;  # Ignore cabal constraints
-              patches = [ ./patches/ema-bug-fix.patch ];
-              cabalFlags.with-generics = true;
-            };
-          };
         };
-      };
     }
     ```
 1. Re-run the nix shell (`nix develop`).
 
-### [nixpkgs] functions
-
-- The `pkgs.haskell.lib` module provides various utility functions that you can use to override Haskell packages. The canonical place to find documentation on these is [the source](https://github.com/NixOS/nixpkgs/blob/master/pkgs/development/haskell-modules/lib/compose.nix). haskell-flake provides a `settings` submodule for convienience; for eg., the `dontCheck` function translates to `settings.<name>.check`.
-
-## Using Hackage versions
+### Using a Hackage version {#hackage}
 
 `packages.<name>.source` also supports Hackage versions. So the following works to pull [ema 0.8.2.0](https://hackage.haskell.org/package/ema-0.8.2.0):
 
@@ -68,7 +58,51 @@ In Nix, it is possible to use an exact package built from an arbitrary source (G
 }
 ```
 
-## Exporting and sharing settings
+### Using a nixpkgs version {#nixpkgs}
+
+```nix
+haskellProjects.default = {
+  settings = { super, ... }: {
+    fourmolu.custom = super.fourmolu_0_13_1_0;
+  };
+};
+```
+
+## Overriding a Haskell package settings {#settings}
+
+```nix
+haskellProjects.default = {
+  settings = {
+    ema = {  # This module can take `{self, super, ...}` args, optionally.
+      # Disable running tests
+      check = false;
+
+      # Disable building haddock (documentation)
+      haddock = false;
+
+      # Ignore Cabal version constraints
+      jailbreak = true;
+
+      # Extra non-Haskell dependencies
+      extraBuildDepends = [ pkgs.stork ];
+
+      # Source patches
+      patches = [ ./patches/ema-bug-fix.patch ];
+
+      # Enable/disable Cabal flags
+      cabalFlags.with-generics = true;
+    };
+  };
+};
+```
+
+:::info Note
+### [nixpkgs] functions
+
+- The `pkgs.haskell.lib` module provides various utility functions that you can use to override Haskell packages. The canonical place to find documentation on these is [the source](https://github.com/NixOS/nixpkgs/blob/master/pkgs/development/haskell-modules/lib/compose.nix). haskell-flake provides a `settings` submodule for convienience. For eg., the `dontCheck` function translates to `settings.<name>.check`; the full list of options can be seen [here](https://github.com/srid/haskell-flake/blob/master/nix/modules/project/settings/all.nix).
+:::
+
+## Sharing settings {#settings-share}
 
 [Project modules](/haskell-flake/modules) export both `packages` and `settings` options for reuse in downstream Haskell projects.
 
