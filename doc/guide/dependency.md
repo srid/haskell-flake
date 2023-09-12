@@ -38,6 +38,7 @@ If you want to use the `master` branch of the [ema](https://hackage.haskell.org/
             ema.source = inputs.ema;
           };
         };
+      };
     }
     ```
 1. Re-run the nix shell (`nix develop`).
