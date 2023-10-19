@@ -13,7 +13,7 @@
     };
 
     # https://github.com/srid/nixci
-    nixci = let overrideInputs = { "haskell-flake" = ./.; }; in {
+    nixci.default = let overrideInputs = { "haskell-flake" = ./.; }; in {
       dev.dir = "dev";
       example = { inherit overrideInputs; dir = "example"; };
     };
