@@ -63,8 +63,8 @@ If you want to use the `master` branch of the [ema](https://hackage.haskell.org/
 
 ```nix
 haskellProjects.default = {
-  settings = { super, ... }: {
-    fourmolu.custom = super.fourmolu_0_13_1_0;
+  settings = {
+    fourmolu = { super, ...}: { custom = _: super.fourmolu_0_13_1_0; };
   };
 };
 ```
