@@ -124,11 +124,11 @@ in
         extraDependencies =
           if lib.hasAttr "extraDependencies" (lib.functionArgs finalPackages.shellFor) then
             p:
-              let o = mkShellArgs.extraDependencies or (_: { }) p;
-              in o // {
-                libraryHaskellDepends = o.libraryHaskellDepends or [ ]
-                  ++ builtins.attrValues (config.devShell.extraLibraries p);
-              }
+            let o = mkShellArgs.extraDependencies or (_: { }) p;
+            in o // {
+              libraryHaskellDepends = o.libraryHaskellDepends or [ ]
+                ++ builtins.attrValues (config.devShell.extraLibraries p);
+            }
           else
             config.log.traceWarning "Your nixpkgs does not support `extraDependencies` in `shellFor`." null;
       });
