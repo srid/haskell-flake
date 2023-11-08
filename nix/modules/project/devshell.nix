@@ -28,7 +28,7 @@ let
         default = hp: { };
       };
       extraLibraries = mkOption {
-        type = functionTo (types.attrsOf (types.nullOr types.package));
+        type = types.nullOr (functionTo (types.attrsOf (types.nullOr types.package)));
         description = ''
           Extra Haskell libraries available in the shell's environment.
           These can be used in the shell's `runghc` and `ghci` for instance.
@@ -37,7 +37,9 @@ let
 
           The return type is an attribute set for overridability and syntax, as only the values are used.
         '';
-        default = hp: { };
+        default = null;
+        apply = f: hp:
+          if f == null then { } else f hp;
         defaultText = lib.literalExpression "hp: { }";
         example = lib.literalExpression "hp: { inherit (hp) releaser; }";
       };
@@ -130,7 +132,10 @@ in
                 ++ builtins.attrValues (config.devShell.extraLibraries p);
             }
           else
-            config.log.traceWarning "Your nixpkgs does not support `extraDependencies` in `shellFor`." null;
+            if config.devShell.extraLibraries != null then
+              builtins.throw "The 'extraLibraries' option is only available when using a version of nixpkgs that supports extraDependencies in shellFor."
+            else
+              null;
       });
 
     in
