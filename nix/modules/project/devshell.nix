@@ -38,8 +38,6 @@ let
           The return type is an attribute set for overridability and syntax, as only the values are used.
         '';
         default = null;
-        apply = f: hp:
-          if f == null then { } else f hp;
         defaultText = lib.literalExpression "null";
         example = lib.literalExpression "hp: { inherit (hp) releaser; }";
       };
@@ -123,16 +121,16 @@ in
             (lib.attrNames localPackages);
         withHoogle = config.devShell.hoogle;
         doBenchmark = config.devShell.benchmark;
-        extraDependencies =
+        extraDependencies = let hasExtraLibraries = config.devShell.extraLibraries != null; in
           if lib.hasAttr "extraDependencies" (lib.functionArgs finalPackages.shellFor) then
             p:
             let o = mkShellArgs.extraDependencies or (_: { }) p;
             in o // {
               libraryHaskellDepends = o.libraryHaskellDepends or [ ]
-                ++ builtins.attrValues (config.devShell.extraLibraries p);
+                ++ builtins.attrValues (if hasExtraLibraries then config.devShell.extraLibraries p else { });
             }
           else
-            if config.devShell.extraLibraries != null then
+            if hasExtraLibraries then
               builtins.throw "The 'extraLibraries' option is only available when using a version of nixpkgs that supports extraDependencies in shellFor."
             else
               null;
