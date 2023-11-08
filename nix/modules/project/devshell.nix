@@ -40,7 +40,7 @@ let
         default = null;
         apply = f: hp:
           if f == null then { } else f hp;
-        defaultText = lib.literalExpression "hp: { }";
+        defaultText = lib.literalExpression "null";
         example = lib.literalExpression "hp: { inherit (hp) releaser; }";
       };
 
