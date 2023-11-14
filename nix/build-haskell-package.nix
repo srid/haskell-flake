@@ -34,13 +34,14 @@ lib.pipe root
     (mkNewStorePath "source-${name}")
     (x: log.traceDebug "${name}.mkNewStorePath ${x.outPath}" x)
 
-    (root: if lib.pathExists (lib.concatStringsSep "/" [root "custom-default.nix"])
-             then
-                let pkgInfo = self.callPackage (lib.concatStringsSep "/" [root "custom-default.nix"]) {};
-                in pkgInfo
-             else
-                let pkgInfo = self.callCabal2nix name root { };
-                in (log.traceDebug "${name}.cabal2nixDeriver ${pkgInfo.cabal2nixDeriver.outPath}" pkgInfo))
+    (root:
+      if lib.pathExists (lib.concatStringsSep "/" [ root "custom-default.nix" ])
+      then
+        let pkgInfo = self.callPackage (lib.concatStringsSep "/" [ root "custom-default.nix" ]) { };
+        in pkgInfo
+      else
+        let pkgInfo = self.callCabal2nix name root { };
+        in (log.traceDebug "${name}.cabal2nixDeriver ${pkgInfo.cabal2nixDeriver.outPath}" pkgInfo))
 
     # Make sure all files we use are included in the sdist, as a check
     # for release-worthiness.
