@@ -80,5 +80,4 @@ https://zero-to-flakes.com/haskell-flake
 - Forum
   - https://github.com/srid/haskell-flake/discussions
 - Chat
-  - https://app.element.io/#/room/#haskell:nixos.org
   - https://app.element.io/#/room/#hercules-ci:matrix.org
