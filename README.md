@@ -80,4 +80,5 @@ https://flakular.in/haskell-flake
 - Forum
   - https://github.com/srid/haskell-flake/discussions
 - Chat
-  - https://app.element.io/#/room/#hercules-ci:matrix.org
+  - For disussion on `haskell-flake`, https://app.element.io/#/room/#flakular:matrix.org
+  - For discussion on `flake-parts`, https://app.element.io/#/room/#hercules-ci:matrix.org
