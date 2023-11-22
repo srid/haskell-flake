@@ -77,8 +77,8 @@ https://flakular.in/haskell-flake
 
 ## Discussion
 
-- Forum
-  - https://github.com/srid/haskell-flake/discussions
 - Chat
-  - For disussion on `haskell-flake`, https://app.element.io/#/room/#flakular:matrix.org
-  - For discussion on `flake-parts`, https://app.element.io/#/room/#hercules-ci:matrix.org
+  - [Zulip](https://nixos.zulipchat.com/#narrow/stream/413949-haskell-flake)
+  - [Matrix](https://app.element.io/#/room/#flakular:matrix.org)
+- Forum
+  - [Github Discussions](https://github.com/srid/haskell-flake/discussions)
