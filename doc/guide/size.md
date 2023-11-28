@@ -19,7 +19,7 @@ relies on `data-files` in its cabal (which data-files can be, for instance, `js`
 
 But how do you arrive at this point in the first place? i.e how do you pin point the exact store paths that are causing the increase in size? These are the rough steps that you can follow, if you are packaging it as part of a docker image:
 
-- Build and scan [the docker image](/docker) for store paths that are taking up the most space:
+- Build and scan [the docker image](/haskell-flake/docker) for store paths that are taking up the most space:
   ```bash
   nix build .#dockerImage
   docker load -i < result
