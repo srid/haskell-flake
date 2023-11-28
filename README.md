@@ -2,9 +2,9 @@
 
 <img src="./doc/logo.webp" width=100 />
 
-There are [several ways](https://nixos.wiki/wiki/Haskell) to manage Haskell packages using Nix with varying degrees of integration.  `haskell-flake` makes Haskell development, packaging and deployment with Nix flakes a lot [simpler](https://flakular.in/haskell-flake/start#under-the-hood) than other existing approaches.  This project is set up as a modern [`flake-parts`](https://flake.parts/) module to integrate easily into other Nix projects and shell development environments in a lightweight and modular way.
+There are [several ways](https://nixos.wiki/wiki/Haskell) to manage Haskell packages using Nix with varying degrees of integration.  `haskell-flake` makes Haskell development, packaging and deployment with Nix flakes a lot [simpler](https://community.flake.parts/haskell-flake/start#under-the-hood) than other existing approaches.  This project is set up as a modern [`flake-parts`](https://flake.parts/) module to integrate easily into other Nix projects and shell development environments in a lightweight and modular way.
 
-To see more background information, guides and best practices, visit https://flakular.in/haskell-flake
+To see more background information, guides and best practices, visit https://community.flake.parts/haskell-flake
 
 Caveat: `haskell-flake` only supports the Haskell package manager [Cabal](https://www.haskell.org/cabal/),
 so your project must have a top-level `.cabal` file (single package project) or a `cabal.project` file
@@ -73,7 +73,7 @@ this [Haskell multi-package project Nix example](https://github.com/srid/haskell
 
 ## Documentation
 
-https://flakular.in/haskell-flake
+https://community.flake.parts/haskell-flake
 
 ## Discussion
 
