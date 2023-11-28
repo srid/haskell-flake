@@ -1,3 +1,5 @@
+[![Harmeless Code of Conduct](https://img.shields.io/badge/harmless-8A2BE2)](https://srid.ca/coc "This project follows the 'Harmlessness Code of Conduct'")
+
 # haskell-flake - Manage Haskell projects conveniently with Nix
 
 <img src="./doc/logo.webp" width=100 />
