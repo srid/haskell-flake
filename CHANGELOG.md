@@ -1,5 +1,9 @@
 # Revision history for haskell-flake
 
+## Unreleased
+
+- #210: Add `extraLibraries` to `settings` module.
+
 ## `0.4.0 (Aug 22, 2023`
 
 - #162: **Completely new way to override Haskell packages**: removed `overrides` and `source-overrides`. Use `packages` to specify your source overrides; use `settings` to override individual packages in modular fashion (like NixOS modules). Additional changes include:
