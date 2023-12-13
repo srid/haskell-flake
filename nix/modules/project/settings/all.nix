@@ -145,6 +145,13 @@ in
       '';
       impl = addBuildTools;
     };
+    extraLibraries = {
+      type = types.listOf types.package;
+      description = ''
+        Extra library dependencies for the package.
+      '';
+      impl = addExtraLibraries;
+    };
     extraTestToolDepends = {
       type = types.listOf types.package;
       description = ''
