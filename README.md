@@ -79,8 +79,4 @@ https://community.flake.parts/haskell-flake
 
 ## Discussion
 
-- Chat
-  - [Zulip](https://nixos.zulipchat.com/#narrow/stream/413949-haskell-flake)
-  - [Matrix](https://app.element.io/#/room/#flakular:matrix.org)
-- Forum
-  - [Github Discussions](https://github.com/srid/haskell-flake/discussions)
+[Zulip](https://nixos.zulipchat.com/#narrow/stream/413949-haskell-flake) is the primary venue for discussion; we also have [Github Discussions](https://github.com/srid/haskell-flake/discussions) enabled.
