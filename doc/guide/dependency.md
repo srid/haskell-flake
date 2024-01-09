@@ -92,6 +92,9 @@ haskellProjects.default = {
 
       # Enable/disable Cabal flags
       cabalFlags.with-generics = true;
+
+      # Allow building a package marked as "broken"
+      broken = false;
     };
   };
 };
