@@ -3,6 +3,7 @@
 ## Unreleased
 
 - #210: Add `extraLibraries` to `settings` module.
+- #215: Improved debug logging.
 
 ## 0.4.0 (Aug 22, 2023)
 
