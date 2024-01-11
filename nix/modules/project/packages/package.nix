@@ -42,7 +42,11 @@ in
           };
         in
         if lib.types.path.check config.source
-        then haskell-parsers.getCabalExecutables config.source
+        then
+          lib.pipe config.source [
+            haskell-parsers.getCabalExecutables
+            (x: project.config.log.traceDebug "${name}.getCabalExecutables = ${builtins.toString x}" x)
+          ]
         else null; # cfg.source is Hackage version; nothing to do.
     };
 
