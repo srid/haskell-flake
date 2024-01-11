@@ -1,5 +1,5 @@
 # A module representing the default values used internally by haskell-flake.
-{ lib, pkgs, config, ... }:
+{ name, lib, pkgs, config, ... }:
 let
   inherit (lib)
     mkOption
@@ -46,6 +46,7 @@ in
           };
           localPackages = lib.pipe config.projectRoot [
             haskell-parsers.findPackagesInCabalProject
+            (x: config.log.traceDebug "${name}.findPackagesInCabalProject = ${builtins.toJSON x}" x)
             (lib.mapAttrs (_: path: {
               # The rest of the module options are not defined, because we'll use
               # the submodule defaults.
