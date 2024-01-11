@@ -104,6 +104,24 @@ in
             );
       };
 
+      gen-pkgset =
+        let
+          drv = pkgs.runCommandNoCC "cabal2nix-generated" { } (
+            "mkdir -p $out\n" +
+            builtins.concatStringsSep "\n" (
+              lib.mapAttrsToList (name: expr: "cp -a ${expr} $out/${name}.nix") config.packagesNix
+            )
+          );
+        in
+        pkgs.writeShellApplication {
+          name = "gen-pkgset";
+          runtimeInputs = [ pkgs.rsync ];
+          text = ''
+            set -x
+            mkdir -p .haskellSrc2nix
+            rsync -a --delete --chmod=u+rw ${drv}/ .haskellSrc2nix
+          '';
+        };
     in
     {
       outputs = {
@@ -113,8 +131,11 @@ in
 
         apps =
           lib.mkMerge
-            (lib.mapAttrsToList (_: packageInfo: packageInfo.exes) config.outputs.packages);
+            (lib.mapAttrsToList (_: packageInfo: packageInfo.exes) config.outputs.packages ++ [{
+              gen-pkgset.program = gen-pkgset;
+            }]);
       };
+
     };
 }
 
