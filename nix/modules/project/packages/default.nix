@@ -73,10 +73,10 @@ in
           getOrMkPackage = name: cfg:
             if lib.types.path.check cfg.source
             then
-              log.traceDebug "${name}.callCabal2nix ${cfg.source}"
+              log.traceDebug "${name}.callCabal2nix[cached] ${cfg.source}"
                 (build-haskell-package name cfg.source "${project.config.projectRoot}/.haskellSrc2nix/${name}.nix")
             else
-              log.traceDebug "${name}.callHackage ${cfg.source}"
+              log.traceDebug "${name}.callHackage[cached] ${cfg.source}"
                 (
                   # (self.callHackage name cfg.source { })
                   # callPackageKeepDeriver (self.hackage2nix name cfg.source) {}
