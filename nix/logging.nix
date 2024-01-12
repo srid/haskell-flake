@@ -1,11 +1,8 @@
-{ name, debug ? false, ... }:
+{ name, ... }:
 
 {
   traceDebug = msg:
-    if debug then
-      builtins.trace ("DEBUG[haskell-flake] [${name}]: " + msg)
-    else
-      x: x;
+    builtins.traceVerbose ("DEBUG[haskell-flake] [${name}]: " + msg);
 
   traceWarning = msg:
     builtins.trace ("WARNING[haskell-flake] [${name}]: " + msg);
