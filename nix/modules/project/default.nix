@@ -40,20 +40,10 @@ in
         then builtins.baseNameOf config.projectRoot
         else cls;
     };
-    debug = mkOption {
-      type = types.bool;
-      default = false;
-      description = ''
-        Whether to enable verbose trace output from haskell-flake.
-
-        Useful for debugging.
-      '';
-    };
     log = mkOption {
       type = types.attrsOf (types.functionTo types.raw);
       default = import ../../logging.nix {
         name = config.projectFlakeName + "#haskellProjects." + name;
-        inherit (config) debug;
       };
       internal = true;
       readOnly = true;

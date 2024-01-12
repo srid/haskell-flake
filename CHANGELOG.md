@@ -4,6 +4,7 @@
 
 - #210: Add `extraLibraries` to `settings` module.
 - #215: Improved debug logging.
+- #216: Remove `debug` option (pass `--trace-verbose` to nix instead)
 
 ## 0.4.0 (Aug 22, 2023)
 
