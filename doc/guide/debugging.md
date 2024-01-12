@@ -4,23 +4,16 @@ slug: /haskell-flake/debugging
 
 # Debugging logs
 
-Enabling the `debug` option causes haskell-flake to print verbose logging of its activity. To enable it:
+Passing `--trace-verbose` to Nix commands causes haskell-flake to print verbose logging of its activity. To enable it:
 
-```nix
-haskellProjects.default = {
-  debug = true;  # Turn on verbose logging
-  projectRoot = ./.;
-  ...
-}
-```
+:::tip[Timestamps in logs]
+`moreutils` provides the `ts` command that you can pipe your nix command output to in order to get timestamps in the logs.
+:::
 
->[!tip] Timestamps in logs
-> `moreutils` provides the `ts` command that you can pipe your nix command output to in order to get timestamps in the logs.
-
-With debug option enabled, you can execute your `nix` commands piped through `ts` to get timestamps in the debug logs. The below is a sample output when building [haskell-multi-nix](https://github.com/srid/haskell-multi-nix/tree/debug):
+The below is a sample output when building [haskell-multi-nix](https://github.com/srid/haskell-multi-nix/tree/debug) with `--trace-verbose`:
 
 ```
-$ nix build github:srid/haskell-multi-nix/debug#bar 2>&1 | ts '[%Y-%m-%d %H:%M:%S]'
+$ nix build github:srid/haskell-multi-nix#bar 2>&1 | ts '[%Y-%m-%d %H:%M:%S]'
 [2024-01-11 15:33:32] trace: DEBUG[haskell-flake] [k0ad89r6pa70rly68ibff1jkw59bljgh-source#haskellProjects.default]: default.findPackagesInCabalProject = {"bar":"/nix/store/k0ad89r6pa70rly68ibff1jkw59bljgh-source/./bar","foo":"/nix/store/k0ad89r6pa70rly68ibff1jkw59bljgh-source/./foo"}
 [2024-01-11 15:33:32] trace: DEBUG[haskell-flake] [k0ad89r6pa70rly68ibff1jkw59bljgh-source#haskellProjects.default]: defaults.packages = {"bar":{"imports":[{"_file":"/nix/store/n2nb5achv6p0bv3nvqw731mfr907d8ny-source/nix/modules/project/defaults.nix, via option perSystem.aarch64-darwin.haskellProjects.default.defaults.packages.bar","imports":[{"source":"/nix/store/k0ad89r6pa70rly68ibff1jkw59bljgh-source/./bar"}]}]},"foo":{"imports":[{"_file":"/nix/store/n2nb5achv6p0bv3nvqw731mfr907d8ny-source/nix/modules/project/defaults.nix, via option perSystem.aarch64-darwin.haskellProjects.default.defaults.packages.foo","imports":[{"source":"/nix/store/k0ad89r6pa70rly68ibff1jkw59bljgh-source/./foo"}]}]}}
 [2024-01-11 15:33:32] trace: DEBUG[haskell-flake] [k0ad89r6pa70rly68ibff1jkw59bljgh-source#haskellProjects.default]: bar.getCabalExecutables = bar
@@ -37,3 +30,7 @@ $ nix build github:srid/haskell-multi-nix/debug#bar 2>&1 | ts '[%Y-%m-%d %H:%M:%
 [2024-01-11 15:33:35] trace: DEBUG[haskell-flake] [k0ad89r6pa70rly68ibff1jkw59bljgh-source#haskellProjects.default]: foo.fromSdist /nix/store/qrsy0bm4khcs1hxy0rhb6m3g2bvi15sm-foo-0.1.0.0
 [2024-01-11 15:33:35] trace: DEBUG[haskell-flake] [k0ad89r6pa70rly68ibff1jkw59bljgh-source#haskellProjects.default]: bar.fromSdist /nix/store/anyx51rm5gjdclafcz5is7jpqgfq2i4w-bar-0.1.0.0
 ```
+
+## See also
+
+- Read more about [the `traceVerbose` function](https://nixos.asia/en/traceVerbose) which haskell-flake uses to produce the above logs.
