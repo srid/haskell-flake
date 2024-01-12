@@ -17,7 +17,7 @@ Passing `--trace-verbose` to Nix commands causes haskell-flake to print verbose 
 The below is a sample output when building [haskell-multi-nix](https://github.com/srid/haskell-multi-nix/tree/debug) with `--trace-verbose`:
 
 ```
-$ nix build github:srid/haskell-multi-nix#bar 2>&1 | ts '[%Y-%m-%d %H:%M:%S]'
+$ nix build --trace-verbose github:srid/haskell-multi-nix#bar 2>&1 | ts '[%Y-%m-%d %H:%M:%S]'
 [2024-01-11 15:33:32] trace: DEBUG[haskell-flake] [k0ad89r6pa70rly68ibff1jkw59bljgh-source#haskellProjects.default]: default.findPackagesInCabalProject = {"bar":"/nix/store/k0ad89r6pa70rly68ibff1jkw59bljgh-source/./bar","foo":"/nix/store/k0ad89r6pa70rly68ibff1jkw59bljgh-source/./foo"}
 [2024-01-11 15:33:32] trace: DEBUG[haskell-flake] [k0ad89r6pa70rly68ibff1jkw59bljgh-source#haskellProjects.default]: defaults.packages = {"bar":{"imports":[{"_file":"/nix/store/n2nb5achv6p0bv3nvqw731mfr907d8ny-source/nix/modules/project/defaults.nix, via option perSystem.aarch64-darwin.haskellProjects.default.defaults.packages.bar","imports":[{"source":"/nix/store/k0ad89r6pa70rly68ibff1jkw59bljgh-source/./bar"}]}]},"foo":{"imports":[{"_file":"/nix/store/n2nb5achv6p0bv3nvqw731mfr907d8ny-source/nix/modules/project/defaults.nix, via option perSystem.aarch64-darwin.haskellProjects.default.defaults.packages.foo","imports":[{"source":"/nix/store/k0ad89r6pa70rly68ibff1jkw59bljgh-source/./foo"}]}]}}
 [2024-01-11 15:33:32] trace: DEBUG[haskell-flake] [k0ad89r6pa70rly68ibff1jkw59bljgh-source#haskellProjects.default]: bar.getCabalExecutables = bar
