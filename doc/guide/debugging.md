@@ -4,6 +4,10 @@ slug: /haskell-flake/debugging
 
 # Debugging logs
 
+:::warning
+This feature is available only in Nix versions 2.10 or later.
+:::
+
 Passing `--trace-verbose` to Nix commands causes haskell-flake to print verbose logging of its activity. To enable it:
 
 :::tip[Timestamps in logs]
