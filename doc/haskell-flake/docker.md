@@ -65,7 +65,7 @@ docker load -i $(nix build .#dockerImage --print-out-paths)
 
 ### Size
 
-Docker images including Haskell packages can be optimized using the methods described [here](/haskell-flake/size).
+Docker images including Haskell packages can be optimized using the methods described [[size|here]].
 
 ### Time
 
