@@ -104,7 +104,7 @@ haskellProjects.default = {
 
 ## Sharing settings {#settings-share}
 
-[Project modules](/haskell-flake/modules) export both `packages` and `settings` options for reuse in downstream Haskell projects.
+[[modules]] export both `packages` and `settings` options for reuse in downstream Haskell projects.
 
 ## Examples
 
