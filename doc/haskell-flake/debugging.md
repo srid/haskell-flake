@@ -1,14 +1,12 @@
 # Debugging logs
 
-:::warning
-This feature is available only in Nix versions 2.10 or later.
-:::
+>[!warning]
+> This feature is available only in Nix versions 2.10 or later.
 
 Passing `--trace-verbose` to Nix commands causes haskell-flake to print verbose logging of its activity. To enable it:
 
-:::tip[Timestamps in logs]
-`moreutils` provides the `ts` command that you can pipe your nix command output to in order to get timestamps in the logs.
-:::
+>[!tip] Timestamps in logs
+> `moreutils` provides the `ts` command that you can pipe your nix command output to in order to get timestamps in the logs.
 
 The below is a sample output when building [haskell-multi-nix](https://github.com/srid/haskell-multi-nix/tree/debug) with `--trace-verbose`:
 
