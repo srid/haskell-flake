@@ -1,3 +1,7 @@
+---
+order: -10
+---
+
 # Getting Started
 
 Before using `haskell-flake` you must first [install Nix](https://flakular.in/install).
