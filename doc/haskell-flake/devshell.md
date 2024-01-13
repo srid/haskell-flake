@@ -1,3 +1,7 @@
+---
+order: -9
+---
+
 # DevShell
 
 haskell-flake uses the [`shellFor`][shellFor] function to provide a Haskell development shell. `shellFor` in turn uses the standard [`mkShell`][mkShell] function to create a Nix shell environment. The `mkShellArgs` option can be used to pass custom arguments to `mkShell`.

@@ -4,6 +4,9 @@ order: -9
 
 # Guide
 
-```query
-children:.
-```
+- [[dependency]]#
+- [[devshell]]#
+- [[package-set]]#
+- [[modules]]#
+- [[debugging]]#
+- [[size]]#
