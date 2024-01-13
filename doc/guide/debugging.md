@@ -1,7 +1,3 @@
----
-slug: /haskell-flake/debugging
----
-
 # Debugging logs
 
 :::warning

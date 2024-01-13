@@ -1,7 +1,3 @@
----
-slug: /haskell-flake/size
----
-
 # Optimize package size
 
 Haskell package derivations created by `haskell-flake` are shipped with symlinks to other store paths, like `$out/lib`, `$out/nix-support` and `$out/share/doc`. In addition, enabling profiling or haddock can increase the size of these packages. If your Haskell application is end-user software, you will want to strip all but the executables. This can be achieved using `justStaticExecutables`:

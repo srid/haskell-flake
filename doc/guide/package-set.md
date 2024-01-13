@@ -1,7 +1,3 @@
----
-slug: /haskell-flake/package-set
----
-
 # Creating package sets
 
 While haskell-flake is generally used to develop and build individual Haskell projects, you can also use it to create a custom Haskell package set that you can use in other projects. This is useful if you want to create a common package set to be shared across multiple projects.

@@ -1,6 +1,3 @@
----
-slug: /haskell-flake/docker
----
 
 # Building a docker image
 

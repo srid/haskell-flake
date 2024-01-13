@@ -1,8 +1,3 @@
----
-slug: /haskell-flake/start
-sidebar_position: 1
----
-
 # Getting Started
 
 Before using `haskell-flake` you must first [install Nix](https://flakular.in/install).

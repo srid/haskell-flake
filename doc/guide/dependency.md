@@ -1,7 +1,3 @@
----
-slug: /haskell-flake/dependency
----
-
 # Overriding dependencies
 
 Haskell libraries ultimately come from [Hackage](https://hackage.haskell.org/), and [nixpkgs] contains [most of these](https://nixpkgs.haskell.page/). Adding a library to your project involves modifying the `.cabal` file and restarting the nix shell. The process is typically as follows:
