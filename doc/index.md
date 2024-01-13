@@ -1,5 +1,8 @@
 ---
 short-title: haskell-flake
+template:
+  sidebar:
+    collapsed: true
 ---
 
 # Haskell development using `haskell-flake`
