@@ -31,14 +31,14 @@ name: root:
 lib.pipe root
   [
     # Avoid rebuilding because of changes in parent directories
-    (mkNewStorePath "source-${name}")
-    (x: log.traceDebug "${name}.mkNewStorePath ${x.outPath}" x)
+    #(mkNewStorePath "source-${name}")
+    #(x: log.traceDebug "${name}.mkNewStorePath ${x.outPath}" x)
 
     (root: self.callCabal2nix name root { })
     (x: log.traceDebug "${name}.cabal2nixDeriver ${x.cabal2nixDeriver.outPath}" x)
 
     # Make sure all files we use are included in the sdist, as a check
     # for release-worthiness.
-    fromSdist
-    (x: log.traceDebug "${name}.fromSdist ${x.outPath}" x)
+    #fromSdist
+    #(x: log.traceDebug "${name}.fromSdist ${x.outPath}" x)
   ]
