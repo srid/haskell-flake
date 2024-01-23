@@ -1,7 +1,3 @@
----
-slug: /haskell-flake/size
----
-
 # Optimize package size
 
 Haskell package derivations created by `haskell-flake` are shipped with symlinks to other store paths, like `$out/lib`, `$out/nix-support` and `$out/share/doc`. In addition, enabling profiling or haddock can increase the size of these packages. If your Haskell application is end-user software, you will want to strip all but the executables. This can be achieved using `justStaticExecutables`:
@@ -19,7 +15,7 @@ relies on `data-files` in its cabal (which data-files can be, for instance, `js`
 
 But how do you arrive at this point in the first place? i.e how do you pin point the exact store paths that are causing the increase in size? These are the rough steps that you can follow, if you are packaging it as part of a docker image:
 
-- Build and scan [the docker image](/haskell-flake/docker) for store paths that are taking up the most space:
+- Build and scan [[docker|the docker image]] for store paths that are taking up the most space:
   ```bash
   nix build .#dockerImage
   docker load -i < result

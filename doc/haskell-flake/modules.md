@@ -1,7 +1,3 @@
----
-slug: /haskell-flake/modules
----
-
 # Project modules
 
 haskell-flake's per-project configuration can be modularized and shared among multiple repos. This is done using the `flake.haskellFlakeProjectModules` flake output. 

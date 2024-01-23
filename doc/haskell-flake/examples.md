@@ -1,8 +1,3 @@
----
-sidebar_position: 50
-slug: /haskell-flake/examples
----
-
 # Examples
 
 - [srid/haskell-template](https://github.com/srid/haskell-template/blob/master/flake.nix)
