@@ -20,7 +20,7 @@ for testDir in "${TESTS[@]}"
 do 
   logHeader "Testing $testDir"
   pushd $testDir
-  $SHELL ./test.sh
+  bash ./test.sh
   popd
 done
 
