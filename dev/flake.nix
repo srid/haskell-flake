@@ -37,7 +37,10 @@
         };
         devShells.default = pkgs.mkShell {
           # cf. https://haskell.flake.page/devshell#composing-devshells
-          inputsFrom = [ config.mission-control.devShell ];
+          inputsFrom = [
+            config.mission-control.devShell
+            config.treefmt.build.devShell
+          ];
         };
       };
     };
