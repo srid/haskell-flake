@@ -1,4 +1,4 @@
-{ pkgs, lib, config, ... }:
+{ pkgs, lib, config, log, buildFromCabalSdist, ... }:
 let
   inherit (lib) types;
   inherit (import ./lib.nix {
@@ -309,6 +309,18 @@ in
         build that is present in the store or cache.  
       '';
       impl = triggerRebuild;
+    };
+    buildFromCabalSdist = {
+      type = types.bool;
+      description = ''
+        Whether to use `buildFromCabalSdist` to build the package.
+      '';
+      impl = enable:
+        if enable then
+          (pkg: lib.pipe pkg [
+            buildFromCabalSdist
+            (x: log.traceDebug "${name}.buildFromCabalSdist ${x.outPath}" x)
+          ]) else x: x;
     };
 
     # When none of the above settings is suitable:

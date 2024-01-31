@@ -89,6 +89,7 @@ in
               # Disabling haddock and profiling is mainly to speed up Nix builds.
               haddock = lib.mkDefault false; # Because, this is end-user software. No need for library docs.
               libraryProfiling = lib.mkDefault false; # Avoid double-compilation.
+              buildFromCabalSdist = lib.mkDefault true;
             };
         in
         if config.defaults.enable then localSettings else { };

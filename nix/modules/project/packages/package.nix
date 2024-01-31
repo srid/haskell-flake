@@ -23,21 +23,6 @@ in
       '';
     };
 
-    transform = mkOption {
-      type = with types; functionTo package;
-      description = ''
-      '';
-      default =
-        let
-          fromSdist = project.config.finalPackages.buildFromCabalSdist or
-            (project.config.log.traceWarning "Your nixpkgs does not have hs.buildFromCabalSdist" (pkg: pkg));
-        in
-        root: lib.pipe root [
-          fromSdist
-          (x: project.config.log.traceDebug "${name}.fromSdist ${x.outPath}" x)
-        ];
-    };
-
     cabal.executables = mkOption {
       type = types.nullOr (types.listOf types.str);
       description = ''

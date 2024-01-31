@@ -63,7 +63,10 @@ in
               ];
               specialArgs = {
                 inherit name pkgs self super;
+                inherit (project.config) log;
                 package = project.config.packages.${name} or null;
+                buildFromCabalSdist = project.config.finalPackages.buildFromCabalSdist or
+                  (project.config.log.traceWarning "Your nixpkgs does not have hs.buildFromCabalSdist" (pkg: pkg));
               } // (import ./lib.nix {
                 inherit lib;
                 # NOTE: Recursively referring generated config in lib.nix.
