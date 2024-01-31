@@ -39,6 +39,6 @@ lib.pipe root
 
     # Make sure all files we use are included in the sdist, as a check
     # for release-worthiness.
-    fromSdist
-    (x: log.traceDebug "${name}.fromSdist ${x.outPath}" x)
+    #fromSdist
+    #(x: log.traceDebug "${name}.fromSdist ${x.outPath}" x)
   ]
