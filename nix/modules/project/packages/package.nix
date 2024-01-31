@@ -29,12 +29,12 @@ in
       '';
       default =
         let
-          fromSdist = project.finalPackages.buildFromCabalSdist or
-            (project.log.traceWarning "Your nixpkgs does not have hs.buildFromCabalSdist" (pkg: pkg));
+          fromSdist = project.config.finalPackages.buildFromCabalSdist or
+            (project.config.log.traceWarning "Your nixpkgs does not have hs.buildFromCabalSdist" (pkg: pkg));
         in
         root: lib.pipe root [
           fromSdist
-          (x: project.log.traceDebug "${name}.fromSdist ${x.outPath}" x)
+          (x: project.config.log.traceDebug "${name}.fromSdist ${x.outPath}" x)
         ];
     };
 
