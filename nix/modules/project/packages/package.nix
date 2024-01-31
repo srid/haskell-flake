@@ -27,14 +27,15 @@ in
       type = with types; functionTo package;
       description = ''
       '';
-      default = 
+      default =
         let
           fromSdist = project.finalPackages.buildFromCabalSdist or
             (project.log.traceWarning "Your nixpkgs does not have hs.buildFromCabalSdist" (pkg: pkg));
-        in root: lib.pipe root [
+        in
+        root: lib.pipe root [
           fromSdist
           (x: project.log.traceDebug "${name}.fromSdist ${x.outPath}" x)
-          ];
+        ];
     };
 
     cabal.executables = mkOption {
