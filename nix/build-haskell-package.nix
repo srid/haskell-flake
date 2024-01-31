@@ -12,8 +12,10 @@
 }:
 
 let
-  fromSdist = self.buildFromCabalSdist or
-    (log.traceWarning "Your nixpkgs does not have hs.buildFromCabalSdist" (pkg: pkg));
+  # NOTE: We do not use the optimized version, `buildFromCabalSdist`, because it
+  # breaks in some cases. See https://github.com/srid/haskell-flake/pull/220
+  fromSdist = self.buildFromSdist or
+    (log.traceWarning "Your nixpkgs does not have hs.buildFromSdist" (pkg: pkg));
 
   mkNewStorePath = name: src:
     # Since 'src' may be a subdirectory of a store path
