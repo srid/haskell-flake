@@ -65,7 +65,7 @@ in
                 inherit name pkgs self super;
                 inherit (project.config) log;
                 package = project.config.packages.${name} or null;
-                buildFromCabalSdist = project.config.finalPackages.buildFromCabalSdist or
+                buildFromCabalSdist = project.config.basePackages.buildFromCabalSdist or
                   (project.config.log.traceWarning "Your nixpkgs does not have hs.buildFromCabalSdist" (pkg: pkg));
               } // (import ./lib.nix {
                 inherit lib;
