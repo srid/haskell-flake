@@ -8,11 +8,12 @@
   # 'self' refers to the Haskell package set context.
 , self
 , log
+, basePackages
 , ...
 }:
 
 let
-  fromSdist = self.buildFromCabalSdist or
+  fromSdist = basePackages.buildFromCabalSdist or
     (log.traceWarning "Your nixpkgs does not have hs.buildFromCabalSdist" (pkg: pkg));
 
   mkNewStorePath = name: src:

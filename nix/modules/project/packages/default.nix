@@ -57,6 +57,7 @@ in
           inherit (project.config) log;
           build-haskell-package = import ../../../build-haskell-package.nix {
             inherit pkgs lib self log;
+            inherit (project.config) basePackages;
           };
           getOrMkPackage = name: cfg:
             if lib.types.path.check cfg.source
