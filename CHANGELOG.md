@@ -5,6 +5,7 @@
 - #210: Add `extraLibraries` to `settings` module.
 - #215: Improved debug logging.
 - #216: Remove `debug` option (pass `--trace-verbose` to nix instead)
+- #222: Improve `cabal.project` parser by handling files not ending with newline
 - Breaking changes
   - #221: Switch to `buildFromSdist`, to allow using non-standard package sets (wherein `cabal-install` is otherwise built without using user's overrides)
 
