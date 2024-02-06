@@ -17,6 +17,14 @@ let
         '';
         expected = [ "foo" "bar" ];
       };
+
+      testEOF = {
+        expr = eval ''
+          packages:
+            foo
+            bar'';
+        expected = [ "foo" "bar" ];
+      };
     };
   cabalExecutableTests =
     let
