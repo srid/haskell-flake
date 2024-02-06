@@ -17,7 +17,7 @@ let
         default = true;
       };
       tools = mkOption {
-        type = functionTo (types.attrsOf (types.nullOr types.package));
+        type = functionTo (types.lazyAttrsOf (types.nullOr types.package));
         description = ''
           Build tools for developing the Haskell project.
 
