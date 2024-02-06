@@ -18,6 +18,7 @@ let
         expected = [ "foo" "bar" ];
       };
 
+      # Handles cases where cabal.project does not end with newline
       testEOF = {
         expr = eval ''
           packages:
