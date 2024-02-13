@@ -3,10 +3,11 @@ on:
   push:
     branches:
       - master
+      - ci
   pull_request:
 jobs:
   checks:
-    runs-on: self-hosted
+    runs-on: ubuntu
     steps:
       - uses: actions/checkout@v4
       - name: Build Nix
