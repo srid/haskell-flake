@@ -2,9 +2,9 @@
 pipeline {
     agent any
     stages {
-        stage ('Dev Flake') {
+        stage ('NixCI') {
             steps {
-                nixBuildAll flakeDir: "./dev", overrideInputs: ["haskell-flake": "."]
+                nixCI system: env.SYSTEM
             }
         }
         // TODO: Do this as part of dev
