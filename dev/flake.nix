@@ -19,6 +19,10 @@
           projectRoot = ../.;
           projectRootFile = "README.md";
           programs.nixpkgs-fmt.enable = true;
+
+          # FIXME: treefmt check fails in gh self-hosted runner
+          # https://nixos.zulipchat.com/#narrow/stream/413948-nixos/topic/Self-hosted.20GitHub.20runners/near/421222981
+          flakeCheck = false;
         };
         mission-control.scripts = {
           ex = {
