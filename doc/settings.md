@@ -46,7 +46,18 @@ haskellProjects.default = {
 
 ## Custom settings {#custom}
 
-- [Emanote overrides](https://github.com/srid/emanote/commit/5b24bd04f94e03afe66ee01da723e4a05d854953): demonstrates how to add a *new* setting option (`removeReferencesTo`).
+You can provide custom settings for use in multiple packages (even across multiple repos). For example, see [this Emanote change](https://github.com/srid/emanote/commit/5b24bd04f94e03afe66ee01da723e4a05d854953) which demonstrates how to add a *new* setting option (`removeReferencesTo`).
 
+## Extra settings {#extra}
+
+haskell-flake provides the following settings on top of those provided by [nixpkgs].
+
+### `removeReferencesTo`
+
+Remove references to other packages from this Haskell package. This is useful to eliminate unnecessary data dependencies from your Haskell executable so as to reduce its closure size.
+        
+> [!info] For more, see
+> - https://github.com/NixOS/nixpkgs/pull/204675
+> - https://srid.ca/remove-references-to
 
 [nixpkgs]: https://nixos.asia/en/nixpkgs
