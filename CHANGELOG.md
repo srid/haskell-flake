@@ -3,6 +3,7 @@
 ## Unreleased
 
 - #210: Add `extraLibraries` to `settings` module.
+- #225: settings: add `removeReferencesTo`
 - #215: Improved debug logging.
 - #216: Remove `debug` option (pass `--trace-verbose` to nix instead)
 - Fixes
