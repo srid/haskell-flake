@@ -13,7 +13,7 @@ jobs:
       - name: Build Nix
         id: build-nix
         run: |
-          nixci
+          nix run github:srid/nixci
       - name: Run test
         id: test
         run: |
