@@ -10,7 +10,7 @@ Passing `--trace-verbose` to Nix commands causes haskell-flake to print verbose 
 
 The below is a sample output when building [haskell-multi-nix](https://github.com/srid/haskell-multi-nix/tree/debug) with `--trace-verbose`:
 
-```
+```text
 $ nix --no-eval-cache build -L --trace-verbose github:srid/haskell-multi-nix 2>&1 | ts '[%H:%M:%S]'
 [22:45:38] trace: DEBUG[haskell-flake] [haskell-multi-nix#haskellProjects.default]: default.findPackagesInCabalProject = {"bar":"/nix/store/5zvwxw2n801bbjcz3685dp20y8afjmld-source/./bar","foo":"/nix/store/5zvwxw2n801bbjcz3685dp20y8afjmld-source/./foo"}
 [22:45:38] trace: DEBUG[haskell-flake] [haskell-multi-nix#haskellProjects.default]: defaults.packages = {"bar":{"imports":[{"_file":"/nix/store/sv90dpz2fgn93kvzc14szqn77wvjssv0-source/nix/modules/project/defaults.nix, via option perSystem.aarch64-darwin.haskellProjects.default.defaults.packages.bar","imports":[{"source":"/nix/store/5zvwxw2n801bbjcz3685dp20y8afjmld-source/./bar"}]}]},"foo":{"imports":[{"_file":"/nix/store/sv90dpz2fgn93kvzc14szqn77wvjssv0-source/nix/modules/project/defaults.nix, via option perSystem.aarch64-darwin.haskellProjects.default.defaults.packages.foo","imports":[{"source":"/nix/store/5zvwxw2n801bbjcz3685dp20y8afjmld-source/./foo"}]}]}}
