@@ -19,6 +19,7 @@
           projectRoot = ../.;
           projectRootFile = "README.md";
           programs.nixpkgs-fmt.enable = true;
+          flakeCheck = false; # FIXME: Fails in self-hosted runner
         };
         mission-control.scripts = {
           ex = {
