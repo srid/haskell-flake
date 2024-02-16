@@ -1,7 +1,3 @@
----
-slug: /haskell-flake/modules
----
-
 # Project modules
 
 haskell-flake's per-project configuration can be modularized and shared among multiple repos. This is done using the `flake.haskellFlakeProjectModules` flake output. 
@@ -60,7 +56,7 @@ By default, haskell-flake will generate the following modules for the "default" 
 | -- | -- |
 | `haskellFlakeProjectModules.output` | Local packages & dependency overrides |
 
-The idea here being that you can "connect" two Haskell projects such that they depend on one another while reusing the overrides (`packages` and `settings`) from one place. For example, if you have a project "foo" that depends on "bar" and if "foo"'s flake.nix has "bar" as its input, then in "foo"'s `haskellProject.default` entry you can import "bar" as follows:
+The idea here being that you can "connect" two Haskell projects such that they depend on one another while reusing the overrides -- `packages` (see [[dependency]]) and `settings` (see [[settings]]) -- from one place. For example, if you have a project "foo" that depends on "bar" and if "foo"'s flake.nix has "bar" as its input, then in "foo"'s `haskellProject.default` entry you can import "bar" as follows:
 
 ```nix
 # foo's flake.nix's perSystem

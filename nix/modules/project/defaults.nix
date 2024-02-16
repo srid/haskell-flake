@@ -18,7 +18,7 @@ in
     };
 
     devShell.tools = mkOption {
-      type = functionTo (types.attrsOf (types.nullOr types.package));
+      type = functionTo (types.lazyAttrsOf (types.nullOr types.package));
       description = ''Build tools always included in devShell'';
       default = hp: with hp; lib.optionalAttrs config.defaults.enable {
         inherit

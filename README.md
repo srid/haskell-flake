@@ -2,7 +2,7 @@
 
 # haskell-flake - Manage Haskell projects conveniently with Nix
 
-<img src="./doc/logo.webp" width=100 />
+<img src="./doc/haskell-flake.webp" width=100 />
 
 There are [several ways](https://nixos.asia/en/haskell) to manage Haskell packages using [Nix](https://nixos.asia/en/nix) with varying degrees of integration.  `haskell-flake` makes Haskell development, packaging and deployment with Nix flakes a lot [simpler](https://community.flake.parts/haskell-flake/start#under-the-hood) than other existing approaches.  This project is set up as a modern [`flake-parts`](https://flake.parts/) module to integrate easily into other Nix projects and shell development environments in a lightweight and modular way.
 

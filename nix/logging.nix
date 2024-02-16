@@ -1,11 +1,11 @@
-{ name, debug ? false, ... }:
+{ name, ... }:
 
 {
-  traceDebug = msg:
-    if debug then
-      builtins.trace ("DEBUG[haskell-flake] [${name}]: " + msg)
-    else
-      x: x;
+  # traceDebug uses traceVerbose; and is no-op on Nix versions below 2.10
+  traceDebug =
+    if builtins.compareVersions "2.10" builtins.nixVersion < 0
+    then msg: builtins.traceVerbose ("DEBUG[haskell-flake] [${name}]: " + msg)
+    else x: x;
 
   traceWarning = msg:
     builtins.trace ("WARNING[haskell-flake] [${name}]: " + msg);

@@ -4,8 +4,7 @@
     flake-parts.url = "github:hercules-ci/flake-parts";
     flake-root.url = "github:srid/flake-root";
     mission-control.url = "github:Platonic-Systems/mission-control";
-    # treefmt-nix.url = "github:numtide/treefmt-nix";
-    treefmt-nix.url = "github:srid/treefmt-nix/patch-3"; # https://github.com/numtide/treefmt-nix/pull/89
+    treefmt-nix.url = "github:numtide/treefmt-nix";
   };
   outputs = inputs@{ self, nixpkgs, flake-parts, ... }:
     flake-parts.lib.mkFlake { inherit inputs; } {
@@ -20,6 +19,10 @@
           projectRoot = ../.;
           projectRootFile = "README.md";
           programs.nixpkgs-fmt.enable = true;
+
+          # FIXME: treefmt check fails in gh self-hosted runner
+          # https://nixos.zulipchat.com/#narrow/stream/413948-nixos/topic/Self-hosted.20GitHub.20runners/near/421222981
+          flakeCheck = false;
         };
         mission-control.scripts = {
           ex = {
@@ -37,7 +40,10 @@
         };
         devShells.default = pkgs.mkShell {
           # cf. https://haskell.flake.page/devshell#composing-devshells
-          inputsFrom = [ config.mission-control.devShell ];
+          inputsFrom = [
+            config.mission-control.devShell
+            config.treefmt.build.devShell
+          ];
         };
       };
     };

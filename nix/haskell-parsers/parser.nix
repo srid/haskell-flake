@@ -25,7 +25,11 @@ in
       key = parsec.string "packages:\n";
       val =
         parsec.many1
-          (parsec.between spaces1 newline path);
+          (parsec.choice
+            [
+              (parsec.between spaces1 newline path)
+              (parsec.between spaces1 parsec.eof path)
+            ]);
       parser = parsec.skipThen
         key
         val;
