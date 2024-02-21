@@ -5,7 +5,7 @@
     flake-root.url = "github:srid/flake-root";
     mission-control.url = "github:Platonic-Systems/mission-control";
     treefmt-nix.url = "github:numtide/treefmt-nix";
-    haskell-flake = {};
+    haskell-flake = { };
   };
   outputs = inputs@{ self, nixpkgs, flake-parts, ... }:
     flake-parts.lib.mkFlake { inherit inputs; } {
