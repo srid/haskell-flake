@@ -1,3 +1,4 @@
+[![project chat](https://img.shields.io/badge/zulip-join_chat-brightgreen.svg)](https://nixos.zulipchat.com/#narrow/stream/413949-haskell-flake)
 [![Harmeless Code of Conduct](https://img.shields.io/badge/harmless-8A2BE2)](https://srid.ca/coc "This project follows the 'Harmlessness Code of Conduct'")
 
 # haskell-flake - Manage Haskell projects conveniently with Nix
