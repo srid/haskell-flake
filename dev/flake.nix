@@ -5,6 +5,7 @@
     flake-root.url = "github:srid/flake-root";
     mission-control.url = "github:Platonic-Systems/mission-control";
     treefmt-nix.url = "github:numtide/treefmt-nix";
+    haskell-flake = {};
   };
   outputs = inputs@{ self, nixpkgs, flake-parts, ... }:
     flake-parts.lib.mkFlake { inherit inputs; } {
@@ -16,7 +17,7 @@
       ];
       perSystem = { pkgs, lib, config, ... }: {
         treefmt.config = {
-          projectRoot = ../.;
+          projectRoot = inputs.haskell-flake;
           projectRootFile = "README.md";
           programs.nixpkgs-fmt.enable = true;
 
