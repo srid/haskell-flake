@@ -5,7 +5,7 @@
     flake-root.url = "github:srid/flake-root";
     mission-control.url = "github:Platonic-Systems/mission-control";
     treefmt-nix.url = "github:numtide/treefmt-nix";
-    haskell-flake = {};
+    haskell-flake = { }; # Overriden by nixci (see top-level flake.nix) and direnv
   };
   outputs = inputs@{ self, nixpkgs, flake-parts, ... }:
     flake-parts.lib.mkFlake { inherit inputs; } {
@@ -20,10 +20,6 @@
           projectRoot = inputs.haskell-flake;
           projectRootFile = "README.md";
           programs.nixpkgs-fmt.enable = true;
-
-          # FIXME: treefmt check fails in gh self-hosted runner
-          # https://nixos.zulipchat.com/#narrow/stream/413948-nixos/topic/Self-hosted.20GitHub.20runners/near/421222981
-          flakeCheck = false;
         };
         mission-control.scripts = {
           ex = {
