@@ -7,8 +7,8 @@ nix --version
 
 # The test directory must contain a 'test.sh' file that will be run in that
 # directory.
+# TODO: Supplant these scripts with Nix. See https://github.com/srid/haskell-flake/issues/241
 TESTS=(
-  ./nix/haskell-parsers
   ./example
   ./test/simple
   ./test/with-subdir

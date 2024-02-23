@@ -1,3 +1,4 @@
+# Run this using 'nixci' at top-level
 { pkgs ? import <nixpkgs> { }, lib ? pkgs.lib, ... }:
 
 let

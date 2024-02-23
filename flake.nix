@@ -19,9 +19,17 @@
       in
       {
         dev = { inherit overrideInputs; dir = "dev"; };
-        test = { inherit overrideInputs; dir = "test"; };
         doc = { dir = "doc"; };
         example = { inherit overrideInputs; dir = "example"; };
+
+        # Tests
+        haskell-parsers-test = {
+          overrideInputs."haskell-parsers" = ./nix/haskell-parsers;
+          dir = ./nix/haskell-parsers/test;
+        };
+        # Legacy shell script test
+        # TODO: Port to pure Nix; see https://github.com/srid/haskell-flake/issues/241
+        test = { inherit overrideInputs; dir = "test"; };
       };
   };
 }
