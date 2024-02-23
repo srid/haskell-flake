@@ -5,7 +5,9 @@ function logHeader {
   echo -e "\n||| $@"
 }
 
-SYSTEM=$(nix show-config | grep 'system =' | nix run nixpkgs#gawk '{print $3}')
+nix --version
+
+SYSTEM=$(nix show-config | grep 'system =' | awk '{print $3}')
 
 DIR_OF_COMMON_SH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 HASKELL_FLAKE=${DIR_OF_COMMON_SH}/..
@@ -24,12 +26,6 @@ if [ "$(printf '%s\n' "$requiredver" "$currentver" | sort -V | head -n1)" = "$re
 then 
   echo
 else
-  echo "!!!! Your Nix version is old ($currentver). Using newer Nix from github:nixos/nix/2.14.1"
-  # We use newer Nix for:
-  # - https://github.com/NixOS/nix/issues/7263
-  # - https://github.com/NixOS/nix/issues/7026
-  nix build --no-link github:nixos/nix/2.14.1
-  export PATH=$(nix eval --raw github:nixos/nix/2.14.1#default.outPath)/bin:$PATH
+  echo "!!!! Your Nix version is old ($currentver)."
+  exit 2
 fi
-
-nix --version
