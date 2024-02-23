@@ -12,24 +12,37 @@
       path = builtins.path { path = ./example; filter = path: _: baseNameOf path != "test.sh"; };
     };
 
+    # CI spec
     # https://github.com/srid/nixci
-    nixci.default =
-      let
-        overrideInputs = { "haskell-flake" = ./.; };
-      in
-      {
-        dev = { inherit overrideInputs; dir = "dev"; };
-        doc = { dir = "doc"; };
-        example = { inherit overrideInputs; dir = "example"; };
-
-        # Tests
-        haskell-parsers-test = {
-          overrideInputs."haskell-parsers" = ./nix/haskell-parsers;
-          dir = ./nix/haskell-parsers/test;
-        };
-        # Legacy shell script test
-        # TODO: Port to pure Nix; see https://github.com/srid/haskell-flake/issues/241
-        test = { inherit overrideInputs; dir = "test"; };
+    nixci.default = {
+      dev = {
+        dir = "dev";
+        overrideInputs."haskell-flake" = ./.;
       };
+
+      doc = {
+        dir = "doc";
+      };
+
+      example = {
+        dir = "example";
+        overrideInputs."haskell-flake" = ./.;
+      };
+
+      # Tests
+      haskell-parsers-test = {
+        dir = ./nix/haskell-parsers/test;
+        overrideInputs."haskell-parsers" = ./nix/haskell-parsers;
+      };
+
+      # Legacy shell script test
+      test = {
+        dir = "test";
+        overrideInputs."haskell-flake" = ./.;
+        # Can't build on Linux until https://github.com/srid/haskell-flake/issues/241
+        # TODO: Do the above, and get rid of this test.
+        systems = [ "aarch64-darwin" "x86_64-darwin" ];
+      };
+    };
   };
 }

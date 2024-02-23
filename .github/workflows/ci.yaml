@@ -9,13 +9,11 @@ jobs:
     runs-on: self-hosted
     strategy:
       matrix:
-        # TODO: Add Linux, after enabling test flake check to work without internet access.
-        # https://github.com/srid/haskell-flake/issues/241
-        system: [aarch64-darwin]
+        system: [aarch64-darwin, aarch64-linux]
     steps:
       - uses: actions/checkout@v4
       - run: nixci --build-systems "github:nix-systems/${{ matrix.system }}"
-  # Remove this job after doing the TODO above.
+  # TODO: Remove this job after https://github.com/srid/haskell-flake/issues/241
   linux-test:
     runs-on: ubuntu-latest
     steps:
