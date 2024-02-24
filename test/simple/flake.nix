@@ -35,7 +35,6 @@
             # Setting to null should remove this tool from defaults.
             ghcid = null;
           };
-          hlsCheck.enable = true;
         };
       };
       perSystem = { self', pkgs, lib, ... }: {
