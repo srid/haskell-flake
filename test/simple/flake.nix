@@ -82,8 +82,8 @@
             ''
               echo "Testing test/simple ..."
 
-              # Run the app
-              ${self'.apps.app1.program}
+              # Run the cabal executable as flake app
+              ${self'.apps.app1.program} | grep fooFunc
 
               touch $out
             '';
