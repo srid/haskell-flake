@@ -7,8 +7,6 @@
     flake-parts = { };
     haskell-flake = { };
 
-    check-flake.url = "github:srid/check-flake/48a17393ed4fcd523399d6602c283775b5127295";
-
     haskell-multi-nix.url = "github:srid/haskell-multi-nix/7aed736571714ec12105ec110358998d70d59e34";
     haskell-multi-nix.flake = false;
   };
@@ -17,7 +15,6 @@
       systems = nixpkgs.lib.systems.flakeExposed;
       imports = [
         inputs.haskell-flake.flakeModule
-        inputs.check-flake.flakeModule
       ];
       flake.haskellFlakeProjectModules.default = { pkgs, lib, ... }: {
         packages = {
@@ -38,7 +35,6 @@
             # Setting to null should remove this tool from defaults.
             ghcid = null;
           };
-          hlsCheck.enable = true;
         };
       };
       perSystem = { self', pkgs, lib, ... }: {
@@ -74,6 +70,52 @@
         # An explicit app to test `nix run .#test` (*without* falling back to
         # using self.packages.test)
         apps.app1 = self'.apps.haskell-flake-test;
+
+        # Our test
+        checks.test =
+          pkgs.runCommandNoCC "simple-test"
+            {
+              nativeBuildInputs = with pkgs; [
+                which
+              ] ++ self'.devShells.default.nativeBuildInputs;
+
+              # Test defaults.settings module behaviour, viz: haddock
+              NO_HADDOCK =
+                lib.assertMsg (!lib.hasAttr "doc" self'.packages.default)
+                  "doc output should not be present";
+            }
+            ''
+              (
+              set -x
+              echo "Testing test/simple ..."
+
+              # Run the cabal executable as flake app
+              ${self'.apps.app1.program} | grep fooFunc
+
+              # Setting buildTools.ghcid to null should disable that default
+              # buildTool (ghcid)
+              which ghcid && \
+                (echo "ghcid should not be in devshell"; exit 2)
+
+              # Adding a buildTool (fzf, here) should put it in devshell.
+              which fzf || \
+                (echo "fzf should be in devshell"; exit 2)
+
+              # mkShellArgs works
+              ${self'.devShells.default.shellHook}
+              if [[ "$FOO" == "bar" ]]; then 
+                  echo "$FOO"
+              else 
+                  echo "FOO is not bar" 
+                  exit 2
+              fi
+
+              # extraLibraries works
+              runghc ${./script} | grep -F 'TOML-flavored boolean: Bool True'
+
+              touch $out
+              )
+            '';
       };
     };
 }

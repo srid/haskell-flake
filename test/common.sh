@@ -7,7 +7,7 @@ function logHeader {
 
 nix --version
 
-SYSTEM=$(nix show-config | grep 'system =' | awk '{print $3}')
+SYSTEM=$(nix eval --impure --expr builtins.currentSystem)
 
 DIR_OF_COMMON_SH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 HASKELL_FLAKE=${DIR_OF_COMMON_SH}/..
