@@ -5,8 +5,10 @@ default:
 ex:
     cd ./example && nix run . --override-input haskell-flake ..
 
-test:
+# Run the checks locally using nixci
+check:
     nixci
 
+# Auto-format the Nix files in project tree
 fmt:
     treefmt
