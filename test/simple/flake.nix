@@ -7,8 +7,6 @@
     flake-parts = { };
     haskell-flake = { };
 
-    check-flake.url = "github:srid/check-flake/48a17393ed4fcd523399d6602c283775b5127295";
-
     haskell-multi-nix.url = "github:srid/haskell-multi-nix/7aed736571714ec12105ec110358998d70d59e34";
     haskell-multi-nix.flake = false;
   };
@@ -17,7 +15,6 @@
       systems = nixpkgs.lib.systems.flakeExposed;
       imports = [
         inputs.haskell-flake.flakeModule
-        inputs.check-flake.flakeModule
       ];
       flake.haskellFlakeProjectModules.default = { pkgs, lib, ... }: {
         packages = {

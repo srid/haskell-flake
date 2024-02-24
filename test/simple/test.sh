@@ -22,6 +22,4 @@ nix run ${OVERRIDE_ALL} .#app1
 # Test non-devshell features:
 # Checks
 logHeader "Testing nix flake checks"
-nix --option sandbox false build \
-    --no-link --print-out-paths \
-    ${OVERRIDE_ALL} -L .#check
+nix flake check ${OVERRIDE_ALL}
