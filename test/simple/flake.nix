@@ -85,6 +85,9 @@
               # Run the cabal executable as flake app
               ${self'.apps.app1.program} | grep fooFunc
 
+              cat ${self'.devShells.default}  | grep ghcid
+              cat ${self'.devShells.default}  | grep adfsd
+
               touch $out
             '';
       };
