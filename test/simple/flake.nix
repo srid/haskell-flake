@@ -76,11 +76,11 @@
           pkgs.runCommandNoCC "simple-test"
             {
               nativeBuildInputs = with pkgs; [
-                nix
-              ];
-              DEVSHELL_ENV = self'.devShells.default;
+                which
+              ] ++ self'.devShells.default.nativeBuildInputs;
             }
             ''
+              (
               set -x
               echo "Testing test/simple ..."
 
@@ -89,16 +89,27 @@
 
               # Setting buildTools.ghcid to null should disable that default
               # buildTool (ghcid)
-              grep ghcid $DEVSHELL_ENV && \
+              which ghcid && \
                 (echo "ghcid should not be in devshell"; exit 2)
 
               # Adding a buildTool (fzf, here) should put it in devshell.
-              grep fzf $DEVSHELL_ENV || \
+              which fzf || \
                 (echo "fzf should be in devshell"; exit 2)
 
-              echo $DEVSHELL_ENV
+              # mkShellArgs works
+              ${self'.devShells.default.shellHook}
+              if [[ "$FOO" == "bar" ]]; then 
+                  echo "$FOO"
+              else 
+                  echo "FOO is not bar" 
+                  exit 2
+              fi
+
+              # extraLibraries works
+              runghc ${./script} | grep -F 'TOML-flavored boolean: Bool True'
 
               touch $out
+              )
             '';
       };
     };

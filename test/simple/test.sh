@@ -11,7 +11,3 @@ nix build ${OVERRIDE_ALL} .#default^doc && {
     echo "ERROR: dontHaddock (from defaults.settings) not in effect"
     exit 1
 }
-
-# Run the devshell test script in a nix develop shell.
-logHeader "Testing nix devshell"
-nix develop ${OVERRIDE_ALL} -c ./test-in-devshell.sh
