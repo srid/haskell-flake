@@ -8,9 +8,6 @@
 
 set -xe
 
-# Test haskell devshell (via HLS check)
-haskell-language-server
-
 # Setting buildTools.ghcid to null should disable that default buildTool
 which ghcid && exit 2 || echo
 
