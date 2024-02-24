@@ -22,6 +22,10 @@
 
       doc = {
         dir = "doc";
+        overrideInputs = {
+          "haskell-flake" = ./.;
+          "flake-parts-website" = "github:hercules-ci/flake.parts-website";
+        };
       };
 
       example = {

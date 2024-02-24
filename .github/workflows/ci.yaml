@@ -20,8 +20,3 @@ jobs:
       - uses: actions/checkout@v4
       - uses: DeterminateSystems/nix-installer-action@main
       - run: bash ./runtest.sh
-  docs-linkcheck:
-    runs-on: self-hosted
-    steps:
-      - uses: actions/checkout@v4
-      - run: bash ./doc/test.sh

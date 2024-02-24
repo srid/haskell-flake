@@ -12,8 +12,6 @@ TESTS=(
   ./example
   # TODO: Move these to flake check, just like ./test/{simple, project-module}
   ./test/with-subdir
-  # We run this separately, because it's a bit slow.
-  # ./doc
 )
 
 for testDir in "${TESTS[@]}" 
