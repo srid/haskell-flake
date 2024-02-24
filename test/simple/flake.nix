@@ -78,6 +78,11 @@
               nativeBuildInputs = with pkgs; [
                 which
               ] ++ self'.devShells.default.nativeBuildInputs;
+
+              # Test defaults.settings module behaviour, viz: haddock
+              NO_HADDOCK =
+                lib.assertMsg (!lib.hasAttr "doc" self'.packages.default)
+                  "doc output should not be present";
             }
             ''
               (
