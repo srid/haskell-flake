@@ -71,6 +71,23 @@
         # An explicit app to test `nix run .#test` (*without* falling back to
         # using self.packages.test)
         apps.app1 = self'.apps.haskell-flake-test;
+
+        # Our test
+        checks.test =
+          pkgs.runCommandNoCC "simple-test"
+            {
+              nativeBuildInputs = with pkgs; [
+                nix
+              ];
+            }
+            ''
+              echo "Testing test/simple ..."
+
+              # Run the app
+              ${self'.apps.app1.program}
+
+              touch $out
+            '';
       };
     };
 }

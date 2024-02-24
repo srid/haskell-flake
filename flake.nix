@@ -35,6 +35,15 @@
         overrideInputs."haskell-parsers" = ./nix/haskell-parsers;
       };
 
+      test-simple = {
+        dir = "test/simple";
+        overrideInputs = {
+          "haskell-flake" = ./.;
+          "flake-parts" = "github:hercules-ci/flake-parts/7c7a8bce3dffe71203dcd4276504d1cb49dfe05f";
+          "nixpkgs" = "github:nixos/nixpkgs/bb31220cca6d044baa6dc2715b07497a2a7c4bc7";
+        };
+      };
+
       # Legacy shell script test
       test = {
         dir = "test";
