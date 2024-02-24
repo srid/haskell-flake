@@ -78,15 +78,25 @@
               nativeBuildInputs = with pkgs; [
                 nix
               ];
+              DEVSHELL_ENV = self'.devShells.default;
             }
             ''
+              set -x
               echo "Testing test/simple ..."
 
               # Run the cabal executable as flake app
               ${self'.apps.app1.program} | grep fooFunc
 
-              cat ${self'.devShells.default}  | grep ghcid
-              cat ${self'.devShells.default}  | grep adfsd
+              # Setting buildTools.ghcid to null should disable that default
+              # buildTool (ghcid)
+              grep ghcid $DEVSHELL_ENV && \
+                (echo "ghcid should not be in devshell"; exit 2)
+
+              # Adding a buildTool (fzf, here) should put it in devshell.
+              grep fzf $DEVSHELL_ENV || \
+                (echo "fzf should be in devshell"; exit 2)
+
+              echo $DEVSHELL_ENV
 
               touch $out
             '';
