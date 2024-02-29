@@ -37,6 +37,22 @@
         };
         formatter = pkgs.nixpkgs-fmt;
         checks.linkcheck = inputs'.flake-parts-website.checks.linkcheck;
+        packages.flake-parts = inputs'.flake-parts-website.packages.default;
+        apps.flake-parts.program = pkgs.writeShellApplication {
+          name = "docs-flake-parts";
+          meta.description = "Open flake.parts docs, previewing local haskell-flake version";
+          text = ''
+            DOCSHTML="${self'.packages.flake-parts}/options/haskell-flake.html"
+
+            if [ "$(uname)" == "Darwin" ]; then
+              open $DOCSHTML
+            else 
+              if type xdg-open &>/dev/null; then
+                xdg-open $DOCSHTML
+              fi
+            fi
+          '';
+        };
       };
     };
 }

@@ -27,6 +27,11 @@
           packages = with pkgs; [
             just
           ];
+          shellHook = ''
+            echo
+            echo "🍎🍎 Run 'just <recipe>' to get started"
+            just
+          '';
         };
       };
     };
