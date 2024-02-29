@@ -13,9 +13,75 @@
       imports = [
         inputs.haskell-flake.flakeModule
       ];
-      perSystem = { self', pkgs, ... }: {
-        haskellProjects.default = { };
-        packages.default = self'.packages.haskell-flake-test;
-      };
+      debug = true;
+      perSystem = { config, self', pkgs, lib, ... }:
+        let
+          cabalName = "haskell-flake-test";
+          # A haskell-flake module used to override the 'default' project.
+          overriding = {
+            defaults.packages = { };
+            autoWire = [ "packages" ];
+            packages.${cabalName}.local.toDefinedProject = lib.mkForce true;
+          };
+        in
+        {
+          haskellProjects.default = { };
+          haskellProjects.touch-cabal-project = { name, ... }: {
+            imports = [ overriding ];
+            packages.${cabalName}.source =
+              (pkgs.applyPatches {
+                name = "${cabalName}-patched-${name}";
+                src = self;
+                patches = [
+                  (pkgs.writeTextFile {
+                    name = "p.diff";
+                    text = ''
+                      diff --git a/cabal.project b/cabal.project
+                      index 1a862c3..92dd52b 100644
+                      --- a/cabal.project
+                      +++ b/cabal.project
+                      @@ -1,2 +1,4 @@
+                       packages:
+                      -  ./haskell-flake-test
+                      \ No newline at end of file
+                      +  ./haskell-flake-test
+                      +-- irrelevant comment
+                      +
+
+                    '';
+                  })
+                ];
+              }) + /haskell-flake-test;
+          };
+          packages.default = self'.packages.haskell-flake-test;
+
+          # Our test
+          checks.test =
+            let
+              getDrvPath = drv: drv.drvPath;
+              getCabal2nixDeriverDrvpath = drv: drv.cabal2nixDeriver.drvPath;
+              baseline = getDrvPath self'.packages.haskell-flake-test;
+              baseline_cabal2nix = getCabal2nixDeriverDrvpath self'.packages.haskell-flake-test;
+            in
+            pkgs.runCommandNoCC "with-subdir-test"
+              {
+                nativeBuildInputs = with pkgs; [
+                  which
+                ] ++ self'.devShells.default.nativeBuildInputs;
+
+                FOO =
+                  lib.assertMsg
+                    (baseline == getDrvPath config.haskellProjects.touch-cabal-project.outputs.finalPackages.haskell-flake-test
+                      && baseline_cabal2nix == getCabal2nixDeriverDrvpath config.haskellProjects.touch-cabal-project.outputs.finalPackages.haskell-flake-test
+                    )
+                    "they must be equal";
+              }
+              ''
+                (
+                set -x
+                touch $out
+                )
+              '';
+        };
     };
 }
