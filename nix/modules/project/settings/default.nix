@@ -77,7 +77,9 @@ in
             # Might be relevant for the 'custom' option.
             lib.concatMap
               (impl: impl)
-              (lib.attrValues (traceSettings name cfg).impl)
+              (lib.mapAttrsToList
+                (k: v: project.config.log.traceDebug k v)
+                (traceSettings name cfg).impl)
           );
       in
       lib.mapAttrs applySettingsFor project.config.settings;
