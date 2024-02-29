@@ -48,6 +48,7 @@
           };
           settings = {
             foo = {
+              jailbreak = true;
               cabalFlags.blah = true;
             };
           };
