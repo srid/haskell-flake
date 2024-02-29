@@ -9,7 +9,7 @@
     };
     templates.example = {
       description = "Example Haskell project using haskell-flake";
-      path = builtins.path { path = ./example; filter = path: _: baseNameOf path != "test.sh"; };
+      path = builtins.path { path = ./example; };
     };
 
     # CI spec

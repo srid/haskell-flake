@@ -24,30 +24,30 @@
           # Note that local packages are automatically included in `packages`
           # (defined by `defaults.packages` option).
           #
-          # packages = {
-          #   aeson.source = "1.5.0.0"; # Hackage version override
-          #   shower.source = inputs.shower;
-          # };
-          # settings = {
-          #   aeson = {
-          #     check = false;
-          #   };
-          #   relude = {
-          #     haddock = false;
-          #     broken = false;
-          #   };
-          # };
+          packages = {
+            # aeson.source = "1.5.0.0"; # Hackage version override
+            # shower.source = inputs.shower;
+          };
+          settings = {
+            #  aeson = {
+            #    check = false;
+            #  };
+            #  relude = {
+            #    haddock = false;
+            #    broken = false;
+            #  };
+          };
 
-          # devShell = {
-          #  # Enabled by default
-          #  enable = true;
-          #
-          #  # Programs you want to make available in the shell.
-          #  # Default programs can be disabled by setting to 'null'
-          #  tools = hp: { fourmolu = hp.fourmolu; ghcid = null; };
-          #
-          #  hlsCheck.enable = true;
-          # };
+          devShell = {
+            # Enabled by default
+            # enable = true;
+
+            # Programs you want to make available in the shell.
+            # Default programs can be disabled by setting to 'null'
+            # tools = hp: { fourmolu = hp.fourmolu; ghcid = null; };
+
+            hlsCheck.enable = pkgs.stdenv.isDarwin; # On darwin, sandbox is disabled, so HLS can use the network.
+          };
         };
 
         # haskell-flake doesn't set the default package, but you can do it here.
