@@ -25,9 +25,9 @@
         settings = {
           # Test that self and super are passed
           foo = { self, super, ... }: {
-            custom = _: builtins.seq
+            custom = pkg: builtins.seq
               (lib.assertMsg (lib.hasAttr "ghc" self) "self is bad")
-              super.foo;
+              pkg;
           };
         };
         devShell = {
