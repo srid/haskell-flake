@@ -19,17 +19,19 @@
         exampleLock = builtins.fromJSON (builtins.readFile ./example/flake.lock);
         nixpkgs = "github:nixos/nixpkgs/" + exampleLock.nodes.nixpkgs.locked.rev;
         flake-parts = "github:hercules-ci/flake-parts/" + exampleLock.nodes.flake-parts.locked.rev;
+        haskell-flake = ./.;
+        haskell-parsers = ./nix/haskell-parsers;
       in
       {
         dev = {
           dir = "dev";
-          overrideInputs."haskell-flake" = ./.;
+          overrideInputs = { inherit haskell-flake; };
         };
 
         doc = {
           dir = "doc";
           overrideInputs = {
-            "haskell-flake" = ./.;
+            inherit haskell-flake;
             # TODO: It is better to add a update-flake-lock.yaml CI action to
             # update this just like ./example inputs.
             "flake-parts-website" = "github:hercules-ci/flake.parts-website";
@@ -38,36 +40,33 @@
 
         example = {
           dir = "example";
-          overrideInputs."haskell-flake" = ./.;
+          overrideInputs = { inherit haskell-flake; };
         };
 
         # Tests
         haskell-parsers-test = {
           dir = ./nix/haskell-parsers/test;
-          overrideInputs."haskell-parsers" = ./nix/haskell-parsers;
+          overrideInputs = { inherit haskell-parsers; };
         };
 
         test-simple = {
           dir = "test/simple";
           overrideInputs = {
-            inherit nixpkgs flake-parts;
-            "haskell-flake" = ./.;
+            inherit nixpkgs flake-parts haskell-flake;
           };
         };
 
         test-with-subdir = {
           dir = "test/with-subdir";
           overrideInputs = {
-            inherit nixpkgs flake-parts;
-            "haskell-flake" = ./.;
+            inherit nixpkgs flake-parts haskell-flake;
           };
         };
 
         test-project-module = {
           dir = "test/project-module";
           overrideInputs = {
-            inherit nixpkgs flake-parts;
-            "haskell-flake" = ./.;
+            inherit nixpkgs flake-parts haskell-flake;
           };
         };
       };
