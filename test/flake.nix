@@ -18,6 +18,7 @@
               git
               which
               gawk
+              jq
             ];
           } ''
           export HOME=$(mktemp -d)

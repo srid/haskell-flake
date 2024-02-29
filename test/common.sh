@@ -14,9 +14,11 @@ HASKELL_FLAKE=${DIR_OF_COMMON_SH}/..
 OVERRIDE_HASKELL_FLAKE="--override-input haskell-flake path:${HASKELL_FLAKE}"
 
 # Let's pin both nixpkgs and flake-parts across all tests, to save up on CI time.
-NIXPKGS_URL="github:nixos/nixpkgs/9a9dae8f6319600fa9aebde37f340975cab4b8c0"
+NIXPKGS_REV=$(jq -r '.nodes."nixpkgs".locked.rev' < ${HASKELL_FLAKE}/example/flake.lock)
+NIXPKGS_URL="github:nixos/nixpkgs/${NIXPKGS_REV}"
 OVERRIDE_NIXPKGS="--override-input nixpkgs ${NIXPKGS_URL}"
-OVERRIDE_FLAKE_PARTS="--override-input flake-parts github:hercules-ci/flake-parts/7c7a8bce3dffe71203dcd4276504d1cb49dfe05f"
+FLAKE_PARTS_REV=$(jq -r '.nodes."flake-parts".locked.rev' < ${HASKELL_FLAKE}/example/flake.lock)
+OVERRIDE_FLAKE_PARTS="--override-input flake-parts github:hercules-ci/flake-parts/${FLAKE_PARTS_REV}"
 
 OVERRIDE_ALL="${OVERRIDE_HASKELL_FLAKE} ${OVERRIDE_FLAKE_PARTS} ${OVERRIDE_NIXPKGS}"
 
