@@ -1,6 +1,5 @@
-# Like callCabal2nix, but does more:
+# Wrapped around callCabal2nix, that does:
 # - Source filtering (to prevent parent content changes causing rebuilds)
-# - Always build from cabal's sdist for release-worthiness
 # - Logs what it's doing (based on 'log' option)
 #
 { pkgs

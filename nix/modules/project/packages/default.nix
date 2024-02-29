@@ -99,8 +99,6 @@ in
             else
               super.${name};
         in
-        #lib.filterAttrs
-          #  (_: v: v != null)
         (lib.mapAttrs f project.config.packages);
     };
   };
