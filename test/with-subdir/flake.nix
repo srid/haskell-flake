@@ -26,8 +26,7 @@
             deriverHash = drv: drv.cabal2nixDeriver.drvPath;
           in
           {
-            # Make an innocent change to cabal.project 
-            # ➡️ The derivation must not be rebuilt.
+            # Eval is constant under changes to irrelevant files
             touch-cabal-project = { name, ... }: {
               patches = [
                 ''
@@ -53,6 +52,8 @@
                   "touch-cabal-project failed";
             };
 
+            # A relevant change to Haskell source causes a .drv change (control check)
+            # But no cabal2nix re-eval
             touch-src = { name, ... }: {
               patches = [
                 ''
@@ -78,6 +79,7 @@
                   "touch-src failed";
             };
 
+            # A relevant change to .cabal file causes cabal2nix re-eval
             touch-cabal = { name, ... }: {
               patches = [
                 ''
