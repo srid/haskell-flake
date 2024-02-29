@@ -10,7 +10,7 @@ in
 {
   options.perSystem = mkPerSystemOption ({ config, self', pkgs, ... }: {
     options = {
-      haskellProjectsPatched = mkOption {
+      haskellProjectTests = mkOption {
         type = types.attrsOf (types.submoduleWith {
           specialArgs = { inherit pkgs self; };
           modules = [
@@ -28,6 +28,10 @@ in
                     Each patch can be a path to the diff file, or inline patch string.
                   '';
                 };
+                expect = lib.mkOption {
+                  type = types.raw;
+                  description = "Test expectation";
+                };
               };
             }
           ];
@@ -35,19 +39,29 @@ in
       };
     };
 
-    config.haskellProjects = lib.flip lib.mapAttrs config.haskellProjectsPatched (name: cfg: {
-      projectRoot = pkgs.applyPatches {
-        name = "haskellProject-patched-${name}";
-        src = config.haskellProjects.${cfg.from}.projectRoot;
-        patches = lib.flip builtins.map cfg.patches (patch:
-          if types.path.check patch then patch else
-          pkgs.writeTextFile {
-            name = "${name}.diff";
-            text = patch;
+    config = {
+      haskellProjects = lib.flip lib.mapAttrs config.haskellProjectTests (name: cfg: {
+        projectRoot = pkgs.applyPatches {
+          name = "haskellProject-patched-${name}";
+          src = config.haskellProjects.${cfg.from}.projectRoot;
+          patches = lib.flip builtins.map cfg.patches (patch:
+            if types.path.check patch then patch else
+            pkgs.writeTextFile {
+              name = "${name}.diff";
+              text = patch;
+            }
+          );
+        };
+      });
+
+      checks = lib.flip lib.mapAttrs config.haskellProjectTests (name: cfg:
+        pkgs.runCommandNoCC "haskell-flake-patch-test-${name}"
+          {
+            EXPECT = builtins.toJSON cfg.expect;
           }
-        );
-      };
-    });
+          ''touch $out''
+      );
+    };
   });
 
 }
