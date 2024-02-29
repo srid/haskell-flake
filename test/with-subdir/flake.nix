@@ -50,7 +50,32 @@
                     (drvHash (pkgOf "default") == drvHash (pkgOf name))
                     (deriverHash (pkgOf "default") == deriverHash (pkgOf name))
                   ])
-                  "they must be equal";
+                  "touch-cabal-project failed";
+            };
+
+            touch-src = { name, ... }: {
+              patches = [
+                ''
+                  diff --git a/haskell-flake-test/src/Main.hs b/haskell-flake-test/src/Main.hs
+                  index fa10095..293744c 100644
+                  --- a/haskell-flake-test/src/Main.hs
+                  +++ b/haskell-flake-test/src/Main.hs
+                  @@ -3,3 +3,5 @@ module Main where
+                   main :: IO ()
+                   main = do 
+                     putStrLn "Hello"
+                  +-- irrelevant comment
+                  +
+
+                ''
+              ];
+              expect =
+                lib.assertMsg
+                  (lib.all (x: x) [
+                    (drvHash (pkgOf "default") != drvHash (pkgOf name))
+                    (deriverHash (pkgOf "default") == deriverHash (pkgOf name))
+                  ])
+                  "touch-src failed";
             };
           };
       };
