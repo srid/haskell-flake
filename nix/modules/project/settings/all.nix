@@ -28,7 +28,7 @@ in
       impl = enable:
         lib.flip lib.pipe [
           (if enable then doCheck else dontCheck)
-          (x: log.traceDebug "${name}.check ${builtins.toString enable} ${x.outPath}" x)
+          (x: log.traceDebug "${name}.check :${builtins.toString enable}: ${x.outPath}" x)
         ];
     };
     jailbreak = {
