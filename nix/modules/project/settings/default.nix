@@ -63,6 +63,7 @@ in
               ];
               specialArgs = {
                 inherit name pkgs self super;
+                inherit (project.config) log;
                 package = project.config.packages.${name} or null;
               } // (import ./lib.nix {
                 inherit lib;

@@ -84,6 +84,7 @@ in
       '';
       default =
         let
+          globalSettings.buildFromSdist = true;
           localSettings = { name, package, config, ... }:
             lib.optionalAttrs (package.local.toDefinedProject or false) {
               # Disabling haddock and profiling is mainly to speed up Nix builds.
@@ -91,7 +92,12 @@ in
               libraryProfiling = lib.mkDefault false; # Avoid double-compilation.
             };
         in
-        if config.defaults.enable then localSettings else { };
+        if config.defaults.enable then {
+          imports = [
+            globalSettings
+            localSettings
+          ];
+        } else { };
     };
 
     projectModules.output = mkOption {
