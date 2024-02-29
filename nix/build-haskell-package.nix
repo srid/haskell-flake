@@ -12,11 +12,6 @@
 }:
 
 let
-  # NOTE: We do not use the optimized version, `buildFromCabalSdist`, because it
-  # breaks in some cases. See https://github.com/srid/haskell-flake/pull/220
-  fromSdist = pkgs.haskell.lib.buildFromSdist or
-    (log.traceWarning "Your nixpkgs does not have hs.buildFromSdist" (pkg: pkg));
-
   mkNewStorePath = name: src:
     # Since 'src' may be a subdirectory of a store path
     # (in string form, which means that it isn't automatically
@@ -38,9 +33,4 @@ lib.pipe root
 
     (root: self.callCabal2nix name root { })
     (x: log.traceDebug "${name}.cabal2nixDeriver ${x.cabal2nixDeriver.outPath}" x)
-
-    # Make sure all files we use are included in the sdist, as a check
-    # for release-worthiness.
-    fromSdist
-    (x: log.traceDebug "${name}.fromSdist ${x.outPath}" x)
   ]

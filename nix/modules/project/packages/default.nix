@@ -12,6 +12,11 @@ let
 
   tracePackages = k: x:
     project.config.log.traceDebug "${k} ${builtins.toJSON x}" x;
+
+  # Return true of package configuration points to a source path.
+  # Return false if it points to Hackage version
+  isSource = cfg:
+    lib.types.path.check cfg.source;
 in
 {
   options = {
@@ -46,7 +51,7 @@ in
       '';
     };
 
-    packagesOverlay = lib.mkOption {
+    packagesOverlays.before = lib.mkOption {
       type = import ../../../types/haskell-overlay-type.nix { inherit lib; };
       description = ''
         The Haskell overlay computed from `packages` modules.
@@ -59,7 +64,7 @@ in
             inherit pkgs lib self log;
           };
           getOrMkPackage = name: cfg:
-            if lib.types.path.check cfg.source
+            if isSource cfg
             then
               log.traceDebug "${name}.callCabal2nix ${cfg.source}"
                 (build-haskell-package name cfg.source)
@@ -68,6 +73,35 @@ in
                 (self.callHackage name cfg.source { });
         in
         lib.mapAttrs getOrMkPackage project.config.packages;
+    };
+
+    packagesOverlays.after = lib.mkOption {
+      type = import ../../../types/haskell-overlay-type.nix { inherit lib; };
+      description = ''
+        The Haskell overlay to apply at the very end (after settings overlay)
+      '';
+      internal = true;
+      default = self: super:
+        let
+          inherit (project.config) log;
+          # NOTE: We do not use the optimized version, `buildFromCabalSdist`, because it
+          # breaks in some cases. See https://github.com/srid/haskell-flake/pull/220
+          fromSdist = pkgs.haskell.lib.buildFromSdist or
+            (log.traceWarning "Your nixpkgs does not have hs.buildFromSdist" (pkg: pkg));
+          f = name: cfg:
+            if isSource cfg
+            then
+            # Make sure all files we use are included in the sdist, as a check
+            # for release-worthiness.
+              log.traceDebug "${name}.fromSdist ${super.${name}.outPath} (source = ${cfg.source})"
+                fromSdist
+                super.${name}
+            else
+              super.${name};
+        in
+        #lib.filterAttrs
+          #  (_: v: v != null)
+        (lib.mapAttrs f project.config.packages);
     };
   };
 }
