@@ -1,4 +1,4 @@
-{ pkgs, lib, config, ... }:
+{ name, pkgs, lib, config, log, ... }:
 let
   inherit (lib) types;
   inherit (import ./lib.nix {
@@ -309,6 +309,20 @@ in
         build that is present in the store or cache.  
       '';
       impl = triggerRebuild;
+    };
+    buildFromSdist = {
+      type = types.bool;
+      description = ''
+        Whether to use `buildFromSdist` to build the package.
+        Make sure all files we use are included in the sdist, as a check
+        for release-worthiness.
+      '';
+      impl = enable:
+        if enable then
+          (pkg: lib.pipe pkg [
+            buildFromSdist
+            (x: log.traceDebug "${name}.buildFromSdist ${x.outPath}" x)
+          ]) else x: x;
     };
 
     removeReferencesTo = {
