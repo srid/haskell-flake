@@ -11,6 +11,7 @@
   - #223 Make `devShell.tools` a `lazyAttrsOf` (lazy evaluation of values)
 - Breaking changes
   - #221: Switch to `buildFromSdist`, to allow using non-standard package sets (wherein `cabal-install` is otherwise built without using user's overrides)
+  - #253: Turn off `buildFromSdist` by default. It can now be enabled manually by setting `settings.<name>.buildFromSdist` to `true`.
 
 ## 0.4.0 (Aug 22, 2023)
 
