@@ -86,7 +86,7 @@ in
         let
           globalSettings = {
             # this shit is broken on nixpkgs
-            # buildFromSdist = true;
+            buildFromSdist = true;
           };
           localSettings = { name, package, config, ... }:
             lib.optionalAttrs (package.local.toDefinedProject or false) {

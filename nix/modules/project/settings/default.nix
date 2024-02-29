@@ -71,15 +71,18 @@ in
                 config = cfg;
               });
             }).config;
+            pairsUnsorted = lib.mapAttrsToList
+              (k: v: lib.nameValuePair k v)
+              (traceSettings name cfg).impl;
+            pairs = lib.filter (p: p.name == "buildFromSdist") pairsUnsorted
+              ++ lib.filter (p: p.name != "buildFromSdist") pairsUnsorted;
           in
           lib.pipe super.${name} (
             # TODO: Do we care about the *order* of overrides?
             # Might be relevant for the 'custom' option.
             lib.concatMap
-              (impl: impl)
-              (lib.mapAttrsToList
-                (_: v: v)
-                (traceSettings name cfg).impl)
+              (impl: impl.value)
+              pairs
           );
       in
       lib.mapAttrs applySettingsFor project.config.settings;
