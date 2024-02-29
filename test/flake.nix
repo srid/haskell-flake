@@ -8,7 +8,7 @@
     inputs.flake-parts.lib.mkFlake { inherit inputs; } {
       systems = inputs.nixpkgs.lib.systems.flakeExposed;
       perSystem = { pkgs, ... }: {
-        checks.tests = pkgs.runCommandNoCC "tests"
+        checks.tests = pkgs.runCommandNoCC "legacy-tests"
           {
             nativeBuildInputs = with pkgs; [
               coreutils

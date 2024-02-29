@@ -44,7 +44,7 @@
         overrideInputs = {
           "haskell-flake" = ./.;
           "flake-parts" = "github:hercules-ci/flake-parts/7c7a8bce3dffe71203dcd4276504d1cb49dfe05f";
-          "nixpkgs" = "github:nixos/nixpkgs/bb31220cca6d044baa6dc2715b07497a2a7c4bc7";
+          "nixpkgs" = "github:nixos/nixpkgs/9a9dae8f6319600fa9aebde37f340975cab4b8c0";
         };
       };
 
@@ -53,12 +53,12 @@
         overrideInputs = {
           "haskell-flake" = ./.;
           "flake-parts" = "github:hercules-ci/flake-parts/7c7a8bce3dffe71203dcd4276504d1cb49dfe05f";
-          "nixpkgs" = "github:nixos/nixpkgs/bb31220cca6d044baa6dc2715b07497a2a7c4bc7";
+          "nixpkgs" = "github:nixos/nixpkgs/9a9dae8f6319600fa9aebde37f340975cab4b8c0";
         };
       };
 
       # Legacy shell script test
-      test = {
+      legacy-test = {
         dir = "test";
         overrideInputs."haskell-flake" = ./.;
         # Can't build on Linux until https://github.com/srid/haskell-flake/issues/241
