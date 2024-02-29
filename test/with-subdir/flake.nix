@@ -19,17 +19,16 @@
         haskellProjects.default = { };
 
         # Test the default project by patching and evaluating the result.
-        haskellProjectTests = {
-          # Make an innocent change to cabal.project 
-          # ➡️ The derivation must not be rebuilt.
-          touch-cabal-project =
-            let
-              getDrvPath = drv: drv.drvPath;
-              getCabal2nixDeriverDrvpath = drv: drv.cabal2nixDeriver.drvPath;
-              baseline = getDrvPath self'.packages.haskell-flake-test;
-              baseline_cabal2nix = getCabal2nixDeriverDrvpath self'.packages.haskell-flake-test;
-            in
-            {
+        haskellProjectTests =
+          let
+            pkgOf = projectName: config.haskellProjects.${projectName}.outputs.finalPackages.haskell-flake-test;
+            drvHash = drv: drv.drvPath;
+            deriverHash = drv: drv.cabal2nixDeriver.drvPath;
+          in
+          {
+            # Make an innocent change to cabal.project 
+            # ➡️ The derivation must not be rebuilt.
+            touch-cabal-project = { name, ... }: {
               patches = [
                 ''
                   diff --git a/cabal.project b/cabal.project
@@ -47,12 +46,13 @@
               ];
               expect =
                 lib.assertMsg
-                  (baseline == getDrvPath config.haskellProjects.touch-cabal-project.outputs.finalPackages.haskell-flake-test
-                    && baseline_cabal2nix == getCabal2nixDeriverDrvpath config.haskellProjects.touch-cabal-project.outputs.finalPackages.haskell-flake-test
-                  )
+                  (lib.all (x: x) [
+                    (drvHash (pkgOf "default") == drvHash (pkgOf name))
+                    (deriverHash (pkgOf "default") == deriverHash (pkgOf name))
+                  ])
                   "they must be equal";
             };
-        };
+          };
       };
     };
 }
