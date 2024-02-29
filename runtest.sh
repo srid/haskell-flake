@@ -9,8 +9,7 @@ nix --version
 # directory.
 # TODO: Supplant these scripts with Nix. See https://github.com/srid/haskell-flake/issues/241
 TESTS=(
-  ./example
-  # TODO: Move these to flake check, just like ./test/{simple, project-module}
+  # TODO: Move this to flake check, just like ./test/{simple, project-module}
   ./test/with-subdir
 )
 
