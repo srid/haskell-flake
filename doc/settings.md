@@ -55,9 +55,14 @@ haskell-flake provides the following settings on top of those provided by [nixpk
 ### `removeReferencesTo`
 
 Remove references to other packages from this Haskell package. This is useful to eliminate unnecessary data dependencies from your Haskell executable so as to reduce its closure size.
-        
+
 > [!info] For more, see
 > - https://github.com/NixOS/nixpkgs/pull/204675
 > - https://srid.ca/remove-references-to
+
+### `buildFromSdist`
+
+Newer versions of [nixpkgs] provide `buildFromSdist` to build your package from the `cabal sdist` tarball. While this is disabled by default ([see here](https://github.com/srid/haskell-flake/pull/253)), you can enable it by setting `settings.<name>.buildFromSdist` to `true`.
+ 
 
 [nixpkgs]: https://nixos.asia/en/nixpkgs

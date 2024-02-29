@@ -85,7 +85,8 @@ in
       default =
         let
           globalSettings = {
-            # This breaks a lot of things. So disabling by default.
+            # We disable this by default because it causes breakage.
+            # See https://github.com/srid/haskell-flake/pull/253
             buildFromSdist = lib.mkDefault false;
           };
           localSettings = { name, package, config, ... }:
