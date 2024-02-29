@@ -78,7 +78,7 @@ in
             lib.concatMap
               (impl: impl)
               (lib.mapAttrsToList
-                (k: v: project.config.log.traceDebug k v)
+                (_: v: v)
                 (traceSettings name cfg).impl)
           );
       in
