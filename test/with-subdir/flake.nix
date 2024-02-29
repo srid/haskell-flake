@@ -23,7 +23,7 @@
           haskellProjects.touch-cabal-project = { name, ... }: {
             projectRoot = pkgs.applyPatches {
               name = "${cabalName}-patched-${name}";
-              src = config.haskellProjects.default.projectRoot;
+              src = self;
               patches = [
                 (pkgs.writeTextFile {
                   name = "p.diff";
