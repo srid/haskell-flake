@@ -13,10 +13,3 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: nixci --build-systems "github:nix-systems/${{ matrix.system }}"
-  # TODO: Remove this job after https://github.com/srid/haskell-flake/issues/241
-  linux-test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: DeterminateSystems/nix-installer-action@main
-      - run: bash ./runtest.sh

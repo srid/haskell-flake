@@ -53,21 +53,20 @@
           };
         };
 
-        test-project-module = {
-          dir = "test/project-module";
+        test-with-subdir = {
+          dir = "test/with-subdir";
           overrideInputs = {
             inherit nixpkgs flake-parts;
             "haskell-flake" = ./.;
           };
         };
 
-        # Legacy shell script test
-        legacy-test = {
-          dir = "test";
-          overrideInputs."haskell-flake" = ./.;
-          # Can't build on Linux until https://github.com/srid/haskell-flake/issues/241
-          # TODO: Do the above, and get rid of this test.
-          systems = [ "aarch64-darwin" "x86_64-darwin" ];
+        test-project-module = {
+          dir = "test/project-module";
+          overrideInputs = {
+            inherit nixpkgs flake-parts;
+            "haskell-flake" = ./.;
+          };
         };
       };
   };

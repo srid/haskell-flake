@@ -1,11 +1,13 @@
 #!/usr/bin/env sh
 
+# TODO: Move this dev/flake.nix as flake app
+
 if [ -z "$1" ]; then
   nix run github:srid/emanote -- -L ./doc
 else
   # Renders the docs, prints the location of the docs, opens the docs if possible
   #
-  # Does not run the link checker. That's done in runtest.sh.
+  # Does not run the link checker. That's done in nixci checks.
   nix --option sandbox false \
       build ${OVERRIDE_HASKELL_FLAKE} \
       -L --show-trace \
