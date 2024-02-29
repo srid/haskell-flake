@@ -77,6 +77,30 @@
                   ])
                   "touch-src failed";
             };
+
+            touch-cabal = { name, ... }: {
+              patches = [
+                ''
+                  diff --git a/haskell-flake-test/haskell-flake-test.cabal b/haskell-flake-test/haskell-flake-test.cabal
+                  index 950a0ff..ef3131b 100644
+                  --- a/haskell-flake-test/haskell-flake-test.cabal
+                  +++ b/haskell-flake-test/haskell-flake-test.cabal
+                  @@ -16,3 +16,5 @@ executable haskell-flake-test
+                           base
+                       hs-source-dirs:   src
+                       default-language: Haskell2010
+                  +-- irrelevant comment
+                  +
+                ''
+              ];
+              expect =
+                lib.assertMsg
+                  (lib.all (x: x) [
+                    (drvHash (pkgOf "default") != drvHash (pkgOf name))
+                    (deriverHash (pkgOf "default") != deriverHash (pkgOf name))
+                  ])
+                  "touch-src failed";
+            };
           };
       };
     };
