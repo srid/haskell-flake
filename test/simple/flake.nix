@@ -7,10 +7,7 @@
     flake-parts = { };
     haskell-flake = { };
 
-    # TODO: Fix https://github.com/srid/haskell-flake/issues/238 and
-    # - Go back to 7aed736571714ec12105ec110358998d70d59e34
-    # - jailbreak foo
-    haskell-multi-nix.url = "github:srid/haskell-multi-nix/518ce6e4014e978e467264e431c6b8658ad9be82";
+    haskell-multi-nix.url = "github:srid/haskell-multi-nix/7aed736571714ec12105ec110358998d70d59e34";
     haskell-multi-nix.flake = false;
   };
   outputs = inputs@{ self, nixpkgs, flake-parts, ... }:
@@ -51,6 +48,7 @@
           };
           settings = {
             foo = {
+              jailbreak = true;
               cabalFlags.blah = true;
             };
           };
