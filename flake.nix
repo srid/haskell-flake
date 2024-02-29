@@ -58,7 +58,7 @@
       };
 
       # Legacy shell script test
-      test = {
+      legacy-test = {
         dir = "test";
         overrideInputs."haskell-flake" = ./.;
         # Can't build on Linux until https://github.com/srid/haskell-flake/issues/241
