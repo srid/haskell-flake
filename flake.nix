@@ -68,15 +68,6 @@
             "haskell-flake" = ./.;
           };
         };
-
-        # Legacy shell script test
-        legacy-test = {
-          dir = "test";
-          overrideInputs."haskell-flake" = ./.;
-          # Can't build on Linux until https://github.com/srid/haskell-flake/issues/241
-          # TODO: Do the above, and get rid of this test.
-          systems = [ "aarch64-darwin" "x86_64-darwin" ];
-        };
       };
   };
 }
