@@ -74,15 +74,28 @@ in
             pairsUnsorted = lib.mapAttrsToList
               (k: v: lib.nameValuePair k v)
               (traceSettings name cfg).impl;
-            pairs = lib.filter (p: p.name == "buildFromSdist") pairsUnsorted
-              ++ lib.filter (p: p.name != "buildFromSdist") pairsUnsorted;
+            pairs =
+              let
+                # Default order is 0
+                order = {
+                  buildFromSdist = 99; # Must be last, because buildFromSdist does funky things, and breaks settings like check/jailbreak otherwise.
+                  custom = -99; # Custom settings apply before any of haskell-flake settings
+                };
+              in
+              # TODO: use sortOn if available
+              lib.lists.sort
+                (p1: p2:
+                  lib.attrByPath [ p1.name ] 0 order < lib.attrByPath [ p2.name ] 0 order)
+                pairsUnsorted;
           in
           lib.pipe super.${name} (
             # TODO: Do we care about the *order* of overrides?
             # Might be relevant for the 'custom' option.
             lib.concatMap
               (impl: impl.value)
-              pairs
+              (project.config.log.traceDebug
+                "ORDER(${name}): ${builtins.toJSON (builtins.map (x: if builtins.length x.value > 0 then x.name else "") pairs)}"
+                pairs)
           );
       in
       lib.mapAttrs applySettingsFor project.config.settings;
