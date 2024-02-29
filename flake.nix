@@ -53,6 +53,14 @@
           };
         };
 
+        test-with-subdir = {
+          dir = "test/with-subdir";
+          overrideInputs = {
+            inherit nixpkgs flake-parts;
+            "haskell-flake" = ./.;
+          };
+        };
+
         test-project-module = {
           dir = "test/project-module";
           overrideInputs = {
