@@ -30,6 +30,8 @@
           dir = "doc";
           overrideInputs = {
             "haskell-flake" = ./.;
+            # TODO: It is better to add a update-flake-lock.yaml CI action to
+            # update this just like ./example inputs.
             "flake-parts-website" = "github:hercules-ci/flake.parts-website";
           };
         };

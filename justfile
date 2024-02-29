@@ -12,3 +12,11 @@ check:
 # Auto-format the Nix files in project tree
 fmt:
     treefmt
+
+# Open haskell-flake docs live preview
+docs:
+    cd ./doc && nix run
+
+# Open flake.parts docs, previewing local haskell-flake version
+docs-flake-parts:
+    cd ./doc && nix run .#flake-parts
