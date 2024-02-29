@@ -26,7 +26,10 @@ in
         Whether to run cabal tests as part of the nix build
       '';
       impl = enable:
-        if enable then doCheck else dontCheck;
+        lib.flip lib.pipe [
+          (if enable then doCheck else dontCheck)
+          (x: log.traceDebug "${name}.check ${x.outPath}" x)
+        ];
     };
     jailbreak = {
       type = types.bool;
