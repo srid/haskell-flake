@@ -16,6 +16,7 @@ in
           Patch an existing `haskellProject` to run some checks. This module
           will create a flake check automatically.  
         '';
+        default = {};
         type = types.attrsOf (types.submoduleWith {
           specialArgs = { inherit pkgs self; };
           modules = [
