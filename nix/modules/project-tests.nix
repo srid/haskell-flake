@@ -1,3 +1,4 @@
+# A convenient module for testing haskell-flake behaviour.
 { self, lib, flake-parts-lib, ... }:
 
 let
@@ -11,6 +12,10 @@ in
   options.perSystem = mkPerSystemOption ({ config, self', pkgs, ... }: {
     options = {
       haskellProjectTests = mkOption {
+        description = ''
+          Patch an existing `haskellProject` to run some checks. This module
+          will create a flake check automatically.  
+        '';
         type = types.attrsOf (types.submoduleWith {
           specialArgs = { inherit pkgs self; };
           modules = [
@@ -19,6 +24,9 @@ in
                 from = lib.mkOption {
                   type = types.str;
                   default = "default";
+                  description = ''
+                    Which `haskellProjects.??` to patch.
+                  '';
                 };
                 patches = lib.mkOption {
                   type = types.listOf (types.either types.path types.str);
@@ -30,7 +38,10 @@ in
                 };
                 expect = lib.mkOption {
                   type = types.raw;
-                  description = "Test expectation";
+                  description = ''
+                    Arbitrary expression to evaluate as part of the generated
+                    flake check
+                  '';
                 };
               };
             }

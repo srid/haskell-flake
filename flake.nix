@@ -1,6 +1,6 @@
 {
   description = "A `flake-parts` module for Haskell development";
-  outputs = { ... }: {
+  outputs = _: {
     flakeModule = ./nix/modules;
 
     templates.default = {

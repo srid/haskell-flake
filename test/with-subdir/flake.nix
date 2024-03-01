@@ -12,7 +12,6 @@
       systems = nixpkgs.lib.systems.flakeExposed;
       imports = [
         inputs.haskell-flake.flakeModule
-        ./haskell-flake-patch.nix
       ];
       debug = true;
       perSystem = { config, self', pkgs, lib, ... }: {
