@@ -41,7 +41,7 @@ in
         else cls;
     };
     log = mkOption {
-      type = types.attrsOf (types.functionTo types.raw);
+      type = types.lazyAttrsOf (types.functionTo types.raw);
       default = import ../../logging.nix {
         name = config.projectFlakeName + "#haskellProjects." + name;
       };
@@ -52,7 +52,7 @@ in
       '';
     };
     basePackages = mkOption {
-      type = types.attrsOf raw;
+      type = types.lazyAttrsOf raw;
       description = ''
         Which Haskell package set / compiler to use.
 
