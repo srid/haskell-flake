@@ -45,7 +45,7 @@ in
         if enable then markBroken else unmarkBroken;
     };
     brokenVersions = {
-      type = types.attrsOf types.str;
+      type = types.lazyAttrsOf types.str;
       description = ''
         List of versions that are known to be broken.
       '';
@@ -200,7 +200,7 @@ in
         removeConfigureFlags;
     };
     cabalFlags = {
-      type = types.attrsOf types.bool;
+      type = types.lazyAttrsOf types.bool;
       description = ''
         Cabal flags to enable or disable explicitly.
       '';

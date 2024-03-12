@@ -17,7 +17,7 @@ in
           will create a flake check automatically.  
         '';
         default = { };
-        type = types.attrsOf (types.submoduleWith {
+        type = types.lazyAttrsOf (types.submoduleWith {
           specialArgs = { inherit pkgs self; };
           modules = [
             {

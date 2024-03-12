@@ -28,7 +28,7 @@ let
         default = hp: { };
       };
       extraLibraries = mkOption {
-        type = types.nullOr (functionTo (types.attrsOf (types.nullOr types.package)));
+        type = types.nullOr (functionTo (types.lazyAttrsOf (types.nullOr types.package)));
         description = ''
           Extra Haskell libraries available in the shell's environment.
           These can be used in the shell's `runghc` and `ghci` for instance.
@@ -43,7 +43,7 @@ let
       };
 
       mkShellArgs = mkOption {
-        type = types.attrsOf types.raw;
+        type = types.lazyAttrsOf types.raw;
         description = ''
           Extra arguments to pass to `pkgs.mkShell`.
         '';

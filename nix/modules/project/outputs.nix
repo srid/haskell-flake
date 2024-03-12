@@ -16,7 +16,7 @@ let
       };
       finalPackages = mkOption {
         # This must be raw because the Haskell package set also contains functions.
-        type = types.attrsOf types.raw;
+        type = types.lazyAttrsOf types.raw;
         readOnly = true;
         description = ''
           The final Haskell package set including local packages and any
@@ -24,7 +24,7 @@ let
         '';
       };
       packages = mkOption {
-        type = types.attrsOf packageInfoSubmodule;
+        type = types.lazyAttrsOf packageInfoSubmodule;
         readOnly = true;
         description = ''
           Package information for all local packages. Contains the following keys:
@@ -34,7 +34,7 @@ let
         '';
       };
       apps = mkOption {
-        type = types.attrsOf appType;
+        type = types.lazyAttrsOf appType;
         readOnly = true;
         description = ''
           Flake apps for each Cabal executable in the project.
@@ -52,7 +52,7 @@ let
         '';
       };
       exes = mkOption {
-        type = types.attrsOf appType;
+        type = types.lazyAttrsOf appType;
         description = ''
           Attrset of executables from `.cabal` file.  
 
