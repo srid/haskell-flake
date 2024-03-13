@@ -10,8 +10,7 @@
       imports = [ inputs.haskell-flake.flakeModule ];
 
       perSystem = { self', pkgs, ... }: {
-        haskellProjects.default = {
-        };
+        haskellProjects.default = { };
       };
     };
 }
