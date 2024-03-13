@@ -5,35 +5,31 @@
   };
 
   inputs = {
-    emanote.url = "github:srid/emanote";
-    nixpkgs.follows = "emanote/nixpkgs";
-    flake-parts.follows = "emanote/flake-parts";
+    cfp.url = "github:flake-parts/community.flake.parts";
+    nixpkgs.follows = "cfp/nixpkgs";
+    flake-parts.follows = "cfp/flake-parts";
+
     flake-parts-website.url = "github:hercules-ci/flake.parts-website";
     flake-parts-website.inputs.nixpkgs.follows = "nixpkgs";
     flake-parts-website.inputs.haskell-flake.follows = "haskell-flake";
     flake-parts-website.inputs.flake-parts.follows = "flake-parts";
+
     haskell-flake.url = "github:srid/haskell-flake";
   };
 
   outputs = inputs@{ self, flake-parts, nixpkgs, ... }:
     flake-parts.lib.mkFlake { inherit inputs; } {
       systems = nixpkgs.lib.systems.flakeExposed;
-      imports = [ inputs.emanote.flakeModule ];
+      imports = [
+        inputs.cfp.flakeModules.default
+      ];
       perSystem = { self', inputs', pkgs, system, ... }: {
-        emanote = {
-          # By default, the 'emanote' flake input is used.
-          # package = inputs.emanote.packages.${system}.default;
-          sites."default" = {
-            layers = [ ./. ];
-            layersString = [ "." ];
-            port = 8181;
-            prettyUrls = true;
+        flake-parts-docs = {
+          enable = true;
+          modules."haskell-flake" = {
+            path = self;
+            pathString = ".";
           };
-        };
-        devShells.default = pkgs.mkShell {
-          buildInputs = [
-            pkgs.nixpkgs-fmt
-          ];
         };
         formatter = pkgs.nixpkgs-fmt;
         checks.linkcheck = inputs'.flake-parts-website.checks.linkcheck;
