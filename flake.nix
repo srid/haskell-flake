@@ -51,6 +51,13 @@
           };
         };
 
+        test-rebuild-single = {
+          dir = "test/rebuild-single";
+          overrideInputs = {
+            inherit nixpkgs flake-parts haskell-flake;
+          };
+        };
+
         test-with-subdir = {
           dir = "test/with-subdir";
           overrideInputs = {
