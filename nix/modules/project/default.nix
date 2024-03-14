@@ -68,6 +68,12 @@ in
       default = pkgs.haskellPackages;
       defaultText = lib.literalExpression "pkgs.haskellPackages";
     };
+    otherOverlays = lib.mkOption {
+      type = types.listOf (import ../../types/haskell-overlay-type.nix { inherit lib; });
+      description = ''
+        Extra overlays to apply.
+      '';
+    };
     autoWire =
       let
         outputTypes = [ "packages" "checks" "apps" "devShells" ];
