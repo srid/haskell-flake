@@ -68,11 +68,68 @@ in
       '';
     };
 
-    settings.default = mkOption {
+    settings.default-current = mkOption {
       type = types.deferredModule;
       description = ''
-        Default settings for all packages in `packages` option.
+        Default settings for the packages local to the current project.
       '';
+      apply = settings:
+        if config.defaults.enable then
+          { package, ... }:
+          lib.optionalAttrs (package.local.toCurrentProject or false) {
+            imports = [
+              settings
+            ];
+          }
+        else { };
+      default = { };
+    };
+
+    settings.default-defined = mkOption {
+      type = types.deferredModule;
+      description = ''
+        Default settings for all the packages that is defined using haskell-flake.
+        
+        For example,
+        ```nix
+        {
+          # Inside haskellProjects.<name>
+          imports = [
+            inputs.moo.haskellFlakeProjectModules.output
+          ];
+          packages = {
+            foo.source = "0.1";
+            bar.source = inputs.bar;
+          };
+          settings = {
+            baz.check = false;
+          };
+        }
+        ```
+        and 
+        ```cabal
+        ...
+        build-depends:
+            moo
+          , foo
+          , bar
+          , baz
+          , qux
+        ...
+        ```
+        This will apply the settings to `moo` and packages in current project. But not to `foo`, `bar`, `baz` and `qux`.
+      '';
+
+      apply = settings:
+        if config.defaults.enable then
+          { package, ... }:
+          lib.optionalAttrs (package.local.toDefinedProject or false) {
+            imports = [
+              settings
+            ];
+          }
+        else { };
+
       defaultText = ''
         Speed up builds by disabling haddock and library profiling.
 
@@ -82,26 +139,64 @@ in
         haskell-flake). The goal being to use the same configuration
         consistently for all packages using haskell-flake.
       '';
-      default =
-        let
-          globalSettings = {
-            # We disable this by default because it causes breakage.
-            # See https://github.com/srid/haskell-flake/pull/253
-            buildFromSdist = lib.mkDefault false;
-          };
-          localSettings = { name, package, config, ... }:
-            lib.optionalAttrs (package.local.toDefinedProject or false) {
-              # Disabling haddock and profiling is mainly to speed up Nix builds.
-              haddock = lib.mkDefault false; # Because, this is end-user software. No need for library docs.
-              libraryProfiling = lib.mkDefault false; # Avoid double-compilation.
-            };
-        in
-        if config.defaults.enable then {
+
+      default = {
+        # Disabling haddock and profiling is mainly to speed up Nix builds.
+        haddock = lib.mkDefault false; # Because, this is end-user software. No need for library docs.
+        libraryProfiling = lib.mkDefault false; # Avoid double-compilation.
+      };
+    };
+
+    settings.default-all = mkOption {
+      type = types.deferredModule;
+      description = ''
+        Default settings for all the packages managed by haskell-flake.
+
+        For example,
+        ```nix
+        {
+          # Inside haskellProjects.<name>
           imports = [
-            globalSettings
-            localSettings
+            inputs.moo.haskellFlakeProjectModules.output
           ];
-        } else { };
+          packages = {
+            foo.source = "0.1";
+            bar.source = inputs.bar;
+          };
+          settings = {
+            baz.check = false;
+          };
+        }
+        ```
+        and 
+        ```cabal
+        ...
+        build-depends:
+            moo
+          , foo
+          , bar
+          , baz
+          , qux
+        ...
+        ```
+        This will apply the settings to `moo`, `foo`, `bar`, `baz`. But not to `qux`.
+      '';
+
+      apply = settings:
+        if config.defaults.enable then
+          {
+            imports = [
+              settings
+            ];
+          }
+        else { };
+      defaultText = ''
+        Disable buildFromSdist for all packages managed by haskell-flake.
+        See <https://github.com/srid/haskell-flake/issues/262>
+      '';
+      default = {
+        buildFromSdist = lib.mkDefault false;
+      };
     };
 
     projectModules.output = mkOption {
