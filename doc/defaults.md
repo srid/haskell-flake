@@ -1,5 +1,5 @@
 
-# Default settings
+# Default options
 
 haskell-flake provides sensible defaults for various options. See [defaults.nix].
 
@@ -7,6 +7,9 @@ haskell-flake provides sensible defaults for various options. See [defaults.nix]
 
 {#override}
 ## Overriding defaults
+
+{#packages}
+### Overriding default local packages
 
 This example shows how to specify [[local]] manually.
 

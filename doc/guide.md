@@ -7,6 +7,7 @@ order: -9
 - [[local]]#
 - [[dependency]]#
 - [[settings]]#
+- [[defaults]]#
 - [[devshell]]#
 - [[package-set]]#
 - [[modules]]#
