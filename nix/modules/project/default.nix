@@ -73,6 +73,7 @@ in
       description = ''
         Extra overlays to apply.
       '';
+      default = [ ];
     };
     autoWire =
       let
