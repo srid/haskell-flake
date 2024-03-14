@@ -2,7 +2,7 @@
 
 While haskell-flake is generally used to develop and build individual Haskell projects, you can also use it to create a custom Haskell package set that you can use in other projects. This is useful if you want to create a common package set to be shared across multiple projects.
 
-A "project" in haskell-flake primarily serves the purpose of developing Haskell projects. Additionally, a project also exposes the final *package set* via the readonly option `outputs.finalPackages`. This package set includes the base packages (`basePackages`), the local packages as well as any [[dependency|dependency overrides]] you set. Since we are are only interested in creating a new package set, we can use empty local packages and disable the dev shell:
+A "project" in haskell-flake primarily serves the purpose of developing Haskell projects. Additionally, a project also exposes the final *package set* via the readonly option `outputs.finalPackages`. This package set includes the base packages (`basePackages`), the [[local|local packages]] as well as any [[dependency|dependency overrides]] you set. Since we are are only interested in creating a new package set, we can use empty local packages and disable the dev shell:
 
 ```nix
 {

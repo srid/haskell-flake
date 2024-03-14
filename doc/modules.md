@@ -54,7 +54,7 @@ By default, haskell-flake will generate the following modules for the "default" 
 
 | Module | Contents |
 | -- | -- |
-| `haskellFlakeProjectModules.output` | Local packages & dependency overrides |
+| `haskellFlakeProjectModules.output` | [[local\|Local packages]] & dependency overrides |
 
 The idea here being that you can "connect" two Haskell projects such that they depend on one another while reusing the overrides -- `packages` (see [[dependency]]) and `settings` (see [[settings]]) -- from one place. For example, if you have a project "foo" that depends on "bar" and if "foo"'s flake.nix has "bar" as its input, then in "foo"'s `haskellProject.default` entry you can import "bar" as follows:
 
@@ -72,7 +72,7 @@ The idea here being that you can "connect" two Haskell projects such that they d
 }
 ```
 
-By importing "bar"'s `output` project module, you automatically get the overrides from "bar" as well as the local packages. This way you don't have to duplicate the `settings` and manually specify the `packages.<name>.source` in "foo"'s flake.nix.
+By importing "bar"'s `output` project module, you automatically get the overrides from "bar" as well as the [[local|local packages]]. This way you don't have to duplicate the `settings` and manually specify the `packages.<name>.source` in "foo"'s flake.nix.
 
 
 ## Examples

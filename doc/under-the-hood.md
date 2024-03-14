@@ -11,7 +11,7 @@ When nixifying a Haskell project without flake-parts (thus without haskell-flake
 
 In addition, compared to using plain nixpkgs, haskell-flake supports:
 
-- Auto-detection of local packages based on `cabal.project` file (via [haskell-parsers](https://github.com/srid/haskell-flake/tree/master/nix/haskell-parsers))
+- Auto-detection of [[local|local packages]] based on `cabal.project` file (via [haskell-parsers](https://github.com/srid/haskell-flake/tree/master/nix/haskell-parsers))
 - Parse executables from `.cabal` file, to create Flake apps.
 - Modular interface to `pkgs.haskell.lib.compose.*` (via `packages` and `settings` submodules)
 - Composition of dependency overrides, and other project settings, via [[modules]]
