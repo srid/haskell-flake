@@ -72,6 +72,10 @@ in
       type = types.listOf (import ../../types/haskell-overlay-type.nix { inherit lib; });
       description = ''
         Extra overlays to apply.
+
+        Normally, you would only use `packages.*` and `settings.*` (which
+        translate to overlays), but you can use this option if you want control
+        over the final overlay.
       '';
       default = [ ];
     };
