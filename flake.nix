@@ -12,6 +12,13 @@
       path = builtins.path { path = ./example; };
     };
 
+    nixci-matrix = {
+      include = [
+        { system = "aarch64-linux"; }
+        { system = "aarch64-darwin"; }
+      ];
+    };
+
     # CI spec
     # https://github.com/srid/nixci
     nixci.default =

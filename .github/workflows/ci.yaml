@@ -15,7 +15,9 @@ jobs:
        uses: actions/checkout@v4
      - name: Set matrix data
        id: set-matrix
-       run: echo "matrix=$(jq -c . < ./matrix.json)" >> $GITHUB_OUTPUT
+       run: |
+         nix eval --json .#nixci-matrix > ./matrix.json 
+         echo "matrix=$(jq -c . < ./matrix.json)" >> $GITHUB_OUTPUT
   nix:
     runs-on: self-hosted
     needs: configure
