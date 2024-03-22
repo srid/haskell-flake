@@ -23,4 +23,4 @@ jobs:
       matrix: ${{ fromJson(needs.configure.outputs.matrix) }}
     steps:
       - uses: actions/checkout@v4
-      - run: nixci --build-systems "github:nix-systems/${{ matrix.name }}"
+      - run: nixci --build-systems "github:nix-systems/${{ matrix.system }}"

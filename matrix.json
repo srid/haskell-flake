@@ -1,10 +1,10 @@
 {
     "include": [
     {
-        "name": "aarch64-darwin"
+        "system": "aarch64-darwin"
     },
     {
-        "name": "aarch64-linux"
+        "system": "aarch64-linux"
     }
     ]
 }
