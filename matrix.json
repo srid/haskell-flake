@@ -1,0 +1,10 @@
+{
+    "include": [
+    {
+        "name": "aarch64-darwin"
+    },
+    {
+        "name": "aarch64-linux"
+    }
+    ]
+}

@@ -3,13 +3,24 @@ on:
   push:
     branches:
       - master
+      - matrix
   pull_request:
 jobs:
+  configure:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+     - name: Checkout to repository
+       uses: actions/checkout@v3
+     - name: Set matrix data
+       id: set-matrix
+       run: echo "matrix=$(jq -c . < ./matrix.json)" >> $GITHUB_OUTPUT
   nix:
     runs-on: self-hosted
+    needs: configure
     strategy:
-      matrix:
-        system: [aarch64-darwin, aarch64-linux]
+      matrix: ${{ fromJson(needs.configure.outputs.matrix) }}
     steps:
       - uses: actions/checkout@v4
-      - run: nixci --build-systems "github:nix-systems/${{ matrix.system }}"
+      - run: nixci --build-systems "github:nix-systems/${{ matrix.name }}"
