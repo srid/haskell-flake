@@ -12,24 +12,6 @@
       path = builtins.path { path = ./example; };
     };
 
-    nixci-matrix =
-      let
-        subFlakes = builtins.attrNames inputs.self.nixci.default;
-        include =
-          builtins.concatMap
-            (system:
-              builtins.map
-                (subflake: {
-                  inherit system subflake;
-                  config = "default";
-                })
-                subFlakes
-            ) [ "aarch64-linux" "aarch64-darwin" ];
-      in
-      {
-        inherit include;
-      };
-
     # CI spec
     # https://github.com/srid/nixci
     nixci.default =
@@ -82,6 +64,26 @@
             inherit nixpkgs flake-parts haskell-flake;
           };
         };
+      };
+
+    # TODO: Automate this using https://github.com/srid/nixci/issues/41
+    nixci-matrix =
+      let
+        include =
+          builtins.concatMap
+            (system:
+              builtins.map
+                (subflake: {
+                  # TODO: Should take into account systems whitelist
+                  # Ref: https://github.com/srid/nixci/blob/efc77c8794e5972617874edd96afa8dd4f1a75b2/src/config.rs#L104-L105
+                  inherit system subflake;
+                  config = "default";
+                })
+                (builtins.attrNames inputs.self.nixci.default)
+            ) [ "aarch64-linux" "aarch64-darwin" ];
+      in
+      {
+        inherit include;
       };
   };
 }
