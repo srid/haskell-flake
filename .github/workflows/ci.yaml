@@ -26,4 +26,4 @@ jobs:
       matrix: ${{ fromJson(needs.configure.outputs.matrix) }}
     steps:
       - uses: actions/checkout@v4
-      - run: nixci --build-systems "github:nix-systems/${{ matrix.system }}" .#${{ matrix.config }}
+      - run: nixci --build-systems "github:nix-systems/${{ matrix.system }}" .#${{ matrix.config }}.${{ matrix.subflake}}
