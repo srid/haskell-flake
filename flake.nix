@@ -71,13 +71,12 @@
       let
         include =
           builtins.concatMap
-            (system:
+            (build-system:
               builtins.map
                 (subflake: {
                   # TODO: Should take into account systems whitelist
                   # Ref: https://github.com/srid/nixci/blob/efc77c8794e5972617874edd96afa8dd4f1a75b2/src/config.rs#L104-L105
-                  inherit system subflake;
-                  config = "default";
+                  inherit build-system subflake;
                 })
                 (builtins.attrNames inputs.self.nixci.default)
             ) [ "aarch64-linux" "aarch64-darwin" ];
