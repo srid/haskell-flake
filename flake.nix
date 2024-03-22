@@ -14,8 +14,8 @@
 
     nixci-matrix = {
       include = [
-        { system = "aarch64-linux"; }
-        { system = "aarch64-darwin"; }
+        { system = "aarch64-linux"; config = "default"; }
+        { system = "aarch64-darwin"; config = "default"; }
       ];
     };
 
