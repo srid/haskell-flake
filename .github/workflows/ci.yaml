@@ -17,6 +17,7 @@ jobs:
        id: set-matrix
        run: |
          nix eval --json .#nixci-matrix > ./matrix.json 
+         cat ./matrix.json | jq -c .
          echo "matrix=$(jq -c . < ./matrix.json)" >> $GITHUB_OUTPUT
   nix:
     runs-on: self-hosted
