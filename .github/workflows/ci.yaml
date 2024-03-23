@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - master
+      - matrix
   pull_request:
 jobs:
   configure:
@@ -25,4 +26,4 @@ jobs:
       matrix: ${{ fromJson(needs.configure.outputs.matrix) }}
     steps:
       - uses: actions/checkout@v4
-      - run: nixci --build-systems "github:nix-systems/${{ matrix.build-system }}" .#default.${{ matrix.subflake}}
+      - run: nix run github:srid/nixci/matrix -- build --build-systems "github:nix-systems/${{ matrix.build-system }}" .#default.${{ matrix.subflake}}
