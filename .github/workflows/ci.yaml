@@ -17,7 +17,7 @@ jobs:
        id: set-matrix
        run: |
          # nix eval --json .#nixci-matrix > ./matrix.json 
-         nix run github:srid/nixci/matrix -- dump-github-actions-matrix --systems=aarch64-linux,aarch64-darwin > ./matrix.json
+         nix --refresh run github:srid/nixci/matrix -- dump-github-actions-matrix --systems=aarch64-linux,aarch64-darwin > ./matrix.json
          cat ./matrix.json | jq -c .
          echo "matrix=$(jq -c . < ./matrix.json)" >> $GITHUB_OUTPUT
   nix:
@@ -27,4 +27,4 @@ jobs:
       matrix: ${{ fromJson(needs.configure.outputs.matrix) }}
     steps:
       - uses: actions/checkout@v4
-      - run: nix run github:srid/nixci/matrix -- build --build-systems "github:nix-systems/${{ matrix.build-system }}" .#default.${{ matrix.subflake}}
+      - run: nix --refresh run github:srid/nixci/matrix -- build --build-systems "github:nix-systems/${{ matrix.build-system }}" .#default.${{ matrix.subflake}}
