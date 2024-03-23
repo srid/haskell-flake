@@ -16,7 +16,8 @@ jobs:
      - name: Set matrix data
        id: set-matrix
        run: |
-         nix eval --json .#nixci-matrix > ./matrix.json 
+         # nix eval --json .#nixci-matrix > ./matrix.json 
+         nix run github:srid/nixci/matrix -- dump-github-actions-matrix --systems=aarch64-linux,aarch64-darwin > ./matrix.json
          cat ./matrix.json | jq -c .
          echo "matrix=$(jq -c . < ./matrix.json)" >> $GITHUB_OUTPUT
   nix:
