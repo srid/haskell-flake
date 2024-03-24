@@ -1,6 +1,6 @@
 {
   description = "A `flake-parts` module for Haskell development";
-  outputs = _: {
+  outputs = inputs: {
     flakeModule = ./nix/modules;
 
     templates.default = {
@@ -64,6 +64,25 @@
             inherit nixpkgs flake-parts haskell-flake;
           };
         };
+      };
+
+    # TODO: Automate this using https://github.com/srid/nixci/issues/41
+    nixci-matrix =
+      let
+        include =
+          builtins.concatMap
+            (build-system:
+              builtins.map
+                (subflake: {
+                  # TODO: Should take into account systems whitelist
+                  # Ref: https://github.com/srid/nixci/blob/efc77c8794e5972617874edd96afa8dd4f1a75b2/src/config.rs#L104-L105
+                  inherit build-system subflake;
+                })
+                (builtins.attrNames inputs.self.nixci.default)
+            ) [ "aarch64-linux" "aarch64-darwin" ];
+      in
+      {
+        inherit include;
       };
   };
 }
