@@ -12,7 +12,7 @@ jobs:
     steps:
      - uses: actions/checkout@v4
      - id: set-matrix
-       run: echo "matrix=$(nix --refresh run github:srid/nixci/matrix -- dump-github-actions-matrix --systems=aarch64-linux,aarch64-darwin | jq -c .)" >> $GITHUB_OUTPUT
+       run: echo "matrix=$(nixci dump-github-actions-matrix --systems=aarch64-linux,aarch64-darwin | jq -c .)" >> $GITHUB_OUTPUT
   nix:
     runs-on: self-hosted
     needs: configure
@@ -21,4 +21,4 @@ jobs:
       fail-fast: false
     steps:
       - uses: actions/checkout@v4
-      - run: nix --refresh run github:srid/nixci/matrix -- build --build-systems "github:nix-systems/${{ matrix.system }}" .#default.${{ matrix.subflake}}
+      - run: nixci build --build-systems "github:nix-systems/${{ matrix.system }}" .#default.${{ matrix.subflake}}
