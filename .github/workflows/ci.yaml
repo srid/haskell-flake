@@ -10,19 +10,15 @@ jobs:
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
-     - name: Checkout to repository
-       uses: actions/checkout@v4
-     - name: Set matrix data
-       id: set-matrix
-       run: |
-         nix eval --json .#nixci-matrix > ./matrix.json 
-         cat ./matrix.json | jq -c .
-         echo "matrix=$(jq -c . < ./matrix.json)" >> $GITHUB_OUTPUT
+     - uses: actions/checkout@v4
+     - id: set-matrix
+       run: echo "matrix=$(nixci gh-matrix --systems=aarch64-linux,aarch64-darwin | jq -c .)" >> $GITHUB_OUTPUT
   nix:
     runs-on: self-hosted
     needs: configure
     strategy:
       matrix: ${{ fromJson(needs.configure.outputs.matrix) }}
+      fail-fast: false
     steps:
       - uses: actions/checkout@v4
-      - run: nixci --build-systems "github:nix-systems/${{ matrix.build-system }}" .#default.${{ matrix.subflake}}
+      - run: nixci build --systems "github:nix-systems/${{ matrix.system }}" .#default.${{ matrix.subflake}}
