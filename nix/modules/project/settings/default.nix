@@ -48,6 +48,11 @@ in
     internal = true;
     default = self: super:
       let
+        emptyPackageSettings =
+          lib.listToAttrs
+            (map (name: { inherit name; value = { }; })
+              (lib.attrNames project.config.packages));
+
         applySettingsFor = name: mod:
           let
             cfg = (lib.evalModules {
@@ -56,7 +61,10 @@ in
                 ./all.nix
 
                 # Default settings
-                project.config.defaults.settings.default
+                project.config.defaults.settings.default-current
+                project.config.defaults.settings.default-defined
+                project.config.defaults.settings.default-all
+
 
                 # User module
                 mod
@@ -80,6 +88,6 @@ in
               (lib.attrValues (traceSettings name cfg).impl)
           );
       in
-      lib.mapAttrs applySettingsFor project.config.settings;
+      lib.mapAttrs applySettingsFor (lib.recursiveUpdate emptyPackageSettings project.config.settings);
   };
 }
