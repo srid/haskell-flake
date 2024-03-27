@@ -64,6 +64,13 @@
             inherit nixpkgs flake-parts haskell-flake;
           };
         };
+
+        test-otherOverlays = {
+          dir = "test/otherOverlays";
+          overrideInputs = {
+            inherit nixpkgs flake-parts haskell-flake;
+          };
+        };
       };
   };
 }
