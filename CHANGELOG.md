@@ -3,6 +3,7 @@
 ## Unreleased
 
 - #210: Add `extraLibraries` to `settings` module.
+- #277: Add `otherOverlays` option to add custom Haskell package overlays.
 - #225: settings: add `removeReferencesTo`
 - #215: Improved debug logging.
 - #216: Remove `debug` option (pass `--trace-verbose` to nix instead)
@@ -30,8 +31,8 @@
 ## 0.3.0 (May 22, 2023)
 
 - #134: Add `autoWire` option to control generation of flake outputs
-    - #138: Add `checks` to `outputs` submodule
-    - #143: Changed `autoWire` to be an enum type, for granular controlling of which outputs to autowire.
+  - #138: Add `checks` to `outputs` submodule
+  - #143: Changed `autoWire` to be an enum type, for granular controlling of which outputs to autowire.
 - #137: Expose cabal executables as flake apps. Add a corresponding `outputs.apps` option, while the `outputs.localPackages` option is renamed to `outputs.packages` (it now contains package metadata, including packages and its executables).
   - #151: Use `lib.getBin` to get the bin output
 - #148: Remove automatic hpack->cabal generation. Use `pre-commit-hooks.nix` instead.
