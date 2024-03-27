@@ -83,10 +83,10 @@ in
       localPackages =
         lib.filterAttrs (_: cfg: cfg.local.toCurrentProject) config.packages;
 
-      finalOverlay = lib.composeManyExtensions [
+      finalOverlay = lib.composeManyExtensions ([
         config.packagesOverlay
         config.settingsOverlay
-      ];
+      ] ++ config.otherOverlays);
 
       finalPackages = config.basePackages.extend finalOverlay;
 
