@@ -225,7 +225,7 @@ in
         Link executables statically against haskell libs to reduce closure size
       '';
       impl = enable:
-        if enable then justStaticExecutables else x: x;
+        if enable then justStaticExecutables else null;
     };
     separateBinOutput = {
       type = types.bool;
@@ -266,13 +266,13 @@ in
         Disable hardening flags for the package.
       '';
       impl = enable:
-        if enable then disableHardening else x: x;
+        if enable then disableHardening else null;
     };
     strip = {
       type = types.bool;
       description = ''
         Let Nix strip the binary files.
-        
+
         This removes debugging symbols.
       '';
       impl = enable:
@@ -284,7 +284,7 @@ in
         Enable DWARF debugging.
       '';
       impl = enable:
-        if enable then enableDWARFDebugging else x: x;
+        if enable then enableDWARFDebugging else null;
     };
     disableOptimization = {
       type = types.bool;
@@ -292,7 +292,7 @@ in
         Disable core optimizations, significantly speeds up build time
       '';
       impl = enable:
-        if enable then disableOptimization else x: x;
+        if enable then disableOptimization else null;
     };
     failOnAllWarnings = {
       type = types.bool;
@@ -300,13 +300,13 @@ in
         Turn on most of the compiler warnings and fail the build if any of them occur
       '';
       impl = enable:
-        if enable then failOnAllWarnings else x: x;
+        if enable then failOnAllWarnings else null;
     };
     triggerRebuild = {
       type = types.raw;
       description = ''
         Add a dummy command to trigger a build despite an equivalent earlier
-        build that is present in the store or cache.  
+        build that is present in the store or cache.
       '';
       impl = triggerRebuild;
     };
@@ -322,7 +322,7 @@ in
           (pkg: lib.pipe pkg [
             buildFromSdist
             (x: log.traceDebug "${name}.buildFromSdist ${x.outPath}" x)
-          ]) else x: x;
+          ]) else null;
     };
 
     removeReferencesTo = {
