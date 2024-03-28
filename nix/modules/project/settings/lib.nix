@@ -19,9 +19,10 @@ let
         cfg = config.${name};
       in
       if cfg != null then
-        ( let g = f cfg;
-            in lib.optional (g != null) g
-        ) else [];
+        (
+          let g = f cfg;
+          in lib.optional (g != null) g
+        ) else [ ];
   };
 
 
