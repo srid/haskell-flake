@@ -73,9 +73,9 @@ in
             }).config;
             cfg = traceSettings name cfg';
             fns = lib.pipe cfg.impl [
-                lib.attrsToList
-                (lib.sort (a: b: if b.name == "buildFromSdist" then true else if a.name == "buildFromSdist" then false else a.name < b.name))
-                (builtins.map (x: x.value))
+              lib.attrsToList
+              (lib.sort (a: b: if b.name == "buildFromSdist" then true else if a.name == "buildFromSdist" then false else a.name < b.name))
+              (builtins.map (x: x.value))
             ];
           in
           lib.pipe super.${name} (
