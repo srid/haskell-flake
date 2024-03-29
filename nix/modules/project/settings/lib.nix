@@ -13,16 +13,15 @@ let
   settingPriorities = {
     # buildFromSdist must apply *after* other settings, else it breaks
     # cf. https://github.com/srid/haskell-flake/pull/252
-    buildFromSdist = 1700;
+    buildFromSdist = 1600;
 
-    # Apply 'custom' last (but before buildFromSdist; see above), to give
-    # the user maximum control.
-    custom = 1600;
+    # Apply 'custom' last, to give the user maximum control.
+    custom = 1700;
   };
 
   mkImplOption = name: f: mkOption {
     # [ pkg -> pkg ]
-    type = listOf (functionTo types.package);
+    type = listOf (nullOr (functionTo types.package));
     description = ''
       Implementation for settings.${name}
     '';
@@ -36,9 +35,9 @@ let
               in lib.optional (g != null) g
             ) else [ ];
       in
-      # if lib.hasAttr name settingPriorities then
-      lib.mkOrder (settingPriorities.${name} or 1000) fns;
-    # else fns;
+      if lib.hasAttr name settingPriorities then
+        lib.mkOrder settingPriorities.${name} fns
+      else fns;
   };
 
 
