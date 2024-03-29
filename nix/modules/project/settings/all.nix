@@ -310,7 +310,7 @@ in
       '';
       impl = triggerRebuild;
     };
-    zbuildFromSdist = {
+    buildFromSdist = {
       type = types.bool;
       description = ''
         Whether to use `buildFromSdist` to build the package.

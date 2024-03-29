@@ -87,7 +87,7 @@ in
           globalSettings = {
             # We disable this by default because it causes breakage.
             # See https://github.com/srid/haskell-flake/pull/253
-            zbuildFromSdist = lib.mkDefault true;
+            buildFromSdist = lib.mkDefault true;
           };
           localSettings = { name, package, config, ... }:
             lib.optionalAttrs (package.local.toDefinedProject or false) {
