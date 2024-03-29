@@ -50,7 +50,7 @@ in
       let
         applySettingsFor = name: mod:
           let
-            cfg = (lib.evalModules {
+            cfg' = (lib.evalModules {
               modules = [
                 # Settings spec
                 ./all.nix
@@ -71,13 +71,19 @@ in
                 config = cfg;
               });
             }).config;
+            cfg = traceSettings name cfg';
+            fns = lib.pipe cfg.impl [
+                lib.attrsToList
+                (lib.sort (a: b: if b.name == "buildFromSdist" then true else if a.name == "buildFromSdist" then false else a.name < b.name))
+                (builtins.map (x: x.value))
+            ];
           in
           lib.pipe super.${name} (
             # TODO: Do we care about the *order* of overrides?
             # Might be relevant for the 'custom' option.
             lib.concatMap
               (impl: impl)
-              (lib.attrValues (traceSettings name cfg).impl)
+              fns
           );
       in
       lib.mapAttrs applySettingsFor project.config.settings;
