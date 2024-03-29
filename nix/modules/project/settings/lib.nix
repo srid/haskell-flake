@@ -8,17 +8,6 @@ let
   inherit (types)
     functionTo listOf nullOr;
 
-  # Default is 1000
-  # https://github.com/hsjobeki/nixpkgs/blob/e0c7b345cdd986ccdbde3744ff8a0740596de834/lib/modules.nix#L1166
-  settingPriorities = {
-    # buildFromSdist must apply *after* other settings, else it breaks
-    # cf. https://github.com/srid/haskell-flake/pull/252
-    buildFromSdist = 1600;
-
-    # Apply 'custom' last, to give the user maximum control.
-    custom = 1700;
-  };
-
   mkImplOption = name: f: mkOption {
     # [ pkg -> pkg ]
     type = listOf (nullOr (functionTo types.package));
@@ -28,16 +17,12 @@ let
     default =
       let
         cfg = config.${name};
-        fns =
-          if cfg != null then
-            (
-              let g = f cfg;
-              in lib.optional (g != null) g
-            ) else [ ];
       in
-      if lib.hasAttr name settingPriorities then
-        lib.mkOrder settingPriorities.${name} fns
-      else fns;
+      if cfg != null then
+        (
+          let g = f cfg;
+          in lib.optional (g != null) g
+        ) else [ ];
   };
 
 
