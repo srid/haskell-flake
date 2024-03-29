@@ -72,11 +72,11 @@ in
               });
             }).config;
             cfg = traceSettings name cfg';
-            fns = lib.pipe cfg.impl [
-              lib.attrsToList
-              (lib.sort (a: b: if b.name == "buildFromSdist" then true else if a.name == "buildFromSdist" then false else a.name < b.name))
-              (builtins.map (x: x.value))
-            ];
+            # HACK: buildFromSdist must apply *last*
+            # cf. https://github.com/srid/haskell-flake/pull/252
+            # In future, we can refactor this as part of https://github.com/srid/haskell-flake/issues/285
+            impl = lib.attrsets.removeAttrs cfg.impl [ "buildFromSdist" ];
+            fns = lib.attrValues impl ++ [ cfg.impl.buildFromSdist ];
           in
           lib.pipe super.${name} (
             # TODO: Do we care about the *order* of overrides?
