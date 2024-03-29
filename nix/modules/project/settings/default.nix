@@ -75,8 +75,10 @@ in
             # HACK: buildFromSdist must apply *last*
             # cf. https://github.com/srid/haskell-flake/pull/252
             # In future, we can refactor this as part of https://github.com/srid/haskell-flake/issues/285
-            impl = lib.attrsets.removeAttrs cfg.impl [ "buildFromSdist" ];
-            fns = lib.attrValues impl ++ [ cfg.impl.buildFromSdist ];
+            # NOTE: removeReferencesTo must apply *before* buildFromSdist, because the
+            # later appears it fuck up the former otherwise.
+            impl = lib.attrsets.removeAttrs cfg.impl [ "buildFromSdist" "removeReferencesTo" ];
+            fns = lib.attrValues impl ++ [ cfg.impl.buildFromSdist cfg.impl.removeReferencesTo ];
           in
           lib.pipe super.${name} (
             # TODO: Do we care about the *order* of overrides?
