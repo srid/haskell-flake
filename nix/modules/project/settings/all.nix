@@ -318,11 +318,18 @@ in
         for release-worthiness.
       '';
       impl = enable:
+        let
+          # A version that doesn't break against Rust derivations
+          # https://github.com/srid/haskell-flake/issues/292
+          buildFromSdist' = drv:
+            if !lib.hasAttr "override" drv then drv else buildFromSdist drv;
+        in
         if enable then
-          (pkg: lib.pipe pkg [
-            buildFromSdist
-            (x: log.traceDebug "${name}.buildFromSdist ${x.outPath}" x)
-          ]) else null;
+          (pkg:
+            lib.pipe pkg [
+              buildFromSdist'
+              (x: log.traceDebug "${name}.buildFromSdist ${x.outPath}" x)
+            ]) else null;
     };
 
     removeReferencesTo = {
