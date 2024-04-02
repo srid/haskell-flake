@@ -77,8 +77,8 @@ in
             # In future, we can refactor this as part of https://github.com/srid/haskell-flake/issues/285
             # NOTE: removeReferencesTo must apply *before* buildFromSdist, because the
             # later appears it fuck up the former otherwise.
-            impl = lib.attrsets.removeAttrs cfg.impl [ "buildFromSdist" "removeReferencesTo" ];
-            fns = lib.attrValues impl ++ [ cfg.impl.buildFromSdist cfg.impl.removeReferencesTo ];
+            impl = lib.attrsets.removeAttrs cfg.impl [ "buildFromSdist" "removeReferencesTo" "patches" ];
+            fns = lib.attrValues impl ++ [ cfg.impl.buildFromSdist cfg.impl.removeReferencesTo cfg.impl.patches ];
           in
           lib.pipe super.${name} (
             # TODO: Do we care about the *order* of overrides?
