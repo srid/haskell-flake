@@ -45,14 +45,14 @@ in
         if enable then markBroken else unmarkBroken;
     };
     brokenVersions = {
-      type = types.lazyAttrsOf types.str;
+      type = types.listOf types.str;
       description = ''
         List of versions that are known to be broken.
       '';
       impl = versions:
         let
           markBrokenVersions = vs: drv:
-            builtins.foldl' markBrokenVersion drv vs;
+            builtins.foldl' (lib.flip markBrokenVersion) drv vs;
         in
         markBrokenVersions versions;
     };
