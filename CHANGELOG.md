@@ -4,7 +4,7 @@
 
 - Breaking changes
   - #221: Switch from `buildFromCabalSdist` to `buildFromSdist`, to allow using non-standard package sets (wherein `cabal-install` is otherwise built without using user's overrides)
-    - #253: Enable controlling `buildFromSdist` through `settings.<name>.buildFromSdist`. (This was turned off by default originally, but was turned on by default in #286)
+    - #253: Enable controlling `buildFromSdist` through `settings.<name>.buildFromSdist`. (This was turned off by default originally, but was turned on by default in #286, limited to local packages in #298)
 - Enhancements
   - `settings` module:
     - #210: Add `extraLibraries` to `settings` module.
