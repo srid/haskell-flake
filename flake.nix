@@ -40,7 +40,7 @@
 
         # Tests
         haskell-parsers-test = {
-          dir = ./nix/haskell-parsers/test;
+          dir = "./nix/haskell-parsers/test";
           overrideInputs = { inherit haskell-parsers; };
         };
 

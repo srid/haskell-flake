@@ -84,21 +84,18 @@ in
       '';
       default =
         let
-          globalSettings = {
-            # Make sure all files we use are included in the sdist, as a check
-            # for release-worthiness.
-            buildFromSdist = lib.mkDefault true;
-          };
           localSettings = { name, package, config, ... }:
             lib.optionalAttrs (package.local.toDefinedProject or false) {
               # Disabling haddock and profiling is mainly to speed up Nix builds.
               haddock = lib.mkDefault false; # Because, this is end-user software. No need for library docs.
               libraryProfiling = lib.mkDefault false; # Avoid double-compilation.
+              # Make sure all files we use are included in the sdist, as a check
+              # for release-worthiness.
+              buildFromSdist = lib.mkDefault true;
             };
         in
         if config.defaults.enable then {
           imports = [
-            globalSettings
             localSettings
           ];
         } else { };
