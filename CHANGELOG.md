@@ -15,6 +15,7 @@
 - Fixes
   - #222: Improve `cabal.project` parser by handling files not ending with newline
   - #271, #223: Change all `types.attrsOf` to `types.lazyAttrsOf`. If you use `lib.mkIf` for `attrsOf` values (not `submodule` options), use `lib.optionalAttrs` instead. This fixes #270 (`basePackages`) and improves performance.
+  - #296: Fix `removeConfigureFlags` to actually work.
 
 ## 0.4.0 (Aug 22, 2023)
 

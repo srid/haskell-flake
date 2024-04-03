@@ -195,7 +195,7 @@ in
       impl =
         let
           removeConfigureFlags = flags: drv:
-            builtins.foldl' removeConfigureFlag drv flags;
+            builtins.foldl' (lib.flip removeConfigureFlag) drv flags;
         in
         removeConfigureFlags;
     };
