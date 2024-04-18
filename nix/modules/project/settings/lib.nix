@@ -6,11 +6,11 @@ let
     mkOption
     types;
   inherit (types)
-    functionTo listOf;
+    functionTo listOf nullOr;
 
   mkImplOption = name: f: mkOption {
     # [ pkg -> pkg ]
-    type = listOf (functionTo types.package);
+    type = listOf (nullOr (functionTo types.package));
     description = ''
       Implementation for settings.${name}
     '';
@@ -18,8 +18,11 @@ let
       let
         cfg = config.${name};
       in
-      lib.optional (cfg != null)
-        (f cfg);
+      if cfg != null then
+        (
+          let g = f cfg;
+          in lib.optional (g != null) g
+        ) else [ ];
   };
 
 

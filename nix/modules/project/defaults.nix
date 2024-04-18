@@ -61,7 +61,7 @@ in
         If you have a `cabal.project` file (under `projectRoot`), those packages
         are automatically discovered. Otherwise, the top-level .cabal file is
         used to discover the only local package.
-        
+
         haskell-flake currently supports a limited range of syntax for
         `cabal.project`. Specifically it requires an explicit list of package
         directories under the "packages" option.
@@ -191,11 +191,10 @@ in
           }
         else { };
       defaultText = ''
-        Disable buildFromSdist for all packages managed by haskell-flake.
-        See <https://github.com/srid/haskell-flake/issues/262>
+        Make sure all files we use are included in the sdist, as a check for release-worthiness.
       '';
       default = {
-        buildFromSdist = lib.mkDefault false;
+        buildFromSdist = lib.mkDefault true;
       };
     };
 

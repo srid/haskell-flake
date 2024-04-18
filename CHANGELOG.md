@@ -1,18 +1,22 @@
 # Revision history for haskell-flake
 
-## Unreleased
+## Unreleased (0.5.0)
 
-- #210: Add `extraLibraries` to `settings` module.
-- #225: settings: add `removeReferencesTo`
-- #215: Improved debug logging.
-- #216: Remove `debug` option (pass `--trace-verbose` to nix instead)
+- Breaking changes
+  - #221: Switch from `buildFromCabalSdist` to `buildFromSdist`, to allow using non-standard package sets (wherein `cabal-install` is otherwise built without using user's overrides)
+    - #253: Enable controlling `buildFromSdist` through `settings.<name>.buildFromSdist`. (This was turned off by default originally, but was turned on by default in #286, limited to local packages in #298)
+- Enhancements
+  - `settings` module:
+    - #210: Add `extraLibraries` to `settings` module.
+    - #225: Add `removeReferencesTo` to `settings` module.
+  - #277: Add `otherOverlays` option to add custom Haskell package overlays.
+  - #215: Improved debug logging.
+    - #216: Remove `debug` option (pass `--trace-verbose` to nix instead)
 - Fixes
   - #222: Improve `cabal.project` parser by handling files not ending with newline
-  - #223 Make `devShell.tools` a `lazyAttrsOf` (lazy evaluation of values)
-- Breaking changes
-  - #221: Switch to `buildFromSdist`, to allow using non-standard package sets (wherein `cabal-install` is otherwise built without using user's overrides)
-  - #253: Turn off `buildFromSdist` by default. It can now be enabled manually by setting `settings.<name>.buildFromSdist` to `true`.
-- #271: Change all `types.attrsOf` to `types.lazyAttrsOf`. If you use `lib.mkIf` for `attrsOf` values (not `submodule` options), use `lib.optionalAttrs` instead. This fixes #270 (`basePackages`) and improves performance.
+  - #271, #223: Change all `types.attrsOf` to `types.lazyAttrsOf`. If you use `lib.mkIf` for `attrsOf` values (not `submodule` options), use `lib.optionalAttrs` instead. This fixes #270 (`basePackages`) and improves performance.
+  - #296: Fix `removeConfigureFlags` to actually work.
+  - #297: Fix `brokenVersions` to actually work.
 
 ## 0.4.0 (Aug 22, 2023)
 
@@ -30,8 +34,8 @@
 ## 0.3.0 (May 22, 2023)
 
 - #134: Add `autoWire` option to control generation of flake outputs
-    - #138: Add `checks` to `outputs` submodule
-    - #143: Changed `autoWire` to be an enum type, for granular controlling of which outputs to autowire.
+  - #138: Add `checks` to `outputs` submodule
+  - #143: Changed `autoWire` to be an enum type, for granular controlling of which outputs to autowire.
 - #137: Expose cabal executables as flake apps. Add a corresponding `outputs.apps` option, while the `outputs.localPackages` option is renamed to `outputs.packages` (it now contains package metadata, including packages and its executables).
   - #151: Use `lib.getBin` to get the bin output
 - #148: Remove automatic hpack->cabal generation. Use `pre-commit-hooks.nix` instead.

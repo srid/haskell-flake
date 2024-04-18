@@ -55,7 +55,7 @@ in
 
         applySettingsFor = name: mod:
           let
-            cfg = (lib.evalModules {
+            cfg' = (lib.evalModules {
               modules = [
                 # Settings spec
                 ./all.nix
@@ -79,13 +79,21 @@ in
                 config = cfg;
               });
             }).config;
+            cfg = traceSettings name cfg';
+            # HACK: buildFromSdist must apply *last*
+            # cf. https://github.com/srid/haskell-flake/pull/252
+            # In future, we can refactor this as part of https://github.com/srid/haskell-flake/issues/285
+            # NOTE: removeReferencesTo must apply *before* buildFromSdist, because the
+            # later appears it fuck up the former otherwise.
+            impl = lib.attrsets.removeAttrs cfg.impl [ "buildFromSdist" "removeReferencesTo" ];
+            fns = lib.attrValues impl ++ [ cfg.impl.buildFromSdist cfg.impl.removeReferencesTo ];
           in
           lib.pipe super.${name} (
             # TODO: Do we care about the *order* of overrides?
             # Might be relevant for the 'custom' option.
             lib.concatMap
               (impl: impl)
-              (lib.attrValues (traceSettings name cfg).impl)
+              fns
           );
       in
       lib.mapAttrs applySettingsFor (lib.recursiveUpdate emptyPackageSettings project.config.settings);
