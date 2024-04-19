@@ -41,7 +41,7 @@
               expect =
                 lib.assertMsg
                   (lib.all (x: x) [
-                    (isSettingUnApplied (finalPackagesOf name).hello)
+                    (isSettingUnApplied (finalPackagesOf name).random)
                     (isSettingUnApplied (finalPackagesOf name).haskell-template)
                     (isSettingApplied (finalPackagesOf name).haskell-flake-test)
                   ])
@@ -64,7 +64,7 @@
               expect =
                 lib.assertMsg
                   (lib.all (x: x) [
-                    (isSettingUnApplied (finalPackagesOf name).hello)
+                    (isSettingUnApplied (finalPackagesOf name).random)
                     (isSettingApplied (finalPackagesOf name).haskell-template)
                     (isSettingApplied (finalPackagesOf name).haskell-flake-test)
                   ])
@@ -76,7 +76,7 @@
                 imports = [
                   inputs.haskell-template.haskellFlakeProjectModules.output
                 ];
-                settings.hello = { };
+                settings.random = { };
                 defaults.settings.default-all = {
                   custom = pkg: pkg.overrideAttrs (oldAttrs: {
                     meta = oldAttrs.meta // {
@@ -88,7 +88,7 @@
               expect =
                 lib.assertMsg
                   (lib.all (x: x) [
-                    (isSettingApplied (finalPackagesOf name).hello)
+                    (isSettingApplied (finalPackagesOf name).random)
                     (isSettingApplied (finalPackagesOf name).haskell-template)
                     (isSettingApplied (finalPackagesOf name).haskell-flake-test)
                   ])
