@@ -42,6 +42,7 @@ in
                   description = ''
                     Extra configuration to apply to the patched haskell-flake project.
                   '';
+                  default = { };
                 };
                 expect = lib.mkOption {
                   type = types.raw;
