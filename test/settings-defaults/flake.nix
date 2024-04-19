@@ -20,8 +20,7 @@
         haskellProjectTests =
           let
             finalPackagesOf = projectName: config.haskellProjects.${projectName}.outputs.finalPackages;
-            isSettingApplied = pkg: pkg.meta.setting-applied == true;
-            isSettingUnApplied = pkg: (lib.hasAttr "setting-applied" pkg.meta) == false;
+            isSettingApplied = pkg: lib.hasAttr "setting-applied" pkg.meta;
           in
           {
             test-default-current = { name, ... }: {
@@ -41,8 +40,8 @@
               expect =
                 lib.assertMsg
                   (lib.all (x: x) [
-                    (isSettingUnApplied (finalPackagesOf name).random)
-                    (isSettingUnApplied (finalPackagesOf name).haskell-template)
+                    (! isSettingApplied (finalPackagesOf name).random)
+                    (! isSettingApplied (finalPackagesOf name).haskell-template)
                     (isSettingApplied (finalPackagesOf name).haskell-flake-test)
                   ])
                   "defaults.settings: ${name} failed";
@@ -64,7 +63,7 @@
               expect =
                 lib.assertMsg
                   (lib.all (x: x) [
-                    (isSettingUnApplied (finalPackagesOf name).random)
+                    (! isSettingApplied (finalPackagesOf name).random)
                     (isSettingApplied (finalPackagesOf name).haskell-template)
                     (isSettingApplied (finalPackagesOf name).haskell-flake-test)
                   ])
