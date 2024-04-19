@@ -71,7 +71,7 @@ in
     settings.current = mkOption {
       type = types.deferredModule;
       description = ''
-        Default settings for the packages local to the current project.
+        Default settings for packages local to the current project.
       '';
       apply = settings:
         if config.defaults.enable then
@@ -88,7 +88,7 @@ in
     settings.defined = mkOption {
       type = types.deferredModule;
       description = ''
-        Default settings for all the packages that is defined using haskell-flake.
+        Default settings for all the packages defined using haskell-flake.
         
         For example,
         ```nix
@@ -150,7 +150,7 @@ in
     settings.all = mkOption {
       type = types.deferredModule;
       description = ''
-        Default settings for all the packages managed by haskell-flake.
+        Default settings for all packages whose derivations are produced by haskell-flake.
 
         For example,
         ```nix
