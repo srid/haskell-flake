@@ -29,7 +29,7 @@
                 imports = [
                   inputs.haskell-template.haskellFlakeProjectModules.output
                 ];
-                defaults.settings.default-current = {
+                defaults.settings.current = {
                   custom = pkg: pkg.overrideAttrs (oldAttrs: {
                     meta = oldAttrs.meta // {
                       setting-applied = true;
@@ -52,7 +52,7 @@
                 imports = [
                   inputs.haskell-template.haskellFlakeProjectModules.output
                 ];
-                defaults.settings.default-defined = {
+                defaults.settings.defined = {
                   custom = pkg: pkg.overrideAttrs (oldAttrs: {
                     meta = oldAttrs.meta // {
                       setting-applied = true;
@@ -76,7 +76,7 @@
                   inputs.haskell-template.haskellFlakeProjectModules.output
                 ];
                 settings.random = { };
-                defaults.settings.default-all = {
+                defaults.settings.all = {
                   custom = pkg: pkg.overrideAttrs (oldAttrs: {
                     meta = oldAttrs.meta // {
                       setting-applied = true;

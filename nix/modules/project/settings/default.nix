@@ -61,9 +61,9 @@ in
                 ./all.nix
 
                 # Default settings
-                project.config.defaults.settings.default-current
-                project.config.defaults.settings.default-defined
-                project.config.defaults.settings.default-all
+                project.config.defaults.settings.current
+                project.config.defaults.settings.defined
+                project.config.defaults.settings.all
 
 
                 # User module

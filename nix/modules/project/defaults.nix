@@ -68,7 +68,7 @@ in
       '';
     };
 
-    settings.default-current = mkOption {
+    settings.current = mkOption {
       type = types.deferredModule;
       description = ''
         Default settings for the packages local to the current project.
@@ -85,7 +85,7 @@ in
       default = { };
     };
 
-    settings.default-defined = mkOption {
+    settings.defined = mkOption {
       type = types.deferredModule;
       description = ''
         Default settings for all the packages that is defined using haskell-flake.
@@ -147,7 +147,7 @@ in
       };
     };
 
-    settings.default-all = mkOption {
+    settings.all = mkOption {
       type = types.deferredModule;
       description = ''
         Default settings for all the packages managed by haskell-flake.
