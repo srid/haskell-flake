@@ -61,7 +61,7 @@ in
                 ./all.nix
 
                 # Default settings
-                project.config.defaults.settings.current
+                project.config.defaults.settings.local
                 project.config.defaults.settings.defined
                 project.config.defaults.settings.all
 

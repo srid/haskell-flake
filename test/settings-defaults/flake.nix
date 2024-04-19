@@ -29,7 +29,7 @@
                 imports = [
                   inputs.haskell-template.haskellFlakeProjectModules.output
                 ];
-                defaults.settings.current = {
+                defaults.settings.local = {
                   custom = pkg: pkg.overrideAttrs (oldAttrs: {
                     meta = oldAttrs.meta // {
                       setting-applied = true;

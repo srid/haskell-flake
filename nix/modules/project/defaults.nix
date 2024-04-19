@@ -68,7 +68,7 @@ in
       '';
     };
 
-    settings.current = mkOption {
+    settings.local = mkOption {
       type = types.deferredModule;
       description = ''
         Default settings for packages local to the current project.
