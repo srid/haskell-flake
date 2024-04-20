@@ -56,7 +56,10 @@ in
                 ./all.nix
 
                 # Default settings
-                project.config.defaults.settings.default
+                project.config.defaults.settings.local
+                project.config.defaults.settings.defined
+                project.config.defaults.settings.all
+
 
                 # User module
                 mod

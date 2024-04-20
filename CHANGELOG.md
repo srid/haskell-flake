@@ -9,6 +9,7 @@
   - `settings` module:
     - #210: Add `extraLibraries` to `settings` module.
     - #225: Add `removeReferencesTo` to `settings` module.
+  - #275: Fine grained settings defaults via `defaults.settings.{local, defined, all}`
   - #277: Add `otherOverlays` option to add custom Haskell package overlays.
   - #215: Improved debug logging.
     - #216: Remove `debug` option (pass `--trace-verbose` to nix instead)

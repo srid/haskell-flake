@@ -68,11 +68,68 @@ in
       '';
     };
 
-    settings.default = mkOption {
+    settings.local = mkOption {
       type = types.deferredModule;
       description = ''
-        Default settings for all packages in `packages` option.
+        Default settings for packages local to the current project.
       '';
+      apply = settings:
+        if config.defaults.enable then
+          { package, ... }:
+          lib.optionalAttrs (package.local.toCurrentProject or false) {
+            imports = [
+              settings
+            ];
+          }
+        else { };
+      default = { };
+    };
+
+    settings.defined = mkOption {
+      type = types.deferredModule;
+      description = ''
+        Default settings for all the packages defined using haskell-flake.
+        
+        For example,
+        ```nix
+        {
+          # Inside haskellProjects.<name>
+          imports = [
+            inputs.moo.haskellFlakeProjectModules.output
+          ];
+          packages = {
+            foo.source = "0.1";
+            bar.source = inputs.bar;
+          };
+          settings = {
+            baz.check = false;
+          };
+        }
+        ```
+        and 
+        ```cabal
+        ...
+        build-depends:
+            moo
+          , foo
+          , bar
+          , baz
+          , qux
+        ...
+        ```
+        This will apply the settings to `moo` and packages in current project. But not to `foo`, `bar`, `baz` and `qux`.
+      '';
+
+      apply = settings:
+        if config.defaults.enable then
+          { package, ... }:
+          lib.optionalAttrs (package.local.toDefinedProject or false) {
+            imports = [
+              settings
+            ];
+          }
+        else { };
+
       defaultText = ''
         Speed up builds by disabling haddock and library profiling.
 
@@ -82,23 +139,63 @@ in
         haskell-flake). The goal being to use the same configuration
         consistently for all packages using haskell-flake.
       '';
-      default =
-        let
-          localSettings = { name, package, config, ... }:
-            lib.optionalAttrs (package.local.toDefinedProject or false) {
-              # Disabling haddock and profiling is mainly to speed up Nix builds.
-              haddock = lib.mkDefault false; # Because, this is end-user software. No need for library docs.
-              libraryProfiling = lib.mkDefault false; # Avoid double-compilation.
-              # Make sure all files we use are included in the sdist, as a check
-              # for release-worthiness.
-              buildFromSdist = lib.mkDefault true;
-            };
-        in
-        if config.defaults.enable then {
+
+      default = {
+        # Disabling haddock and profiling is mainly to speed up Nix builds.
+        haddock = lib.mkDefault false; # Because, this is end-user software. No need for library docs.
+        libraryProfiling = lib.mkDefault false; # Avoid double-compilation.
+      };
+    };
+
+    settings.all = mkOption {
+      type = types.deferredModule;
+      description = ''
+        Default settings for all packages whose derivations are produced by haskell-flake.
+
+        For example,
+        ```nix
+        {
+          # Inside haskellProjects.<name>
           imports = [
-            localSettings
+            inputs.moo.haskellFlakeProjectModules.output
           ];
-        } else { };
+          packages = {
+            foo.source = "0.1";
+            bar.source = inputs.bar;
+          };
+          settings = {
+            baz.check = false;
+          };
+        }
+        ```
+        and 
+        ```cabal
+        ...
+        build-depends:
+            moo
+          , foo
+          , bar
+          , baz
+          , qux
+        ...
+        ```
+        This will apply the settings to `moo`, `foo`, `bar`, `baz`. But not to `qux`.
+      '';
+
+      apply = settings:
+        if config.defaults.enable then
+          {
+            imports = [
+              settings
+            ];
+          }
+        else { };
+      defaultText = ''
+        Make sure all files we use are included in the sdist, as a check for release-worthiness.
+      '';
+      default = {
+        buildFromSdist = lib.mkDefault true;
+      };
     };
 
     projectModules.output = mkOption {

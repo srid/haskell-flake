@@ -21,6 +21,7 @@
         flake-parts = "github:hercules-ci/flake-parts/" + exampleLock.nodes.flake-parts.locked.rev;
         haskell-flake = ./.;
         haskell-parsers = ./nix/haskell-parsers;
+        haskell-template = "github:srid/haskell-template/554b7c565396cf2d49a248e7e1dc0e0b46883b10";
       in
       {
         dev = {
@@ -62,6 +63,13 @@
           dir = "test/project-module";
           overrideInputs = {
             inherit nixpkgs flake-parts haskell-flake;
+          };
+        };
+
+        test-settings-defaults = {
+          dir = "test/settings-defaults";
+          overrideInputs = {
+            inherit nixpkgs flake-parts haskell-flake haskell-template;
           };
         };
 
