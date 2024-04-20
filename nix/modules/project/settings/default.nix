@@ -48,11 +48,6 @@ in
     internal = true;
     default = self: super:
       let
-        emptyPackageSettings =
-          lib.listToAttrs
-            (map (name: { inherit name; value = { }; })
-              (lib.attrNames project.config.packages));
-
         applySettingsFor = name: mod:
           let
             cfg' = (lib.evalModules {
@@ -96,6 +91,6 @@ in
               fns
           );
       in
-      lib.mapAttrs applySettingsFor (lib.recursiveUpdate emptyPackageSettings project.config.settings);
+      lib.mapAttrs applySettingsFor project.config.settings;
   };
 }
