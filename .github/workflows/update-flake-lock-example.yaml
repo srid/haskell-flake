@@ -20,3 +20,4 @@ jobs:
           pr-labels: |
             automated
           path-to-flake-dir: 'example/'
+          branch: "update_flake_lock_example"
