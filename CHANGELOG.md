@@ -4,11 +4,12 @@
 
 - Breaking changes
   - #221: Switch from `buildFromCabalSdist` to `buildFromSdist`, to allow using non-standard package sets (wherein `cabal-install` is otherwise built without using user's overrides)
-    - #253: Enable controlling `buildFromSdist` through `settings.<name>.buildFromSdist`. (This was turned off by default originally, but was turned on by default in #286, limited to local packages in #298)
+    - #253: Enable controlling `buildFromSdist` through `settings.<name>.buildFromSdist`. (This was turned off by default originally, but was turned on by default in #286, limited to packages defined by haskell-flake in #298 & #306)
 - Enhancements
   - `settings` module:
     - #210: Add `extraLibraries` to `settings` module.
     - #225: Add `removeReferencesTo` to `settings` module.
+  - #275: Fine grained settings defaults via `defaults.settings.{local, defined, all}`
   - #277: Add `otherOverlays` option to add custom Haskell package overlays.
   - #215: Improved debug logging.
     - #216: Remove `debug` option (pass `--trace-verbose` to nix instead)

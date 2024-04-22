@@ -104,6 +104,11 @@ in
             );
       };
 
+      # To fix the following error with lib.mkMerge
+      # error: The option `perSystem.aarch64-darwin.haskellProjects.default.outputs.apps' is used but not defined.
+      mkMergeHandlingEmpty = xs:
+        if xs == [ ] then { } else lib.mkMerge xs;
+
     in
     {
       outputs = {
@@ -112,7 +117,7 @@ in
         packages = lib.mapAttrs buildPackageInfo localPackages;
 
         apps =
-          lib.mkMerge
+          mkMergeHandlingEmpty
             (lib.mapAttrsToList (_: packageInfo: packageInfo.exes) config.outputs.packages);
       };
     };

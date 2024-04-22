@@ -37,6 +37,13 @@ in
                     Each patch can be a path to the diff file, or inline patch string.
                   '';
                 };
+                extraHaskellProjectConfig = lib.mkOption {
+                  type = types.deferredModule;
+                  description = ''
+                    Extra configuration to apply to the patched haskell-flake project.
+                  '';
+                  default = { };
+                };
                 expect = lib.mkOption {
                   type = types.raw;
                   description = ''
@@ -53,6 +60,9 @@ in
 
     config = {
       haskellProjects = lib.flip lib.mapAttrs config.haskellProjectTests (name: cfg: {
+        imports = [
+          cfg.extraHaskellProjectConfig
+        ];
         projectRoot = pkgs.applyPatches {
           name = "haskellProject-patched-${name}";
           src = config.haskellProjects.${cfg.from}.projectRoot;
