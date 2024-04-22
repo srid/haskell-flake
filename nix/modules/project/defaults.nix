@@ -37,11 +37,14 @@ in
           haskell-parsers = import ../../haskell-parsers {
             inherit pkgs lib;
             throwError = msg: config.log.throwError ''
+
               A default value for `packages` cannot be auto-determined:
 
                 ${msg}
 
-              Please specify the `packages` option manually or change your project configuration (cabal.project).
+              haskell-flake's `cabal.project` parser is limited; see #307.
+              Please specify the `packages` option manually or modify your
+              cabal.project file for acceptance by haskell-flake.
             '';
           };
           localPackages = lib.pipe config.projectRoot [
