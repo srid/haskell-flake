@@ -15,7 +15,7 @@ jobs:
       - name: Update flake.lock
         uses: DeterminateSystems/update-flake-lock@main
         with:
-          commit-msg: "doc: Update flake.lock"
+          commit-msg: "chore(doc): Update flake.lock"
           pr-title: "Update doc/flake.lock"
           pr-labels: |
             automated
