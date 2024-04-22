@@ -58,7 +58,8 @@ in
               res.value
           else throwErrorOnCabalProjectParseError "Failed to parse ${cabalProjectFile}: ${builtins.toJSON res}"
         else
-          [ projectRoot ];
+          lib.optional (traversal.findSingleCabalFile projectRoot != null)
+            projectRoot;
     in
     lib.listToAttrs
       (map
