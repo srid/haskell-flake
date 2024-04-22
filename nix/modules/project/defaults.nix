@@ -41,6 +41,12 @@ in
               A default value for `packages` cannot be auto-determined:
 
                 ${msg}
+            '';
+            throwErrorOnCabalProjectParseError = msg: config.log.throwError ''
+
+              A default value for `packages` cannot be auto-determined:
+
+                ${msg}
 
               haskell-flake's `cabal.project` parser is limited; see #307.
               Please specify the `packages` option manually or modify your
