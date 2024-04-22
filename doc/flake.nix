@@ -10,7 +10,6 @@
     flake-parts.follows = "cfp/flake-parts";
 
     flake-parts-website.url = "github:hercules-ci/flake.parts-website";
-    flake-parts-website.inputs.nixpkgs.follows = "nixpkgs";
     flake-parts-website.inputs.haskell-flake.follows = "haskell-flake";
     flake-parts-website.inputs.flake-parts.follows = "flake-parts";
 
