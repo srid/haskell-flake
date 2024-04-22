@@ -131,7 +131,8 @@ in
         else { };
 
       defaultText = ''
-        Speed up builds by disabling haddock and library profiling.
+        Speed up builds by disabling haddock and library profiling. Also ensures
+        release-worthiness.
 
         This uses `local.toDefinedProject` option to determine which packages to
         override. Thus, it applies to both local packages as well as
@@ -144,6 +145,7 @@ in
         # Disabling haddock and profiling is mainly to speed up Nix builds.
         haddock = lib.mkDefault false; # Because, this is end-user software. No need for library docs.
         libraryProfiling = lib.mkDefault false; # Avoid double-compilation.
+        buildFromSdist = lib.mkDefault true; # Ensure release-worthiness
       };
     };
 
@@ -191,11 +193,9 @@ in
           }
         else { };
       defaultText = ''
-        Make sure all files we use are included in the sdist, as a check for release-worthiness.
+        Nothing is changed by default.
       '';
-      default = {
-        buildFromSdist = lib.mkDefault true;
-      };
+      default = { };
     };
 
     projectModules.output = mkOption {
