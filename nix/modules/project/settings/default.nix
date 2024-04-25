@@ -80,7 +80,7 @@ in
             # In future, we can refactor this as part of https://github.com/srid/haskell-flake/issues/285
             # NOTE: removeReferencesTo must apply *before* buildFromSdist, because the
             # later appears it fuck up the former otherwise.
-            impl = lib.attrsets.removeAttrs cfg.impl [ "buildFromSdist" "removeReferencesTo" ];
+            impl = builtins.removeAttrs cfg.impl [ "buildFromSdist" "removeReferencesTo" ];
             fns = lib.attrValues impl ++ [ cfg.impl.buildFromSdist cfg.impl.removeReferencesTo ];
           in
           lib.pipe super.${name} (
