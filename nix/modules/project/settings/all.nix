@@ -237,8 +237,10 @@ in
         let
           enableParallelBuilding =
             overrideCabal (drv: { enableParallelBuilding = true; });
+          disableParallelBuilding =
+            overrideCabal (drv: { enableParallelBuilding = false; });
         in
-        if enable then enableParallelBuilding else null;
+        if enable then enableParallelBuilding else disableParallelBuilding;
     };
     separateBinOutput = {
       type = types.bool;
