@@ -233,6 +233,10 @@ in
         Whether to use the -j flag to make GHC/Cabal start multiple jobs in parallel.
       '';
       impl = enable:
+        let
+          enableParallelBuilding =
+            overrideCabal (drv: { enableParallelBuilding = true; });
+        in
         if enable then enableParallelBuilding else null;
     };
     separateBinOutput = {
