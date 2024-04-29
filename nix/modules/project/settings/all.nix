@@ -231,6 +231,7 @@ in
       type = types.bool;
       description = ''
         Whether to use the -j flag to make GHC/Cabal start multiple jobs in parallel.
+        By default set to false.
       '';
       impl = enable:
         let
