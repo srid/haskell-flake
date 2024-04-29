@@ -227,6 +227,14 @@ in
       impl = enable:
         if enable then justStaticExecutables else null;
     };
+    enableParallelBuilding = {
+      type = types.bool;
+      description = ''
+        Whether to use the -j flag to make GHC/Cabal start multiple jobs in parallel.
+      '';
+      impl = enable:
+        if enable then enableParallelBuilding else null;
+    };
     separateBinOutput = {
       type = types.bool;
       description = ''
