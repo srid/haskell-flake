@@ -2,20 +2,21 @@
 order: -8
 ---
 
-# haskell-language-server
+# IDE configuration (HLS)
 
-haskell-flake enables [haskell-language-server](https://github.com/haskell/haskell-language-server) and [a few other tools by default](https://github.com/srid/haskell-flake/blob/988a78590c158c5fa0b4893de793c9c783b9d7e9/nix/modules/project/defaults.nix#L23-L29).
+By default, #[[devshell]] of haskell-flake projects includes [haskell-language-server](https://github.com/haskell/haskell-language-server) and [a few other tools by default](https://github.com/srid/haskell-flake/blob/988a78590c158c5fa0b4893de793c9c783b9d7e9/nix/modules/project/defaults.nix#L23-L29).
 {#disable}
-## Disabling haskell-language-server
+## Disabling `haskell-language-server`
 
-> [!note]
-> Only applicable if `haskellProjects.<proj-name>.defaults.enable = true;`
+> [!tip] Default options
+> Alternatively, disabling the [[defaults|default options]] (i.e., `haskellProjects.<proj-name>.defaults.enable = false;`) automatically removes HLS.
 
-You can set your own `devShell.tools` defaults, that does not include `haskell-language-server`, as follows:
+HLS is included as part of the default value of `devShell.tools` options. You can override this default by overriding it, for e.g.:
 
 ```nix
 {
   haskellProjects.<proj-name> = {
+    # NOTE: This is 'defaults.devShell.tools', not 'devShell.tools'
     defaults.devShell.tools = hp: with hp; {
       inherit
         cabal-install
@@ -25,8 +26,21 @@ You can set your own `devShell.tools` defaults, that does not include `haskell-l
 }
 ```
 
+Alternatively, you can set it to `null` at a project-level:
+
+```nix
+{
+  haskellProjects.<proj-name> = {
+    # NOTE: This is 'devShell.tools', not 'defaults.devShell.tools'
+    devShell.tools = {
+      haskell-language-server = null;
+    };
+  };
+}
+```
+
 {#disable-plugins}
-## Disabling plugins
+## Disabling HLS plugins
 
 >[!warning] TODO
 > See here for current status: <https://github.com/srid/haskell-flake/issues/245>

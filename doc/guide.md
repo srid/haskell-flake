@@ -9,7 +9,6 @@ order: -9
 - [[settings]]#
 - [[defaults]]#
 - [[devshell]]#
-- [[hls]]#
 - [[package-set]]#
 - [[modules]]#
 - [[debugging]]#
