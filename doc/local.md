@@ -45,7 +45,7 @@ When a local package is the only top-level one, however, any file in the reposit
 To avoid rebuilding the top-level package whenever irrelevant files change, you can do one of the following:
 
 - Put the top-level package in a sub-directory.
-- Or, set `projectRoot` to a subset of your flake root, [for example](https://github.com/srid/haskell-template/blob/033913a6fe418ea0c25ec2c2604ab4030563ba2e/flake.nix#L28-L34):
+- Or, set `projectRoot` to a subset of your flake root using [`fileset.toSource`](https://nixos.org/manual/nixpkgs/stable/#function-library-example-lib.fileset.toSource). For [example](https://github.com/srid/haskell-template/blob/033913a6fe418ea0c25ec2c2604ab4030563ba2e/flake.nix#L28-L34):
     ```nix
     {
       haskellProjects.default = {
