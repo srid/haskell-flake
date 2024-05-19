@@ -25,8 +25,8 @@
           # (defined by `defaults.packages` option).
           #
           packages = {
-            # aeson.source = "1.5.0.0"; # Hackage version override
-            # shower.source = inputs.shower;
+            # aeson.source = "1.5.0.0";      # Override aeson to a custom version from Hackage
+            # shower.source = inputs.shower; # Override shower to a custom source path
           };
           settings = {
             #  aeson = {
