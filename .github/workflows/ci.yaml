@@ -15,6 +15,8 @@ jobs:
        run: echo "matrix=$(nixci gh-matrix --systems=x86_64-linux,x86_64-darwin,aarch64-darwin | jq -c .)" >> $GITHUB_OUTPUT
   nix:
     runs-on: ${{ matrix.system }}
+    permissions:
+      contents: read
     needs: configure
     strategy:
       matrix: ${{ fromJson(needs.configure.outputs.matrix) }}
@@ -22,7 +24,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: |
-          nixci --version
           nixci \
             --extra-access-tokens ${{ secrets.GITHUB_TOKEN }} \
             build \
