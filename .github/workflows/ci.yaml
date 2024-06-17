@@ -27,5 +27,5 @@ jobs:
           nixci \
             --extra-access-tokens ${{ secrets.GITHUB_TOKEN }} \
             build \
-            --systems "github:nix-systems/${{ matrix.system }}" \
+            --systems "${{ matrix.system }}" \
             .#default.${{ matrix.subflake}}
