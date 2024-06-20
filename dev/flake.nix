@@ -20,7 +20,7 @@
           programs.nixpkgs-fmt.enable = true;
         };
         devShells.default = pkgs.mkShell {
-          # cf. https://community.flake.parts/haskell-flake#composing-devshells
+          # cf. https://community.flake.parts/haskell-flake/devshell#composing-devshells
           inputsFrom = [
             config.treefmt.build.devShell
           ];
