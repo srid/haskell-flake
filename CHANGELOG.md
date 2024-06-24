@@ -1,6 +1,6 @@
 # Revision history for haskell-flake
 
-## Unreleased (0.5.0)
+## 0.5.0 (Jun 24, 2024)
 
 - Breaking changes
   - #221: Switch from `buildFromCabalSdist` to `buildFromSdist`, to allow using non-standard package sets (wherein `cabal-install` is otherwise built without using user's overrides)
