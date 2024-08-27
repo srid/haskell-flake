@@ -39,7 +39,7 @@ The minimal changes to your `flake.nix` to introduce the `haskell-flake` and [`f
 
           # Packages to add on top of `basePackages`, e.g. from Hackage
           packages = {
-            aeson.source = "1.5.0.0" # Hackage version
+            aeson.source = "1.5.0.0"; # Hackage version
           };
 
           # my-haskell-package development shell configuration
