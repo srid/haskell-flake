@@ -54,7 +54,7 @@ let
       exes = mkOption {
         type = types.lazyAttrsOf appType;
         description = ''
-          Attrset of executables from `.cabal` file.  
+          Attrset of executables from `.cabal` file.
 
           If the associated Haskell project has a separate bin output
           (cf. `enableSeparateBinOutput`), then this exe will refer
@@ -90,15 +90,19 @@ in
 
       finalPackages = config.basePackages.extend finalOverlay;
 
-      buildPackageInfo = name: value: {
+      buildPackageInfo = name: value: rec {
         package = finalPackages.${name};
         exes =
           lib.listToAttrs
             (map
               (exe:
-                lib.nameValuePair exe {
-                  program = "${lib.getBin finalPackages.${name}}/bin/${exe}";
-                }
+                lib.nameValuePair exe ({
+                  program = "${lib.getBin package}/bin/${exe}";
+                  meta.description =
+                    if (exe != name && lib.hasAttrByPath [ "meta" "description" ] package)
+                    then package.meta.description
+                    else "Executable ${exe} from package ${name}";
+                })
               )
               value.cabal.executables
             );
@@ -122,4 +126,3 @@ in
       };
     };
 }
-

@@ -5,6 +5,7 @@ license:         NONE
 author:          Joe
 maintainer:      joe@example.com
 build-type:      Simple
+synopsis:           A template for Haskell projects using Nix
 
 common warnings
     ghc-options: -Wall
