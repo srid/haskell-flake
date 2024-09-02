@@ -100,7 +100,7 @@ in
                   program = "${lib.getBin package}/bin/${exe}";
                   meta.description =
                     if lib.hasAttrByPath [ "meta" "description" ] package
-                    then "${if exe != name then "[${exe}] " else ""}${meta.description}";
+                    then "${if exe != name then "[${exe}] " else ""}${meta.description}"
                     else "Executable ${if exe != name then "${exe} from " else "for "}package ${name}";
                 })
               )
