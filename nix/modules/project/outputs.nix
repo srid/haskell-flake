@@ -99,9 +99,9 @@ in
                 lib.nameValuePair exe ({
                   program = "${lib.getBin package}/bin/${exe}";
                   meta.description =
-                    if (exe != name && !lib.hasAttrByPath [ "meta" "description" ] package)
-                    then "Executable ${exe} from package ${name}"
-                    else package.meta.description;
+                    if lib.hasAttrByPath [ "meta" "description" ] package
+                    then package.meta.description
+                    else "Executable ${if exe != name then "${exe} from " else "for "}package ${name}";
                 })
               )
               value.cabal.executables
