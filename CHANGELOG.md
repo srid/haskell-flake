@@ -1,5 +1,10 @@
 # Revision history for haskell-flake
 
+## Unreleased
+
+- Enhancements
+  - Support `meta.description` in flake apps. Requires newer version of flake-parts.
+
 ## 0.5.0 (Jun 24, 2024)
 
 - Breaking changes
