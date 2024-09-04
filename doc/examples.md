@@ -8,3 +8,4 @@
 - [nammayatri/nammayatri backend](https://github.com/nammayatri/nammayatri/blob/main/Backend/default.nix) - a polyglot flake
 - [haskell/hackage-server](https://github.com/haskell/hackage-server/blob/master/flake.nix)
 - [hercules-ci/warp-systemd](https://github.com/hercules-ci/warp-systemd/blob/master/flake.nix) - a library with a NixOS test
+- [KovalevDima/ClickHaskell](https://github.com/KovalevDima/ClickHaskell)
