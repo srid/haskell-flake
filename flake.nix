@@ -13,8 +13,8 @@
     };
 
     # CI spec
-    # https://github.com/srid/nixci
-    nixci.default =
+    # https://github.com/juspay/omnix
+    om.ci.default =
       let
         exampleLock = builtins.fromJSON (builtins.readFile ./example/flake.lock);
         nixpkgs = "github:nixos/nixpkgs/" + exampleLock.nodes.nixpkgs.locked.rev;
