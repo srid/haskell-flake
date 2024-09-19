@@ -1,6 +1,6 @@
 {
   description = "A `flake-parts` module for Haskell development";
-  outputs = _: {
+  outputs = inputs: {
     flakeModule = ./nix/modules;
 
     templates.default = {
@@ -12,9 +12,21 @@
       path = builtins.path { path = ./example; };
     };
 
-    # CI spec
-    # https://github.com/juspay/omnix
     om = {
+      # https://omnix.page/om/init.html#spec
+      templates.haskell-flake = {
+        template = inputs.templates.example;
+        params = [
+          {
+            name = "package-name";
+            description = "Name of the Haskell package";
+            placeholder = "example";
+          }
+        ];
+      };
+
+      # CI spec
+      # https://omnix.page/om/ci.html
       ci.default =
         let
           exampleLock = builtins.fromJSON (builtins.readFile ./example/flake.lock);
