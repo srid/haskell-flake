@@ -15,7 +15,7 @@
     om = {
       # https://omnix.page/om/init.html#spec
       templates.haskell-flake = {
-        template = inputs.templates.example;
+        template = inputs.self.templates.example;
         params = [
           {
             name = "package-name";
