@@ -41,51 +41,51 @@
             dir = "dev";
             overrideInputs = { inherit haskell-flake; };
           };
-  
+
           doc = {
             dir = "doc";
             overrideInputs = { inherit haskell-flake; };
           };
-  
+
           example = {
             dir = "example";
             overrideInputs = { inherit haskell-flake; };
           };
-  
+
           # Tests
           haskell-parsers-test = {
             dir = "./nix/haskell-parsers/test";
             overrideInputs = { inherit haskell-parsers; };
           };
-  
+
           test-simple = {
             dir = "test/simple";
             overrideInputs = {
               inherit nixpkgs flake-parts haskell-flake;
             };
           };
-  
+
           test-with-subdir = {
             dir = "test/with-subdir";
             overrideInputs = {
               inherit nixpkgs flake-parts haskell-flake;
             };
           };
-  
+
           test-project-module = {
             dir = "test/project-module";
             overrideInputs = {
               inherit nixpkgs flake-parts haskell-flake;
             };
           };
-  
+
           test-settings-defaults = {
             dir = "test/settings-defaults";
             overrideInputs = {
               inherit nixpkgs flake-parts haskell-flake haskell-template;
             };
           };
-  
+
           test-otherOverlays = {
             dir = "test/otherOverlays";
             overrideInputs = {
@@ -93,6 +93,6 @@
             };
           };
         };
-      };
+    };
   };
 }
