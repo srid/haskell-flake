@@ -52,9 +52,11 @@ lib.pipe root
         let pkg = 
           if lib.pathExists (lib.concatStringsSep "/" [ root "default.nix" ])
           then 
-            callPackageKeepDeriver root { }
+            (log.traceDebug "${name}.callPackageKeepDeriver ${root}") 
+              callPackageKeepDeriver root { }
           else
-            self.callCabal2nix name root { };
+            (log.traceDebug "${name}.callCabal2nix ${root}")
+              self.callCabal2nix name root { };
         in 
           (log.traceDebug "${name}.cabal2nixDeriver ${pkg.cabal2nixDeriver.outPath}" pkg)
      )
