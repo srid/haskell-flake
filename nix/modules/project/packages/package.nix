@@ -23,6 +23,16 @@ in
       '';
     };
 
+    cabal2NixFile = lib.mkOption {
+      type = lib.types.str;
+      description = ''
+        The Nix file which contains cached (pre-generated) `cabal2nix` expressions.
+
+        By default, it refers to `cabal.nix` file.
+      '';
+      default = "cabal.nix";
+    };
+
     cabal.executables = mkOption {
       type = types.nullOr (types.listOf types.str);
       description = ''

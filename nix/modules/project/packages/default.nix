@@ -61,7 +61,7 @@ in
           getOrMkPackage = name: cfg:
             if lib.types.path.check cfg.source
             then
-              (build-haskell-package name cfg.source)
+              (build-haskell-package name cfg.source cfg.cabal2NixFile)
             else
               log.traceDebug "${name}.callHackage ${cfg.source}"
                 (self.callHackage name cfg.source { });
