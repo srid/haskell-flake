@@ -41,18 +41,11 @@ lib.pipe root
       if builtins.pathExists path
       then
         (log.traceDebug "${name}.callPackage[cabal2nix] ${path}")
-          self.callPackage
-          path
-          { }
+          (self.callPackage path { })
       else
-        let
-          pkg =
-            (log.traceDebug "${name}.callCabal2nix ${root}")
-              self.callCabal2nix
-              name
-              root
-              { };
-        in
-        (log.traceDebug "${name}.cabal2nixDeriver ${pkg.cabal2nixDeriver.outPath}" pkg)
+        lib.pipe (self.callCabal2nix name root { })
+          [
+            (pkg: log.traceDebug "${name}.callCabal2nix root=${root} deriver=${pkg.cabal2nixDeriver.outPath}" pkg)
+          ]
     )
   ]
