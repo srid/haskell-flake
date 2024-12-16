@@ -33,14 +33,14 @@ lib.pipe root
     (x: log.traceDebug "${name}.mkNewStorePath ${x.outPath}" x)
 
     (root:
-      let path = lib.concatStringsSep "/" [ root "${cabal2NixFile}" ];
+      let path = "${root}/${cabal2NixFile}";
       in
       # Check if cached cabal2nix generated nix expression is present,
         # if present use it with callPackage
         # to avoid IFD
-      if lib.pathIsRegularFile path
+      if builtins.pathExists path
       then
-        (log.traceDebug "${name}.callPackage[Cached] ${path}")
+        (log.traceDebug "${name}.callPackage[cabal2nix] ${path}")
           self.callPackage
           path
           { }
