@@ -1,4 +1,4 @@
-{ name, pkgs, lib, config, log, ... }:
+{ name, pkgs, self, lib, config, log, ... }:
 let
   inherit (lib) types;
   inherit (import ./lib.nix {
