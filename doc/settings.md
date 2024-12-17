@@ -70,3 +70,13 @@ Newer versions of [nixpkgs] provide `buildFromSdist` to build your package from 
 > If you encounter issues with `buildFromSdist` you can disable it by setting `settings.<name>.buildFromSdist` to `true`.
 
 [nixpkgs]: https://nixos.asia/en/nixpkgs
+
+### `stan`
+
+Run **ST**atic **AN**alysis on the package using [stan] and generate an HTML report. The report is created in the `/nix/store` path alongside your package outputs.
+
+> [!note] stan configuration  
+> This setting looks for a `.stan.toml` file in the root of the package source. See a sample [.stan.toml] configuration for reference.
+
+[stan]: https://github.com/kowainik/stan
+[.stan.toml]: https://github.com/kowainik/stan/blob/main/.stan.toml
