@@ -51,6 +51,8 @@
               jailbreak = true;
               cabalFlags.blah = true;
             };
+            # Test STatic ANalysis report generation
+            haskell-flake-test.stan = true;
           };
           devShell = {
             tools = hp: {
