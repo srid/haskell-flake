@@ -4,6 +4,8 @@
 
 - Enhancements
   - Support `meta.description` in flake apps. Requires newer version of flake-parts.
+  - `settings` module:
+    - #384: Add `stan`
 
 ## 0.5.0 (Jun 24, 2024)
 
