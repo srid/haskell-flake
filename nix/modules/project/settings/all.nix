@@ -365,7 +365,6 @@ in
                 postInstall = (old.postInstall or "") + ''
                   echo "Generating stan.html"
                   cd $out
-                  env
                   stan report --hiedir $OLDPWD --config-file $OLDPWD/.stan.toml
                   echo "Finished generating stan.html"
                 '';
