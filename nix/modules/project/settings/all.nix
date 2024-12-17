@@ -365,7 +365,7 @@ in
                 postInstall = (old.postInstall or "") + ''
                   echo "Generating stan.html"
                   cd $out
-                  stan report --hiedir $TMPDIR/source-${name} --config-file $TMPDIR/source-${name}
+                  stan report --hiedir $SRCDIR --config-file $SRCDIR
                   echo "Finished generating stan.html"
                 '';
               }))
