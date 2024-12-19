@@ -65,6 +65,13 @@
             };
           };
 
+          test-cabal2nix = {
+            dir = "test/cabal2nix";
+            overrideInputs = {
+              inherit nixpkgs flake-parts haskell-flake;
+            };
+          };
+
           test-with-subdir = {
             dir = "test/with-subdir";
             overrideInputs = {
