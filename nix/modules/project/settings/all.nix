@@ -364,8 +364,8 @@ in
               drv.overrideAttrs (old: {
                 postInstall = (old.postInstall or "") + ''
                   echo "Generating stan.html"
-                  cd $out
-                  stan report --hiedir $OLDPWD --config-file $OLDPWD/.stan.toml
+                  stan report
+                  mv stan.html $out
                   echo "Finished generating stan.html"
                 '';
               }))
