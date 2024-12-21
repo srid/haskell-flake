@@ -22,15 +22,30 @@ let
       name = "${name}";
       inherit src;
     };
+
 in
 
-name: root:
+name: root: cabal2NixFile:
 lib.pipe root
   [
     # Avoid rebuilding because of changes in parent directories
     (mkNewStorePath "source-${name}")
     (x: log.traceDebug "${name}.mkNewStorePath ${x.outPath}" x)
 
-    (root: self.callCabal2nix name root { })
-    (x: log.traceDebug "${name}.cabal2nixDeriver ${x.cabal2nixDeriver.outPath}" x)
+    (root:
+      let path = "${root}/${cabal2NixFile}";
+      in
+      # Check if cached cabal2nix generated nix expression is present,
+        # if present use it with callPackage
+        # to avoid IFD
+      if builtins.pathExists path
+      then
+        (log.traceDebug "${name}.callPackage[cabal2nix] ${path}")
+          (self.callPackage path { })
+      else
+        lib.pipe (self.callCabal2nix name root { })
+          [
+            (pkg: log.traceDebug "${name}.callCabal2nix root=${root} deriver=${pkg.cabal2nixDeriver.outPath}" pkg)
+          ]
+    )
   ]
