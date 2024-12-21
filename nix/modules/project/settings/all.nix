@@ -1,4 +1,4 @@
-{ name, pkgs, lib, config, log, ... }:
+{ name, pkgs, self, lib, config, log, ... }:
 let
   inherit (lib) types;
   inherit (import ./lib.nix {
@@ -345,6 +345,32 @@ in
             ${lib.concatStrings (map (e: "remove-references-to -t ${e} $out/bin/*\n") disallowedReferences)}
           '';
         });
+    };
+
+    stan = {
+      type = types.bool;
+      description = ''
+        Modifies the Haskell package to generate a static analysis report using <https://github.com/kowainik/stan>.
+      '';
+      impl = enable: drv:
+        let
+          inherit (pkgs.haskell.lib.compose) appendConfigureFlags addBuildTool;
+        in
+        if enable then
+          lib.pipe drv [
+            (appendConfigureFlags [ "--ghc-options=-fwrite-ide-info" "--ghc-options=-hiedir=.hie" ])
+            (addBuildTool self.stan)
+            (drv:
+              drv.overrideAttrs (old: {
+                postInstall = (old.postInstall or "") + ''
+                  echo "Generating stan.html"
+                  stan report
+                  mv stan.html $out
+                  echo "Finished generating stan.html"
+                '';
+              }))
+          ]
+        else drv;
     };
 
     # When none of the above settings is suitable:
