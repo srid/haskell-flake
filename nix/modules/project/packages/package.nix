@@ -26,9 +26,9 @@ in
     cabal2NixFile = lib.mkOption {
       type = lib.types.str;
       description = ''
-        The Nix file which contains cached (pre-generated) `cabal2nix` expressions.
+        Filename of the cabal2nix generated nix expression.
 
-        By default, it refers to `cabal.nix` file.
+        This gets used if it exists instead of using IFD (callCabal2nix).
       '';
       default = "cabal.nix";
     };
