@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Enhancements
+  - #382: Support for cabal2nix generated expressions (avoiding IFD for local packages)
   - Support `meta.description` in flake apps. Requires newer version of flake-parts.
   - `settings` module:
     - #384: Add `stan`
