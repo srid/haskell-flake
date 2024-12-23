@@ -58,16 +58,8 @@ in
           build-haskell-package = import ../../../build-haskell-package.nix {
             inherit pkgs lib self log;
           };
-          getOrMkPackage = name: cfg:
-            if lib.types.path.check cfg.source
-            then
-              log.traceDebug "${name}.callCabal2nix ${cfg.source}"
-                (build-haskell-package name cfg.source)
-            else
-              log.traceDebug "${name}.callHackage ${cfg.source}"
-                (self.callHackage name cfg.source { });
         in
-        lib.mapAttrs getOrMkPackage project.config.packages;
+        lib.mapAttrs build-haskell-package project.config.packages;
     };
   };
 }

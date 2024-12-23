@@ -12,7 +12,7 @@
 }:
 
 let
-  mkNewStorePath = name: src:
+  mkNewStorePath' = name: src:
     # Since 'src' may be a subdirectory of a store path
     # (in string form, which means that it isn't automatically
     # copied), the purpose of cleanSourceWith here is to create a
@@ -22,15 +22,39 @@ let
       name = "${name}";
       inherit src;
     };
+
+  # Avoid rebuilding because of changes in parent directories
+  mkNewStorePath = name: src:
+    let newSrc = mkNewStorePath' name src;
+    in log.traceDebug "${name}.mkNewStorePath ${newSrc}" newSrc;
+
+  callCabal2nix = name: src:
+    let pkg = self.callCabal2nix name src { };
+    in log.traceDebug "${name}.callCabal2nix src=${src} deriver=${pkg.cabal2nixDeriver.outPath}" pkg;
+
+  # Use cached cabal2nix generated nix expression if present, otherwise use IFD (callCabal2nix)
+  callCabal2NixUnlessCached = name: src: cabal2nixFile:
+    let path = "${src}/${cabal2nixFile}";
+    in
+    if builtins.pathExists path
+    then
+      callPackage name path
+    else
+      callCabal2nix name src;
+
+  callPackage = name: nixFilePath:
+    let pkg = self.callPackage nixFilePath { };
+    in log.traceDebug "${name}.callPackage[cabal2nix] ${nixFilePath}" pkg;
+
+  callHackage = name: version:
+    let pkg = self.callHackage name version { };
+    in log.traceDebug "${name}.callHackage ver=${version}" pkg;
 in
 
-name: root:
-lib.pipe root
-  [
-    # Avoid rebuilding because of changes in parent directories
-    (mkNewStorePath "source-${name}")
-    (x: log.traceDebug "${name}.mkNewStorePath ${x.outPath}" x)
-
-    (root: self.callCabal2nix name root { })
-    (x: log.traceDebug "${name}.cabal2nixDeriver ${x.cabal2nixDeriver.outPath}" x)
-  ]
+name: cfg:
+# If 'source' is a path, we treat it as such. Otherwise, we assume it's a version (from hackage).
+if lib.types.path.check cfg.source
+then
+  callCabal2NixUnlessCached name (mkNewStorePath name cfg.source) cfg.cabal2NixFile
+else
+  callHackage name cfg.source

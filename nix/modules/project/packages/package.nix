@@ -23,6 +23,16 @@ in
       '';
     };
 
+    cabal2NixFile = lib.mkOption {
+      type = lib.types.str;
+      description = ''
+        Filename of the cabal2nix generated nix expression.
+
+        This gets used if it exists instead of using IFD (callCabal2nix).
+      '';
+      default = "cabal.nix";
+    };
+
     cabal.executables = mkOption {
       type = types.nullOr (types.listOf types.str);
       description = ''
