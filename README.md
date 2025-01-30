@@ -1,5 +1,5 @@
 [![project chat](https://img.shields.io/badge/zulip-join_chat-brightgreen.svg)](https://nixos.zulipchat.com/#narrow/stream/413949-haskell-flake)
-[![Harmeless Code of Conduct](https://img.shields.io/badge/harmless-8A2BE2)](https://srid.ca/coc "This project follows the 'Harmlessness Code of Conduct'")
+[![Naiveté Compass of Mood](https://img.shields.io/badge/naïve-FF10F0)](https://srid.ca/coc "This project follows the 'Naiveté Compass of Mood'")
 
 # haskell-flake - Manage Haskell projects conveniently with Nix
 
