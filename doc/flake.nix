@@ -9,9 +9,9 @@
     nixpkgs.follows = "cfp/nixpkgs";
     flake-parts.follows = "cfp/flake-parts";
 
-    flake-parts-website.url = "github:hercules-ci/flake.parts-website";
-    flake-parts-website.inputs.haskell-flake.follows = "haskell-flake";
-    flake-parts-website.inputs.flake-parts.follows = "flake-parts";
+    # flake-parts-website.url = "github:hercules-ci/flake.parts-website";
+    # flake-parts-website.inputs.haskell-flake.follows = "haskell-flake";
+    # flake-parts-website.inputs.flake-parts.follows = "flake-parts";
 
     haskell-flake.url = "github:srid/haskell-flake";
   };
@@ -31,6 +31,10 @@
           };
         };
         formatter = pkgs.nixpkgs-fmt;
+
+        # Disable linkcheck due to upstream issue
+        # https://github.com/hercules-ci/flake.parts-website/issues/1367
+        /*
         checks.linkcheck = inputs'.flake-parts-website.checks.linkcheck;
         packages.flake-parts = inputs'.flake-parts-website.packages.default;
         apps.flake-parts.program = pkgs.writeShellApplication {
@@ -48,6 +52,7 @@
             fi
           '';
         };
+        */
       };
     };
 }
