@@ -45,9 +45,9 @@ If you want to use the `master` branch of the [ema](https://hackage.haskell.org/
 
 ### Using a multi-package Haskell Git repo {#multi-path}
 
-If you want to add multiple packages from [haskell-multi-nix](https://github.com/srid/haskell-multi-nix) library, you can do:
+If you want to override multiple dependencies whose source exist in the same mono repo (for e.g., `foo` and `bar` in [haskell-multi-nix](https://github.com/srid/haskell-multi-nix), you can do so as follows:
 
-1. Add a flake input pointing to `haskell-multi-nix` Git repo in `flake.nix`:
+1. Add a flake input pointing to the monorepo (eg., `haskell-multi-nix` Git repo) in `flake.nix`:
     ```nix
     {
       inputs = {
@@ -56,7 +56,7 @@ If you want to add multiple packages from [haskell-multi-nix](https://github.com
       };
     }
     ```
-1. Add a separate entry in `haskellProjects.<name>.packages` for each of the package:
+1. Add a separate entry in `haskellProjects.<name>.packages` for each of the package in the subdirectories:
     ```nix
     {
       perSystem = { self', config, pkgs, ... }: {
