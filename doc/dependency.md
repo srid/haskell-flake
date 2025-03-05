@@ -43,6 +43,33 @@ If you want to use the `master` branch of the [ema](https://hackage.haskell.org/
     ```
 1. Re-run the nix shell (`nix develop`).
 
+### Using a multi-package Haskell Git repo {#multi-path}
+
+If you want to add multiple packages from [haskell-multi-nix](https://github.com/srid/haskell-multi-nix) library, you can do:
+
+1. Add a flake input pointing to `haskell-multi-nix` Git repo in `flake.nix`:
+    ```nix
+    {
+      inputs = {
+        haskell-multi-nix.url = "github:srid/haskell-multi-nix";
+        haskell-multi-nix.flake = false;
+      };
+    }
+    ```
+1. Add a separate entry in `haskellProjects.<name>.packages` for each of the package:
+    ```nix
+    {
+      perSystem = { self', config, pkgs, ... }: {
+        haskellProjects.default = {
+          packages = {
+            foo.source = inputs.haskell-multi-nix + /foo;
+            bar.source = inputs.haskell-multi-nix + /bar;
+          };
+        };
+      };
+    }
+    ```
+
 ### Using a Hackage version {#hackage}
 
 `packages.<name>.source` also supports Hackage versions. So the following works to pull [ema 0.8.2.0](https://hackage.haskell.org/package/ema-0.8.2.0):
