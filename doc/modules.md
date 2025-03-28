@@ -39,7 +39,7 @@ This module can then be imported in multiple projects, such as the `myapp` proje
 
 This way your `app` project knows how to find "mylib" library as well as includes the default tools you want to use in the dev shell.
 
-## Module arguments
+## Module arguments {#args}
 
 A haskell-flake project module takes the following arguments:
 
@@ -48,7 +48,7 @@ A haskell-flake project module takes the following arguments:
 | `pkgs` | The perSystem's `pkgs` argument |
 | `self` | The flake's `self` |
 
-## Default modules
+## Default modules {#default}
 
 By default, haskell-flake will generate the following modules for the "default" `haskellProject`:
 
@@ -74,7 +74,7 @@ The idea here being that you can "connect" two Haskell projects such that they d
 
 By importing "bar"'s `output` project module, you automatically get the overrides from "bar" as well as the [[local|local packages]]. This way you don't have to duplicate the `settings` and manually specify the `packages.<name>.source` in "foo"'s flake.nix.
 
-## Export non-default project modules
+## Export non-default project modules {#non-default}
 
 The flake output `haskellFlakeProjectModules.output` exports `packages` and [[settings]] options of `haskellProject.default`, but you could create custom flake output that does the same for an arbitrary project, let's say `bar`, as follows:
 
