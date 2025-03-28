@@ -60,3 +60,8 @@ Finally, you can externalize this `ghc810` package set as either a flake-parts m
 ## Examples
 
 - https://github.com/nammayatri/common/pull/11/files
+
+## See also
+
+- [[gotchas]]
+
