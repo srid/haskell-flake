@@ -373,6 +373,27 @@ in
         else drv;
     };
 
+    installIntermediates = {
+      type = types.bool;
+      description = ''
+        Whether to install intermediate build artifacts (for incremental builds).
+      '';
+      impl = enable: overrideCabal (drv: {
+        doInstallIntermediates = enable;
+      });
+    };
+
+    separateIntermediatesOutput = {
+      type = types.bool;
+      description = ''
+        Whether to separate intermediate build artifacts into a distinct output.
+        Only applies if `installIntermediates` is enabled.
+      '';
+      impl = enable: overrideCabal (drv: {
+        enableSeparateIntermediatesOutput = enable;
+      });
+    };
+
     # When none of the above settings is suitable:
     custom = {
       type = types.functionTo types.package;
