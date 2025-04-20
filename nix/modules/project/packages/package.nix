@@ -90,5 +90,27 @@ in
         defining project.
       '';
     };
+
+    extraCabal2nixOptions = mkOption {
+      type = types.listOf types.str;
+      description = ''
+        List of extra options given to cabal2nix.
+      '';
+      default = [];
+      apply =
+        flags:
+          lib.strings.concatStringsSep " " (config.cabalFlags ++ flags);
+    };
+
+    cabalFlags = mkOption {
+      type = types.lazyAttrsOf types.bool;
+      description = ''
+        Cabal flags to enable or disable explicitly when calling cabal2nix.
+      '';
+      default = {};
+      apply =
+        lib.mapAttrsToList
+          (flag: enabled: "-f${if enabled then "" else "-"}${flag}");
+    };
   };
 }
