@@ -96,10 +96,10 @@ in
       description = ''
         List of extra options given to cabal2nix.
       '';
-      default = [];
+      default = [ ];
       apply =
         flags:
-          lib.strings.concatStringsSep " " (config.cabalFlags ++ flags);
+        lib.strings.concatStringsSep " " (config.cabalFlags ++ flags);
     };
 
     cabalFlags = mkOption {
@@ -107,7 +107,7 @@ in
       description = ''
         Cabal flags to enable or disable explicitly when calling cabal2nix.
       '';
-      default = {};
+      default = { };
       apply =
         lib.mapAttrsToList
           (flag: enabled: "-f${if enabled then "" else "-"}${flag}");
