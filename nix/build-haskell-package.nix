@@ -55,6 +55,14 @@ name: cfg:
 # If 'source' is a path, we treat it as such. Otherwise, we assume it's a version (from hackage).
 if lib.types.path.check cfg.source
 then
-  callCabal2NixUnlessCached name (mkNewStorePath name cfg.source) cfg.cabal2NixFile cfg.extraCabal2nixOptions
+  let
+    cfgCabalFlags =
+      lib.mapAttrsToList
+        (flag: enabled: "-f${if enabled then "" else "-"}${flag}")
+        cfg.cabalFlags;
+    extraCabal2nixOptions =
+      lib.strings.concatStringsSep " " (cfgCabalFlags ++ cfg.extraCabal2nixOptions);
+  in
+  callCabal2NixUnlessCached name (mkNewStorePath name cfg.source) cfg.cabal2NixFile extraCabal2nixOptions
 else
   callHackage name cfg.source
