@@ -203,6 +203,8 @@ in
       type = types.lazyAttrsOf types.bool;
       description = ''
         Cabal flags to enable or disable explicitly.
+
+        NOTE: You may wish to use `packages.*.cabalFlags` instead, as those are passed directly to `cabal2nix` (see #418).
       '';
       impl = flags: drv:
         let
