@@ -14,7 +14,6 @@ executable haskell-flake-test
     main-is:          Main.hs
     build-depends:    
         base,
-        -- Add version constraint to test `jailbreak` in flake
         foo >= 0.2
     hs-source-dirs:   src
     default-language: Haskell2010
