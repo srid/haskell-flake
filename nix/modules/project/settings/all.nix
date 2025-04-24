@@ -203,6 +203,8 @@ in
       type = types.lazyAttrsOf types.bool;
       description = ''
         Cabal flags to enable or disable explicitly.
+
+        NOTE: You may wish to use `packages.*.cabalFlags` instead, as those are passed directly to `cabal2nix` (see #418).
       '';
       impl = flags: drv:
         let
@@ -371,6 +373,27 @@ in
               }))
           ]
         else drv;
+    };
+
+    installIntermediates = {
+      type = types.bool;
+      description = ''
+        Whether to install intermediate build artifacts (for incremental builds).
+      '';
+      impl = enable: overrideCabal (drv: {
+        doInstallIntermediates = enable;
+      });
+    };
+
+    separateIntermediatesOutput = {
+      type = types.bool;
+      description = ''
+        Whether to separate intermediate build artifacts into a distinct output.
+        Only applies if `installIntermediates` is enabled.
+      '';
+      impl = enable: overrideCabal (drv: {
+        enableSeparateIntermediatesOutput = enable;
+      });
     };
 
     # When none of the above settings is suitable:

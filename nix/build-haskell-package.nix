@@ -28,19 +28,19 @@ let
     let newSrc = mkNewStorePath' name src;
     in log.traceDebug "${name}.mkNewStorePath ${newSrc}" newSrc;
 
-  callCabal2nix = name: src:
-    let pkg = self.callCabal2nix name src { };
-    in log.traceDebug "${name}.callCabal2nix src=${src} deriver=${pkg.cabal2nixDeriver.outPath}" pkg;
+  callCabal2nix = name: src: opts:
+    let pkg = self.callCabal2nixWithOptions name src { extraCabal2nixOptions = opts; } { };
+    in log.traceDebug "${name}.callCabal2nixWithOptions src=${src} deriver=${pkg.cabal2nixDeriver.outPath} opts=${opts}" pkg;
 
   # Use cached cabal2nix generated nix expression if present, otherwise use IFD (callCabal2nix)
-  callCabal2NixUnlessCached = name: src: cabal2nixFile:
+  callCabal2NixUnlessCached = name: src: cabal2nixFile: opts:
     let path = "${src}/${cabal2nixFile}";
     in
     if builtins.pathExists path
     then
       callPackage name path
     else
-      callCabal2nix name src;
+      callCabal2nix name src opts;
 
   callPackage = name: nixFilePath:
     let pkg = self.callPackage nixFilePath { };
@@ -55,6 +55,14 @@ name: cfg:
 # If 'source' is a path, we treat it as such. Otherwise, we assume it's a version (from hackage).
 if lib.types.path.check cfg.source
 then
-  callCabal2NixUnlessCached name (mkNewStorePath name cfg.source) cfg.cabal2NixFile
+  let
+    cfgCabalFlags =
+      lib.mapAttrsToList
+        (flag: enabled: "-f${if enabled then "" else "-"}${flag}")
+        cfg.cabalFlags;
+    extraCabal2nixOptions =
+      lib.strings.concatStringsSep " " (cfgCabalFlags ++ cfg.extraCabal2nixOptions);
+  in
+  callCabal2NixUnlessCached name (mkNewStorePath name cfg.source) cfg.cabal2NixFile extraCabal2nixOptions
 else
   callHackage name cfg.source

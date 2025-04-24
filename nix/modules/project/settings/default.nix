@@ -80,8 +80,10 @@ in
             # In future, we can refactor this as part of https://github.com/srid/haskell-flake/issues/285
             # NOTE: removeReferencesTo must apply *before* buildFromSdist, because the
             # later appears it fuck up the former otherwise.
-            impl = builtins.removeAttrs cfg.impl [ "buildFromSdist" "removeReferencesTo" ];
-            fns = lib.attrValues impl ++ [ cfg.impl.buildFromSdist cfg.impl.removeReferencesTo ];
+            # NOTE: separateIntermediatesOutput must apply after buildFromSdist, otherwise
+            # the `installIntermediatesPhase` is set on the `sdist`'s drv instead of the package's.
+            impl = builtins.removeAttrs cfg.impl [ "buildFromSdist" "removeReferencesTo" "separateIntermediatesOutput" ];
+            fns = lib.attrValues impl ++ [ cfg.impl.buildFromSdist cfg.impl.removeReferencesTo cfg.impl.separateIntermediatesOutput ];
           in
           lib.pipe super.${name} (
             # TODO: Do we care about the *order* of overrides?
