@@ -14,6 +14,10 @@ executable haskell-flake-test
     main-is:          Main.hs
     build-depends:    
         base,
-        foo
+        -- Add a version constraint that fails unless jailbroken.
+        --
+        -- This exists to test if the user's setting to enable `jailbreak` paramounts
+        -- `buildFromSdist`'s setting to disable it
+        foo >= 0.2
     hs-source-dirs:   src
     default-language: Haskell2010

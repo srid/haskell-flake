@@ -51,8 +51,14 @@
               jailbreak = true;
               cabalFlags.blah = true;
             };
-            # Test STatic ANalysis report generation
-            haskell-flake-test.stan = true;
+            haskell-flake-test = {
+              # Test STatic ANalysis report generation
+              stan = true;
+              # Test if user's setting overrides the `jailbreak = false;` override by `buildFromSdist`.
+              # 
+              # This jailbreak ignores the unsatisfiable version constraints on the library `foo`.
+              jailbreak = true;
+            };
           };
           devShell = {
             tools = hp: {
