@@ -396,6 +396,16 @@ in
       });
     };
 
+    previousIntermediates = {
+      type = types.path;
+      description = ''
+        Previous build intermediates of the same package.
+      '';
+      impl = intermediates: overrideCabal (drv: {
+        previousIntermediates = intermediates;
+      });
+    };
+
     # When none of the above settings is suitable:
     custom = {
       type = types.functionTo types.package;
