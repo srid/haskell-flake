@@ -53,6 +53,12 @@ You can provide custom settings for use in multiple packages (even across multip
 
 haskell-flake provides the following settings on top of those provided by [nixpkgs].
 
+### `generateOptparseApplicativeCompletions`
+
+Generate and install shell completion files for executables.
+The executables need to be using `optparse-applicative` for this to work.
+Note that this feature is automatically disabled when cross-compiling, since it requires executing the binaries in question.
+
 ### `removeReferencesTo`
 
 Remove references to other packages from this Haskell package. This is useful to eliminate unnecessary data dependencies from your Haskell executable so as to reduce its closure size.
