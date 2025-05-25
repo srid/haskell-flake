@@ -327,6 +327,16 @@ in
           ]) else null;
     };
 
+    generateOptparseApplicativeCompletions = {
+      type = types.listOf types.str;
+      description = ''
+        Generate and install shell completion files for executables.
+        The executables need to be using `optparse-applicative` for this to work.
+        Note that this feature is automatically disabled when cross-compiling, since it requires executing the binaries in question.
+      '';
+      impl = self.generateOptparseApplicativeCompletions;
+    };
+
     removeReferencesTo = {
       type = types.listOf types.package;
       description = ''
