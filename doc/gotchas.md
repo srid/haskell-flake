@@ -16,13 +16,13 @@ Use the following [[settings]] configuration to override `libssh2`:
   settings = {
     libssh2 = {
       broken = false;
-      custom = [ (p: p.overrideAttrs (oa: rec {
+      custom = (p: p.overrideAttrs (oa: rec {
         version = "0.2.0.9";
         src = pkgs.fetchzip {
           url = "mirror://hackage/${oa.pname}-${version}/${oa.pname}-${version}.tar.gz";
           sha256 = "sha256-/zzj11iOxkpEsKVwB4+IF8dNZwEuwUlgw+cZYguN8QI=";
         };
-      })) ];
+      }));
     };
   };
 }

@@ -91,7 +91,7 @@ If you want to override multiple dependencies whose source exist in the same mon
 ```nix
 haskellProjects.default = {
   settings = {
-    fourmolu = { super, ...}: { custom = [ (_: super.fourmolu_0_13_1_0) ]; };
+    fourmolu = { super, ...}: { custom = _: super.fourmolu_0_13_1_0; };
   };
 };
 ```
