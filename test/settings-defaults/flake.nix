@@ -93,6 +93,39 @@
                   ])
                   "defaults.settings: ${name} failed";
             };
+            test-custom-merge = { name, ... }: {
+              patches = [ ];
+              extraHaskellProjectConfig = {
+                imports = [
+                  inputs.haskell-template.haskellFlakeProjectModules.output
+                ];
+                # Test that both defaults and user settings can define custom functions
+                # without conflicts (previously would fail with "custom expected to be unique")
+                defaults.settings.local = {
+                  custom = pkg: pkg.overrideAttrs (oldAttrs: {
+                    meta = oldAttrs.meta // {
+                      default-custom-applied = true;
+                    };
+                  });
+                };
+                settings.haskell-flake-test = {
+                  custom = pkg: pkg.overrideAttrs (oldAttrs: {
+                    meta = oldAttrs.meta // {
+                      user-custom-applied = true;
+                    };
+                  });
+                };
+              };
+              expect =
+                let
+                  pkg = (finalPackagesOf name).haskell-flake-test;
+                  hasDefaultCustom = lib.hasAttr "default-custom-applied" pkg.meta;
+                  hasUserCustom = lib.hasAttr "user-custom-applied" pkg.meta;
+                in
+                lib.assertMsg
+                  (hasDefaultCustom && hasUserCustom)
+                  "custom merge test failed: default-custom=${toString hasDefaultCustom}, user-custom=${toString hasUserCustom}";
+            };
           };
       };
     };
