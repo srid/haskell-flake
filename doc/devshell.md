@@ -13,7 +13,8 @@ haskell-flake uses the [`shellFor`][shellFor] function to provide a Haskell deve
       mkShellArgs = {
         shellHook = ''
           export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${pkgs.flint}/lib
-        ''
+        '';
+        packages = with pkgs; [ sqlite-interactive curl ];
       };
     }
   }

@@ -108,8 +108,11 @@ in
         config.defaults.devShell.tools finalPackages //
         config.devShell.tools finalPackages
       );
-      mkShellArgs = config.devShell.mkShellArgs // {
-        nativeBuildInputs = (config.devShell.mkShellArgs.nativeBuildInputs or [ ]) ++ nativeBuildInputs;
+      # Extract packages from mkShellArgs to add to nativeBuildInputs, since shellFor will override packages
+      mkShellArgsPackages = config.devShell.mkShellArgs.packages or [ ];
+      mkShellArgsWithoutPackages = builtins.removeAttrs config.devShell.mkShellArgs [ "packages" ];
+      mkShellArgs = mkShellArgsWithoutPackages // {
+        nativeBuildInputs = (config.devShell.mkShellArgs.nativeBuildInputs or [ ]) ++ nativeBuildInputs ++ mkShellArgsPackages;
       };
       devShell = finalPackages.shellFor (mkShellArgs // {
         packages = p:

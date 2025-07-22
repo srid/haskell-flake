@@ -68,10 +68,13 @@
             extraLibraries = hp: {
               inherit (hp) tomland;
             };
-            mkShellArgs.shellHook = ''
-              echo "Hello from devshell!"
-              export FOO=bar
-            '';
+            mkShellArgs = {
+              shellHook = ''
+                echo "Hello from devshell!"
+                export FOO=bar
+              '';
+              packages = with pkgs; [ curl ];
+            };
           };
         };
         packages.default = self'.packages.haskell-flake-test;
@@ -109,6 +112,10 @@
               # Adding a buildTool (fzf, here) should put it in devshell.
               which fzf || \
                 (echo "fzf should be in devshell"; exit 2)
+
+              # mkShellArgs.packages should work (curl added via packages)
+              which curl || \
+                (echo "curl should be in devshell via mkShellArgs.packages"; exit 2)
 
               # mkShellArgs works
               ${self'.devShells.default.shellHook}
