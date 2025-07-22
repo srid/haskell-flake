@@ -49,6 +49,8 @@ haskellProjects.default = {
 
 You can provide custom settings for use in multiple packages (even across multiple repos). For example, see [this Emanote change](https://github.com/srid/emanote/commit/5b24bd04f94e03afe66ee01da723e4a05d854953) which demonstrates how to add a _new_ setting option (`removeReferencesTo`).
 
+**Note:** As of this version, the `custom` setting now accepts a list of functions to support merging from multiple modules. This allows different defaults and user settings to all contribute custom transformations to a package.
+
 ## Extra settings {#extra}
 
 haskell-flake provides the following settings on top of those provided by [nixpkgs].

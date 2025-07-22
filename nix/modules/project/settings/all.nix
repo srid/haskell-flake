@@ -418,20 +418,27 @@ in
 
     # When none of the above settings is suitable:
     custom = {
-      type = types.functionTo types.package;
+      type = types.listOf (types.functionTo types.package);
       description = ''
-        A custom function to apply on the Haskell package.
+        Custom functions to apply on the Haskell package.
 
         Use this only if none of the existing settings are suitable.
 
-        The function must take three arguments: self, super and the package being
-        applied to.
+        Each function takes a package and returns a modified package.
+        All functions are applied in sequence.
 
         Example:
 
-            custom = pkg: builtins.trace pkg.version pkg;
+            custom = [
+              (pkg: builtins.trace pkg.version pkg)
+              (pkg: pkg.overrideAttrs { meta.description = "custom"; })
+            ];
+            
+        For a single function, you can also use:
+        
+            custom = [ (pkg: builtins.trace pkg.version pkg) ];
       '';
-      impl = f: f;
+      impl = functions: pkg: lib.pipe pkg functions;
     };
   };
 }

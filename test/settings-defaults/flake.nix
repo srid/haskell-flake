@@ -30,11 +30,11 @@
                   inputs.haskell-template.haskellFlakeProjectModules.output
                 ];
                 defaults.settings.local = {
-                  custom = pkg: pkg.overrideAttrs (oldAttrs: {
+                  custom = [ (pkg: pkg.overrideAttrs (oldAttrs: {
                     meta = oldAttrs.meta // {
                       setting-applied = true;
                     };
-                  });
+                  })) ];
                 };
               };
               expect =
@@ -53,11 +53,11 @@
                   inputs.haskell-template.haskellFlakeProjectModules.output
                 ];
                 defaults.settings.defined = {
-                  custom = pkg: pkg.overrideAttrs (oldAttrs: {
+                  custom = [ (pkg: pkg.overrideAttrs (oldAttrs: {
                     meta = oldAttrs.meta // {
                       setting-applied = true;
                     };
-                  });
+                  })) ];
                 };
               };
               expect =
@@ -77,11 +77,11 @@
                 ];
                 settings.random = { };
                 defaults.settings.all = {
-                  custom = pkg: pkg.overrideAttrs (oldAttrs: {
+                  custom = [ (pkg: pkg.overrideAttrs (oldAttrs: {
                     meta = oldAttrs.meta // {
                       setting-applied = true;
                     };
-                  });
+                  })) ];
                 };
               };
               expect =
