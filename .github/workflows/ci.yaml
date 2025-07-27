@@ -8,28 +8,26 @@ on:
   workflow_dispatch:
 
 jobs:
-  
-  configure:
-    runs-on: x86_64-linux
-    outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
-    steps:
-     - uses: actions/checkout@v4
-     - id: set-matrix
-       run: echo "matrix=$(om ci gh-matrix --systems=x86_64-linux,x86_64-darwin,aarch64-darwin | jq -c .)" >> $GITHUB_OUTPUT
-  
   nix:
-    runs-on: ${{ matrix.system }}
+    runs-on: ${{ matrix.runner }}
     permissions:
       contents: read
-    needs: configure
     strategy:
-      matrix: ${{ fromJson(needs.configure.outputs.matrix) }}
+      matrix:
+        include:
+          - system: x86_64-linux
+            runner: ubuntu-latest
+          - system: x86_64-darwin
+            runner: macos-13
+          - system: aarch64-darwin
+            runner: macos-latest
       fail-fast: false
     steps:
       - uses: actions/checkout@v4
+      - uses: DeterminateSystems/nix-installer-action@main
+      - uses: DeterminateSystems/magic-nix-cache-action@main
+      - run: nix profile install nixpkgs#omnix
       - run: |
           om ci run \
             --extra-access-tokens "github.com=${{ secrets.GITHUB_TOKEN }}" \
-            --systems "${{ matrix.system }}" \
-            .#default.${{ matrix.subflake}}
+            --systems "${{ matrix.system }}"
