@@ -31,7 +31,7 @@ let
         throwError "No .cabal file found under ${path}";
   };
 in
-{
+rec {
   findPackagesInCabalProject = projectRoot:
     let
       cabalProjectFile = projectRoot + "/cabal.project";
@@ -65,16 +65,24 @@ in
       (path: lib.nameValuePair (traversal.findHaskellPackageNameOfDirectory path) path)
       packageDirs;
 
-  getCabalExecutables = path:
+  getCabalStanzas = path:
     let
       cabalFile = traversal.findSingleCabalFile path;
     in
     if cabalFile != null then
-      let res = parser.parseCabalExecutableNames (builtins.readFile (lib.concatStrings [ path "/" cabalFile ]));
+      let
+        cabalContent = builtins.readFile (lib.concatStrings [ path "/" cabalFile ]);
+        res = parser.parseCabalStanzas cabalContent;
       in
       if res.type == "success"
       then res.value
       else throwError "Failed to parse ${cabalFile}: ${builtins.toJSON res}"
     else
       throwError "No .cabal file found under ${path}";
+
+  getCabalExecutables = path:
+    let
+      stanzas = getCabalStanzas path;
+    in
+      stanzas.executable or [ ];
 }

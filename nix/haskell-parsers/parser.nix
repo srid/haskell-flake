@@ -13,7 +13,7 @@ let
   };
   inherit (import nix-parsec) parsec;
 in
-{
+rec {
   # Extract the "packages" list from a cabal.project file.
   #
   # Globs are not supported yet. Values must be refer to a directory, not file.
@@ -36,19 +36,79 @@ in
     in
     parsec.runParser parser cabalProjectFile;
 
-  # Extract all the executables from a .cabal file 
-  parseCabalExecutableNames = cabalFile:
+  # Extract all stanzas from a .cabal file in a single pass using choice
+  # Returns an attribute set mapping stanza type to list of names
+  parseCabalStanzas = cabalFile:
     with parsec;
     let
-      # Skip empty lines and lines that don't start with 'executable'
-      skipLines =
-        skipTill
-          (sequence [ (skipWhile (x: x != "\n")) anyChar ])
-          (parsec.string "executable ");
-      val = parsec.fmap lib.concatStrings (parsec.many1 (parsec.anyCharBut "\n"));
-      parser = parsec.many (parsec.skipThen
-        skipLines
-        val);
+      # Parse either a stanza line or skip irrelevant line
+      parseLineOrSkip = parsec.choice [
+        # Try to parse a stanza line
+        (parsec.fmap
+          (result: {
+            type = lib.head result;
+            name = lib.removePrefix " " (lib.elemAt result 1);
+          })
+          (parsec.sequence [
+            (parsec.choice [
+              (parsec.string "executable")
+              (parsec.string "test-suite")
+              (parsec.string "benchmark")
+              (parsec.string "foreign-library")
+              (parsec.string "custom-setup")
+              (parsec.string "library")
+            ])
+            (parsec.fmap lib.concatStrings (parsec.many (parsec.anyCharBut "\n")))
+          ]))
+        # Or skip this line
+        (parsec.fmap
+          (_: null)
+          (parsec.sequence [ (parsec.many (parsec.anyCharBut "\n")) anyChar ]))
+      ];
+
+      # Parse many lines, keeping only stanzas (non-null results)
+      parser = parsec.fmap
+        (lib.filter (x: x != null))
+        (parsec.many parseLineOrSkip);
+
+      result = parsec.runParser parser cabalFile;
     in
-    parsec.runParser parser cabalFile;
+    if result.type == "success" then
+      let
+        # Group stanzas by type, filtering out empty names  
+        groupedStanzas = lib.foldl
+          (acc: stanza:
+            let
+              shouldInclude = stanza.name != "";
+            in
+            if shouldInclude then
+              acc // {
+                ${stanza.type} = (acc.${stanza.type} or [ ]) ++ [ stanza.name ];
+              }
+            else
+              acc)
+          { }
+          result.value;
+      in
+      {
+        type = "success";
+        value = groupedStanzas;
+      }
+    else
+      result;
+
+  # Extract all the executables from a .cabal file 
+  parseCabalExecutableNames = cabalFile:
+    let
+      result = parseCabalStanzas cabalFile;
+    in
+    if result.type == "success"
+    then {
+      type = "success";
+      value = result.value.executable or [ ];
+    }
+    else {
+      type = "error";
+      value = result.value;
+    };
 }
