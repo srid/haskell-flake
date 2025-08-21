@@ -80,9 +80,4 @@ rec {
     else
       throwError "No .cabal file found under ${path}";
 
-  getCabalExecutables = path:
-    let
-      stanzas = getCabalStanzas path;
-    in
-      stanzas.executable or [ ];
 }
