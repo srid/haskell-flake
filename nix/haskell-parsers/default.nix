@@ -61,11 +61,9 @@ in
           lib.optional (traversal.findSingleCabalFile projectRoot != null)
             projectRoot;
     in
-    lib.listToAttrs
-      (map
-        (path:
-          lib.nameValuePair (traversal.findHaskellPackageNameOfDirectory path) path)
-        packageDirs);
+    map
+      (path: lib.nameValuePair (traversal.findHaskellPackageNameOfDirectory path) path)
+      packageDirs;
 
   getCabalExecutables = path:
     let
