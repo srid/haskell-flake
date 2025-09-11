@@ -53,14 +53,14 @@ You can provide custom settings for use in multiple packages (even across multip
 
 haskell-flake provides the following settings on top of those provided by [nixpkgs].
 
-### `raw`
+### `drvAttrs`
 
-Set arbitrary attributes on the Haskell package derivation. This is a simpler alternative to the `custom` option for setting derivation attributes like environment variables.
+Set arbitrary attributes on the Haskell package derivation. This is a simpler alternative to the `custom` option for setting [derivation](https://nixos.asia/en/drv) attributes like environment variables.
 
 ```nix
 settings = {
   foo = {
-    raw = {
+    drvAttrs = {
       GIT_BIN = lib.getExe' pkgs.git "git";
       SOME_ENV_VAR = "value";
     };
@@ -68,7 +68,7 @@ settings = {
 };
 ```
 
-[Unlike](https://github.com/srid/haskell-flake/discussions/430) `custom`, the `raw` option composes well with other settings and doesn't require writing a function.
+[Unlike](https://github.com/srid/haskell-flake/discussions/430) `custom`, the `drvAttrs` option composes well with other settings and doesn't require writing a function.
 
 ### `generateOptparseApplicativeCompletions`
 
@@ -98,7 +98,7 @@ Newer versions of [nixpkgs] provide `buildFromSdist` to build your package from 
 
 Run **ST**atic **AN**alysis on the package using [stan] and generate an HTML report. The report is created in the `/nix/store` path alongside your package outputs.
 
-> [!note] stan configuration  
+> [!note] stan configuration
 > This setting looks for a `.stan.toml` file in the root of the package source. See a sample [.stan.toml] configuration for reference.
 
 [stan]: https://github.com/kowainik/stan

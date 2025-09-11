@@ -50,8 +50,8 @@
             foo = {
               jailbreak = true;
               cabalFlags.blah = true;
-              # Test raw option
-              raw = {
+              # Test drvAttrs option
+              drvAttrs = {
                 TEST_RAW_ATTR = "test-value";
               };
             };
@@ -59,7 +59,7 @@
               # Test STatic ANalysis report generation
               stan = true;
               # Test if user's setting overrides the `jailbreak = false;` override by `buildFromSdist`.
-              # 
+              #
               # This jailbreak ignores the unsatisfiable version constraints on the library `foo`.
               jailbreak = true;
             };
@@ -97,10 +97,10 @@
                 lib.assertMsg (!lib.hasAttr "doc" self'.packages.default)
                   "doc output should not be present";
 
-              # Test raw option - verify that the TEST_RAW_ATTR is applied
+              # Test drvAttrs option - verify that the TEST_RAW_ATTR is applied
               TEST_RAW_ATTR =
                 lib.assertMsg (config.haskellProjects.default.outputs.finalPackages.foo.TEST_RAW_ATTR == "test-value")
-                  "raw option should apply TEST_RAW_ATTR attribute";
+                  "drvAttrs option should apply TEST_RAW_ATTR attribute";
             }
             ''
               (
@@ -121,10 +121,10 @@
 
               # mkShellArgs works
               ${self'.devShells.default.shellHook}
-              if [[ "$FOO" == "bar" ]]; then 
+              if [[ "$FOO" == "bar" ]]; then
                   echo "$FOO"
-              else 
-                  echo "FOO is not bar" 
+              else
+                  echo "FOO is not bar"
                   exit 2
               fi
 

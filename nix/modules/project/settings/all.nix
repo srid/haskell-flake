@@ -417,7 +417,7 @@ in
     };
 
     # Setting raw attributes on the derivation
-    raw = {
+    drvAttrs = {
       type = types.lazyAttrsOf types.raw;
       description = ''
         Raw attributes to set on the Haskell package derivation.
@@ -427,7 +427,7 @@ in
 
         Example:
 
-            raw = {
+            drvAttrs = {
               GIT_BIN = lib.getExe' pkgs.git "git";
             };
       '';
