@@ -37,7 +37,7 @@
           };
         };
       };
-      perSystem = { self', pkgs, lib, ... }: {
+      perSystem = { config, self', pkgs, lib, ... }: {
         haskellProjects.default = {
           # Multiple modules should be merged correctly.
           imports = [ self.haskellFlakeProjectModules.default ];
@@ -50,6 +50,10 @@
             foo = {
               jailbreak = true;
               cabalFlags.blah = true;
+              # Test raw option
+              raw = {
+                TEST_RAW_ATTR = "test-value";
+              };
             };
             haskell-flake-test = {
               # Test STatic ANalysis report generation
@@ -92,6 +96,11 @@
               NO_HADDOCK =
                 lib.assertMsg (!lib.hasAttr "doc" self'.packages.default)
                   "doc output should not be present";
+
+              # Test raw option - verify that the TEST_RAW_ATTR is applied
+              TEST_RAW_ATTR =
+                lib.assertMsg (config.haskellProjects.default.outputs.finalPackages.foo.TEST_RAW_ATTR == "test-value")
+                  "raw option should apply TEST_RAW_ATTR attribute";
             }
             ''
               (
