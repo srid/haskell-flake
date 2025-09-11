@@ -416,6 +416,24 @@ in
       });
     };
 
+    # Setting raw attributes on the derivation
+    drvAttrs = {
+      type = types.lazyAttrsOf types.raw;
+      description = ''
+        Raw attributes to set on the Haskell package derivation.
+
+        This allows setting arbitrary attributes like environment variables
+        or other derivation attributes without the complexity of using custom.
+
+        Example:
+
+            drvAttrs = {
+              GIT_BIN = lib.getExe' pkgs.git "git";
+            };
+      '';
+      impl = attrs: drv: drv.overrideAttrs (oldAttrs: oldAttrs // attrs);
+    };
+
     # When none of the above settings is suitable:
     custom = {
       type = types.functionTo types.package;

@@ -10,6 +10,7 @@
     - #384: Add `stan`
     - #419, #421: Add `installIntermediates`, `previousIntermediates` and `separateIntermediatesOutput`
     - #427: Add `generateOptparseApplicativeCompletions`
+    - #455: Add `drvAttrs` option for setting arbitrary derivation attributes
 
 ## 0.5.0 (Jun 24, 2024)
 

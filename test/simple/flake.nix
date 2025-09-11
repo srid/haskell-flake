@@ -37,7 +37,7 @@
           };
         };
       };
-      perSystem = { self', pkgs, lib, ... }: {
+      perSystem = { config, self', pkgs, lib, ... }: {
         haskellProjects.default = {
           # Multiple modules should be merged correctly.
           imports = [ self.haskellFlakeProjectModules.default ];
@@ -50,12 +50,16 @@
             foo = {
               jailbreak = true;
               cabalFlags.blah = true;
+              # Test drvAttrs option
+              drvAttrs = {
+                TEST_RAW_ATTR = "test-value";
+              };
             };
             haskell-flake-test = {
               # Test STatic ANalysis report generation
               stan = true;
               # Test if user's setting overrides the `jailbreak = false;` override by `buildFromSdist`.
-              # 
+              #
               # This jailbreak ignores the unsatisfiable version constraints on the library `foo`.
               jailbreak = true;
             };
@@ -92,6 +96,11 @@
               NO_HADDOCK =
                 lib.assertMsg (!lib.hasAttr "doc" self'.packages.default)
                   "doc output should not be present";
+
+              # Test drvAttrs option - verify that the TEST_RAW_ATTR is applied
+              TEST_RAW_ATTR =
+                lib.assertMsg (config.haskellProjects.default.outputs.finalPackages.foo.TEST_RAW_ATTR == "test-value")
+                  "drvAttrs option should apply TEST_RAW_ATTR attribute";
             }
             ''
               (
@@ -112,10 +121,10 @@
 
               # mkShellArgs works
               ${self'.devShells.default.shellHook}
-              if [[ "$FOO" == "bar" ]]; then 
+              if [[ "$FOO" == "bar" ]]; then
                   echo "$FOO"
-              else 
-                  echo "FOO is not bar" 
+              else
+                  echo "FOO is not bar"
                   exit 2
               fi
 
