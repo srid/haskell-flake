@@ -53,6 +53,23 @@ You can provide custom settings for use in multiple packages (even across multip
 
 haskell-flake provides the following settings on top of those provided by [nixpkgs].
 
+### `raw`
+
+Set arbitrary attributes on the Haskell package derivation. This is a simpler alternative to the `custom` option for setting derivation attributes like environment variables.
+
+```nix
+settings = {
+  foo = {
+    raw = {
+      GIT_BIN = lib.getExe' pkgs.git "git";
+      SOME_ENV_VAR = "value";
+    };
+  };
+};
+```
+
+[Unlike](https://github.com/srid/haskell-flake/discussions/430) `custom`, the `raw` option composes well with other settings and doesn't require writing a function.
+
 ### `generateOptparseApplicativeCompletions`
 
 Generate and install shell completion files for executables.
