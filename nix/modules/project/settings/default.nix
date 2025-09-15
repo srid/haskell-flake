@@ -75,7 +75,10 @@ in
               });
             }).config;
             cfg = traceSettings name cfg';
-            # NOTE: apply custom first for better UX
+
+            # Some settings must be applied in deterministic order
+            #
+            # NOTE: The `custom` setting must apply, since it can discard its argument.
             # HACK: buildFromSdist must apply *last*
             # cf. https://github.com/srid/haskell-flake/pull/252
             # In future, we can refactor this as part of https://github.com/srid/haskell-flake/issues/285
