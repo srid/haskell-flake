@@ -4,4 +4,4 @@
   in pipeline
     & #signoff % #enable .~ True
     & #cachix % #enable .~ False
-    & #attic % #enable .~ isMain
+    & #attic % #enable .~ isMaster
