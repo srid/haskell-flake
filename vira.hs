@@ -1,7 +1,8 @@
--- Pipeline configuration for Vira
+-- CI configuration <https://vira.nixos.asia/>
 \ctx pipeline ->
-  let isMaster = ctx.branch == "master"
+  let 
+    isMaster = ctx.branch == "master"
   in pipeline
-    & #signoff % #enable .~ True
-    & #cachix % #enable .~ False
-    & #attic % #enable .~ isMaster
+     { signoff.enable = True
+     , attic.enable = isMaster
+     }
