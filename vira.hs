@@ -4,5 +4,5 @@
     isMaster = ctx.branch == "master"
   in pipeline
      { signoff.enable = True
-     , attic.enable = isMaster
+     , cache.url = if isMaster then Just "https://cache.nixos.asia/oss" else Nothing
      }
