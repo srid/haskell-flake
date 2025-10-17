@@ -3,8 +3,8 @@
   # pinning), we must specify revisions for *all* inputs to ensure
   # reproducibility.
   inputs = {
-    nixpkgs = { };
-    flake-parts = { };
+    nixpkgs.url = "github:nixos/nixpkgs/870493f9a8cb0b074ae5b411b2f232015db19a65";
+    flake-parts.url = "github:hercules-ci/flake-parts/758cf7296bee11f1706a574c77d072b8a7baa881";
     haskell-flake = { };
 
     haskell-multi-nix.url = "github:srid/haskell-multi-nix/d6ac6ccab559f886d1fc7da8cab44b99cb0c2c3d";

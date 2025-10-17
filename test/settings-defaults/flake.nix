@@ -3,10 +3,10 @@
   # pinning), we must specify revisions for *all* inputs to ensure
   # reproducibility.
   inputs = {
-    nixpkgs = { };
-    flake-parts = { };
+    nixpkgs.url = "github:nixos/nixpkgs/870493f9a8cb0b074ae5b411b2f232015db19a65";
+    flake-parts.url = "github:hercules-ci/flake-parts/758cf7296bee11f1706a574c77d072b8a7baa881";
     haskell-flake = { };
-    haskell-template = { };
+    haskell-template.url = "github:srid/haskell-template/554b7c565396cf2d49a248e7e1dc0e0b46883b10";
   };
   outputs = inputs@{ self, nixpkgs, flake-parts, ... }:
     flake-parts.lib.mkFlake { inherit inputs; } {
