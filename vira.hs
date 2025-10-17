@@ -8,7 +8,7 @@
          [ "./dev" { overrideInputs = hf }
          , "./doc" { overrideInputs = hf }
          , "./example" { overrideInputs = hf }
-         , "./nix/haskell-parsers/test" { overrideInputs = [("haskell-parsers", "./nix/haskell-parsers")] }
+         , "./nix/haskell-parsers/test" { overrideInputs = [("haskell-parsers", "path:./nix/haskell-parsers")] }
          , "./test/simple" { overrideInputs = hf }
          , "./test/cabal2nix" { overrideInputs = hf }
          , "./test/with-subdir" { overrideInputs = hf }
