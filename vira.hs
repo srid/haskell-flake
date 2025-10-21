@@ -4,7 +4,11 @@
     isMaster = ctx.branch == "master"
     hf = [("haskell-flake", ".")]
   in pipeline
-     { build.flakes =
+     { build.systems =
+        [ "x86_64-linux"
+        , "aarch64-darwin"
+        ]
+     , build.flakes =
          [ "./dev" { overrideInputs = hf }
          , "./doc" { overrideInputs = hf }
          , "./example" { overrideInputs = hf }
