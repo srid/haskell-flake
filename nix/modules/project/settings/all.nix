@@ -173,6 +173,42 @@ in
       '';
       impl = addSetupDepends;
     };
+    libraryHaskellDepends = {
+      type = types.listOf types.package;
+      description = ''
+        Haskell library dependencies for the package.
+      '';
+      impl = deps: overrideCabal (drv: {
+        libraryHaskellDepends = (drv.libraryHaskellDepends or [ ]) ++ deps;
+      });
+    };
+    librarySystemDepends = {
+      type = types.listOf types.package;
+      description = ''
+        System library dependencies for the package.
+      '';
+      impl = deps: overrideCabal (drv: {
+        librarySystemDepends = (drv.librarySystemDepends or [ ]) ++ deps;
+      });
+    };
+    libraryToolDepends = {
+      type = types.listOf types.package;
+      description = ''
+        Tool dependencies for the library.
+      '';
+      impl = deps: overrideCabal (drv: {
+        libraryToolDepends = (drv.libraryToolDepends or [ ]) ++ deps;
+      });
+    };
+    libraryPkgconfigDepends = {
+      type = types.listOf types.package;
+      description = ''
+        Pkgconfig dependencies for the library.
+      '';
+      impl = deps: overrideCabal (drv: {
+        libraryPkgconfigDepends = (drv.libraryPkgconfigDepends or [ ]) ++ deps;
+      });
+    };
     extraConfigureFlags = {
       type = types.listOf types.str;
       description = ''
