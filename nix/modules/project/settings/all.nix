@@ -223,6 +223,15 @@ in
       '';
       impl = appendBuildFlags;
     };
+    extraHaddockFlags = {
+      type = types.listOf types.str;
+      description = ''
+        Extra flags to pass to haddock
+      '';
+      impl = flags: overrideCabal (drv: {
+        haddockFlags = (drv.haddockFlags or [ ]) ++ flags;
+      });
+    };
     removeConfigureFlags = {
       type = types.listOf types.str;
       description = ''

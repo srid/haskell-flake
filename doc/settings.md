@@ -16,6 +16,9 @@ haskellProjects.default = {
       # Disable building haddock (documentation)
       haddock = false;
 
+      # Extra flags to pass to haddock
+      extraHaddockFlags = [ "-Werror" ];
+
       # Ignore Cabal version constraints
       jailbreak = true;
 

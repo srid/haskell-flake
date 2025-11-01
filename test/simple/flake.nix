@@ -62,6 +62,8 @@
               #
               # This jailbreak ignores the unsatisfiable version constraints on the library `foo`.
               jailbreak = true;
+              # Test extraHaddockFlags option
+              extraHaddockFlags = [ "-Werror" ];
             };
           };
           devShell = {
@@ -101,6 +103,11 @@
               TEST_RAW_ATTR =
                 lib.assertMsg (config.haskellProjects.default.outputs.finalPackages.foo.TEST_RAW_ATTR == "test-value")
                   "drvAttrs option should apply TEST_RAW_ATTR attribute";
+
+              # Test extraHaddockFlags option - verify that -Werror is in haddockFlags
+              EXTRA_HADDOCK_FLAGS =
+                lib.assertMsg (lib.elem "-Werror" (config.haskellProjects.default.outputs.finalPackages.haskell-flake-test.haddockFlags or [ ]))
+                  "extraHaddockFlags should add -Werror to haddockFlags";
             }
             ''
               (
