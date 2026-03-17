@@ -12,4 +12,5 @@ order: -9
 - [[package-set]]#
 - [[modules]]#
 - [[debugging]]#
+- [[incremental-builds]]#
 - [[size]]#
