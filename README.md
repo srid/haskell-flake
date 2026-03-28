@@ -5,7 +5,9 @@
 
 <img src="./doc/haskell-flake.webp" width=100 />
 
-There are [several ways](https://nixos.asia/en/haskell) to manage Haskell packages using [Nix](https://nixos.asia/en/nix) with varying degrees of integration.  `haskell-flake` makes Haskell development, packaging and deployment with Nix flakes a lot [simpler](https://community.flake.parts/haskell-flake/start#under-the-hood) than other existing approaches.  This project is set up as a modern [`flake-parts`](https://flake.parts/) module to integrate easily into other Nix projects and shell development environments in a lightweight and modular way.
+There are [several ways](https://nixos.asia/en/haskell) to manage Haskell packages using [Nix](https://nixos.asia/en/nix) with varying degrees of integration.  `haskell-flake` makes Haskell development, packaging and deployment with Nix flakes a lot [simpler](https://community.flake.parts/haskell-flake/start#under-the-hood) than other existing approaches.  This project is set up as a modern [`flake-parts`](https://flake.parts/) module to integrate easily into other Nix projects and shell development environments in a lightweight and modular way.[^standalone]
+
+[^standalone]: `flake-parts` is not required. haskell-flake also provides a [standalone API](https://community.flake.parts/haskell-flake/standalone) (`lib.evalHaskellProject`) for use in plain flakes or legacy Nix.
 
 To see more background information, guides and best practices, visit https://community.flake.parts/haskell-flake
 
