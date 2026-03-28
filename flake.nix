@@ -2,6 +2,7 @@
   description = "A `flake-parts` module for Haskell development";
   outputs = inputs: {
     flakeModule = ./nix/modules;
+    lib = import ./nix/lib.nix;
 
     templates.default = {
       description = "A simple flake.nix using haskell-flake";

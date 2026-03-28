@@ -13,9 +13,10 @@ in
       haskellProjects = mkOption {
         description = "Haskell projects";
         type = types.lazyAttrsOf (types.submoduleWith {
-          specialArgs = { inherit pkgs self; };
+          specialArgs = { inherit pkgs; };
           modules = [
             ./project
+            { projectRoot = lib.mkDefault self; }
           ];
         });
       };
