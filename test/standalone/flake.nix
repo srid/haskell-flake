@@ -7,45 +7,29 @@
   outputs = { self, nixpkgs, haskell-flake, ... }:
     let
       eachSystem = nixpkgs.lib.genAttrs nixpkgs.lib.systems.flakeExposed;
+
+      perSystem = system:
+        let
+          pkgs = nixpkgs.legacyPackages.${system};
+          project = (haskell-flake.lib { inherit pkgs; }).evalHaskellProject {
+            projectRoot = self;
+          };
+        in
+        {
+          packages.default = project.packages.haskell-flake-test.package;
+          devShells.default = project.devShell;
+          checks.test = pkgs.runCommandNoCC "standalone-test" { } ''
+            ${project.packages.haskell-flake-test.package}/bin/haskell-flake-test \
+              | grep "Hello from standalone"
+            touch $out
+          '';
+        };
+
+      systemOutputs = eachSystem perSystem;
     in
     {
-      packages = eachSystem (system:
-        let
-          pkgs = nixpkgs.legacyPackages.${system};
-          project = (haskell-flake.lib { inherit pkgs; }).evalHaskellProject {
-            projectRoot = self;
-          };
-        in
-        {
-          default = project.packages.haskell-flake-test.package;
-        });
-
-      devShells = eachSystem (system:
-        let
-          pkgs = nixpkgs.legacyPackages.${system};
-          project = (haskell-flake.lib { inherit pkgs; }).evalHaskellProject {
-            projectRoot = self;
-          };
-        in
-        {
-          default = project.devShell;
-        });
-
-      checks = eachSystem (system:
-        let
-          pkgs = nixpkgs.legacyPackages.${system};
-          project = (haskell-flake.lib { inherit pkgs; }).evalHaskellProject {
-            projectRoot = self;
-          };
-        in
-        {
-          test = pkgs.runCommandNoCC "standalone-test"
-            { }
-            ''
-              ${project.packages.haskell-flake-test.package}/bin/haskell-flake-test \
-                | grep "Hello from standalone"
-              touch $out
-            '';
-        });
+      packages = nixpkgs.lib.mapAttrs (_: s: s.packages) systemOutputs;
+      devShells = nixpkgs.lib.mapAttrs (_: s: s.devShells) systemOutputs;
+      checks = nixpkgs.lib.mapAttrs (_: s: s.checks) systemOutputs;
     };
 }

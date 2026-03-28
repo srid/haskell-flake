@@ -1,12 +1,18 @@
 # Standalone API for using haskell-flake without flake-parts.
 #
-# Usage:
+# In a flake:
 #   let
-#     project = (import haskell-flake.lib { inherit pkgs; }).evalHaskellProject {
-#       projectRoot = ./.;
-#       modules = [{ settings.mypkg.haddock = false; }];
+#     project = (haskell-flake.lib { inherit pkgs; }).evalHaskellProject {
+#       projectRoot = self;
 #     };
-#   in project.packages.mypkg.package
+#   in project.packages.mypackage.package
+#
+# Without flakes:
+#   let
+#     project = (import /path/to/haskell-flake/nix/lib.nix { inherit pkgs; }).evalHaskellProject {
+#       projectRoot = ./.;
+#     };
+#   in project.packages.mypackage.package
 { pkgs, lib ? pkgs.lib }:
 
 {
