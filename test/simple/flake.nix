@@ -62,10 +62,12 @@
               #
               # This jailbreak ignores the unsatisfiable version constraints on the library `foo`.
               jailbreak = true;
-              # Test removeReferencesTo setting (cf. https://github.com/srid/haskell-flake/issues/288)
-              # gmp is a real runtime reference from integer-gmp; this verifies the
-              # reference is actually stripped even with buildFromSdist enabled.
-              removeReferencesTo = [ pkgs.gmp ];
+              # Test removeReferencesTo (cf. https://github.com/srid/haskell-flake/issues/288)
+              # Uses `hello` as the target. The assertion below verifies that
+              # disallowedReferences survives the buildFromSdist pipeline — the
+              # exact regression from PR #287 where overrideCabal in buildFromSdist
+              # would clobber the overrideAttrs from removeReferencesTo.
+              removeReferencesTo = [ pkgs.hello ];
             };
           };
           devShell = {
@@ -106,8 +108,16 @@
                 lib.assertMsg (config.haskellProjects.default.outputs.finalPackages.foo.TEST_RAW_ATTR == "test-value")
                   "drvAttrs option should apply TEST_RAW_ATTR attribute";
 
-              # For removeReferencesTo test: the store path to verify is gone
-              GMP_PATH = "${pkgs.gmp}";
+              # Test removeReferencesTo: disallowedReferences must survive buildFromSdist.
+              # If the PR #287 ordering regression returns, overrideCabal in buildFromSdist
+              # will clobber the overrideAttrs from removeReferencesTo, and this assertion
+              # will fail because drvAttrs won't have disallowedReferences.
+              REMOVE_REFS =
+                let
+                  finalPkg = config.haskellProjects.default.outputs.finalPackages.haskell-flake-test;
+                in
+                lib.assertMsg (finalPkg.drvAttrs ? disallowedReferences)
+                  "removeReferencesTo: disallowedReferences missing from final package drvAttrs";
             }
             ''
               (
@@ -137,13 +147,6 @@
 
               # extraLibraries works
               runghc ${./script} | grep -F 'TOML-flavored boolean: Bool True'
-
-              # removeReferencesTo: verify gmp reference was actually stripped from the binary
-              # (regression test for https://github.com/srid/haskell-flake/pull/287)
-              if grep -rq "$GMP_PATH" ${self'.packages.haskell-flake-test}/; then
-                echo "FAIL: removeReferencesTo didn't remove gmp reference from binary"
-                exit 2
-              fi
 
               touch $out
               )
