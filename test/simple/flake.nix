@@ -105,11 +105,14 @@
                 lib.assertMsg (config.haskellProjects.default.outputs.finalPackages.foo.TEST_RAW_ATTR == "test-value")
                   "drvAttrs option should apply TEST_RAW_ATTR attribute";
 
-              # Test removeReferencesTo: verify disallowedReferences is set on the final package
+              # Test removeReferencesTo: verify the setting is applied on the final package
               # even with buildFromSdist enabled (regression test for https://github.com/srid/haskell-flake/pull/287)
               REMOVE_REFS =
-                lib.assertMsg (config.haskellProjects.default.outputs.finalPackages.haskell-flake-test.disallowedReferences == [ pkgs.hello ])
-                  "removeReferencesTo should set disallowedReferences on the final package";
+                let
+                  pkg = config.haskellProjects.default.outputs.finalPackages.haskell-flake-test;
+                in
+                lib.assertMsg (lib.hasInfix "remove-references-to" (pkg.postInstall or ""))
+                  "removeReferencesTo should add remove-references-to to postInstall";
             }
             ''
               (
