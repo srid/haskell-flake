@@ -1,0 +1,92 @@
+#!/usr/bin/env bash
+# Manages .do-results.json for the /do workflow.
+# Avoids LLM token generation by handling all JSON mutations in bash+jq.
+#
+# Usage:
+#   do-results init <forge> <noGit>           — create initial skeleton
+#   do-results step <name> <status> <verif> <startedAt> <completedAt> [reason]
+#                                             — append a completed step
+#                                               pass "now" for startedAt/completedAt to auto-generate UTC timestamp
+#   do-results set <field> <value>            — update a top-level field (active, status)
+#   do-results patch-last <field> <value>     — patch a field on the last step
+
+set -euo pipefail
+
+# Resolve jq, falling back to nix if not on PATH
+if command -v jq &>/dev/null; then
+  JQ=jq
+else
+  JQ="nix run nixpkgs#jq --"
+fi
+
+FILE=".do-results.json"
+
+cmd="${1:?Usage: do-results <init|step|set|patch-last> ...}"
+shift
+
+case "$cmd" in
+  init)
+    forge="${1:?forge required (github|bitbucket|unknown)}"
+    noGit="${2:?noGit required (true|false)}"
+    startedAt="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+    cat > "$FILE" <<ENDJSON
+{
+  "workflow": "do",
+  "startedAt": "$startedAt",
+  "active": "working",
+  "status": "running",
+  "forge": "$forge",
+  "noGit": $noGit,
+  "steps": []
+}
+ENDJSON
+    ;;
+
+  step)
+    name="${1:?name required}"
+    status="${2:?status required (passed|failed|skipped)}"
+    verif="${3:?verification required}"
+    startedAt="${4:?startedAt required}"
+    completedAt="${5:?completedAt required}"
+    reason="${6:-}"
+
+    # Resolve "now" sentinel to current UTC timestamp
+    [[ "$startedAt" == "now" ]] && startedAt="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+    [[ "$completedAt" == "now" ]] && completedAt="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+
+    if [ -n "$reason" ]; then
+      $JQ --arg n "$name" --arg s "$status" --arg v "$verif" \
+         --arg sa "$startedAt" --arg ca "$completedAt" --arg r "$reason" \
+         '.steps += [{"name":$n,"status":$s,"verification":$v,"startedAt":$sa,"completedAt":$ca,"reason":$r}]' \
+         "$FILE" > "${FILE}.tmp" && mv "${FILE}.tmp" "$FILE"
+    else
+      $JQ --arg n "$name" --arg s "$status" --arg v "$verif" \
+         --arg sa "$startedAt" --arg ca "$completedAt" \
+         '.steps += [{"name":$n,"status":$s,"verification":$v,"startedAt":$sa,"completedAt":$ca}]' \
+         "$FILE" > "${FILE}.tmp" && mv "${FILE}.tmp" "$FILE"
+    fi
+    ;;
+
+  set)
+    field="${1:?field required}"
+    value="${2:?value required}"
+    # Handle booleans and strings
+    if [ "$value" = "true" ] || [ "$value" = "false" ]; then
+      $JQ --arg f "$field" --argjson v "$value" '.[$f] = $v' "$FILE" > "${FILE}.tmp" && mv "${FILE}.tmp" "$FILE"
+    else
+      $JQ --arg f "$field" --arg v "$value" '.[$f] = $v' "$FILE" > "${FILE}.tmp" && mv "${FILE}.tmp" "$FILE"
+    fi
+    ;;
+
+  patch-last)
+    field="${1:?field required}"
+    value="${2:?value required}"
+    $JQ --arg f "$field" --arg v "$value" '.steps[-1][$f] = $v' "$FILE" > "${FILE}.tmp" && mv "${FILE}.tmp" "$FILE"
+    ;;
+
+  *)
+    echo "Unknown command: $cmd" >&2
+    echo "Usage: do-results <init|step|set|patch-last> ..." >&2
+    exit 1
+    ;;
+esac

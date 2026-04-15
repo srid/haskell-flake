@@ -4,3 +4,7 @@ result-*
 dist-newstyle
 .direnv
 /.worktrees
+
+
+# APM dependencies
+apm_modules/
