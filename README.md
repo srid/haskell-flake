@@ -5,9 +5,9 @@
 
 <img src="./doc/haskell-flake.webp" width=100 />
 
-There are [several ways](https://nixos.asia/en/haskell) to manage Haskell packages using [Nix](https://nixos.asia/en/nix) with varying degrees of integration. `haskell-flake` makes Haskell development, packaging and deployment with Nix a lot [simpler](https://community.flake.parts/haskell-flake/start#under-the-hood) than other existing approaches. It works with plain Nix (no flakes), Nix flakes, or as a [`flake-parts`](https://flake.parts/) module—choose whichever fits your project.
+There are [several ways](https://nixos.asia/en/haskell) to manage Haskell packages using [Nix](https://nixos.asia/en/nix) with varying degrees of integration. `haskell-flake` makes Haskell development, packaging and deployment with Nix a lot [simpler](https://haskell.nixos.asia/start#under-the-hood) than other existing approaches. It works with plain Nix (no flakes), Nix flakes, or as a [`flake-parts`](https://flake.parts/) module—choose whichever fits your project.
 
-To see more background information, guides and best practices, visit https://community.flake.parts/haskell-flake
+To see more background information, guides and best practices, visit https://haskell.nixos.asia
 
 Caveat: `haskell-flake` only supports the Haskell package manager [Cabal](https://www.haskell.org/cabal/),
 so your project must have a top-level `.cabal` file (single package project) or a `cabal.project` file
@@ -15,7 +15,7 @@ so your project must have a top-level `.cabal` file (single package project) or 
 
 ## Getting started
 
-The guide below uses [flake-parts](https://flake.parts/); for other approaches see [standalone usage](https://community.flake.parts/haskell-flake/standalone).
+The guide below uses [flake-parts](https://flake.parts/); for other approaches see [standalone usage](https://haskell.nixos.asia/standalone).
 
 The minimal changes to your `flake.nix` to introduce `haskell-flake` with flake-parts will look similar to:
 
@@ -78,7 +78,7 @@ this [Haskell multi-package project Nix example](https://github.com/srid/haskell
 
 ## Documentation
 
-https://community.flake.parts/haskell-flake
+https://haskell.nixos.asia
 
 ## Discussion
 
