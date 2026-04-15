@@ -3,3 +3,4 @@ result
 result-*
 dist-newstyle
 .direnv
+/.worktrees
