@@ -1,0 +1,8 @@
+name: haskell-flake
+version: 1.0.0
+type: hybrid
+
+dependencies:
+  apm:
+    - srid/agency#master
+    - juspay/skills/skills/nix-justfile

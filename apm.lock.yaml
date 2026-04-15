@@ -1,0 +1,31 @@
+lockfile_version: '1'
+generated_at: '2026-04-15T18:06:20.839665+00:00'
+apm_version: 0.8.11
+dependencies:
+- repo_url: juspay/skills
+  host: github.com
+  resolved_commit: 6e2df2d9ab3a4031e89598b50aa1074c3fd87748
+  virtual_path: skills/nix-justfile
+  is_virtual: true
+  package_type: claude_skill
+  deployed_files:
+  - .claude/skills/nix-justfile
+  content_hash: sha256:8f48e067e59da48c3ac90b4e2228ebb4ecfd988375b40efe831339d9a493accd
+- repo_url: srid/agency
+  host: github.com
+  resolved_commit: ee9575e7f28858251a27e51202ff03dbbb1bf48c
+  resolved_ref: master
+  package_type: apm_package
+  deployed_files:
+  - .claude/commands/talk.md
+  - .claude/hooks/agency/scripts/do-stop-guard.sh
+  - .claude/rules/apm-sources.md
+  - .claude/skills/code-police
+  - .claude/skills/do
+  - .claude/skills/elegance
+  - .claude/skills/fact-check
+  - .claude/skills/forge-pr
+  - .claude/skills/hickey
+  - .claude/skills/lowy
+  - .claude/skills/ralph
+  content_hash: sha256:9a38729f5cab4ecf83b23f974eb6c19c848e7bc9c63738b57be4ce2318a54435
