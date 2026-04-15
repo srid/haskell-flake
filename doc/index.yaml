@@ -3,9 +3,6 @@
 
 page:
   siteTitle: haskell-flake
-  headHtml: |
-    <snippet var="js.highlightjs" />
-
 template:
   # You can add your own variables here, like editBaseUrl.
   # See after-note.tpl to see where editBaseUrl gets used.

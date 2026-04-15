@@ -20,6 +20,7 @@
           sites = {
             default = {
               layers = [{ path = ./.; pathString = "."; }];
+              extraConfig.highlight.enable = true;
             };
           };
         };
