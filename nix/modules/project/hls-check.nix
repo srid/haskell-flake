@@ -1,5 +1,5 @@
 # Definition of the `haskellProjects.${name}` submodule's `config`
-{ name, self, config, lib, pkgs, ... }:
+{ name, config, lib, pkgs, ... }:
 let
   inherit (lib)
     mkOption
@@ -82,7 +82,7 @@ in
       hlsCheck =
         runCommandInSimulatedShell
           config.outputs.devShell
-          self "${projectKey}-hls-check"
+          config.projectRoot "${projectKey}-hls-check"
           { } "haskell-language-server";
     in
     {

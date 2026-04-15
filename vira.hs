@@ -19,6 +19,7 @@
          , "./test/project-module" { overrideInputs = hf }
          , "./test/settings-defaults" { overrideInputs = hf }
          , "./test/otherOverlays" { overrideInputs = hf }
+         , "./test/standalone" { overrideInputs = hf }
          ]
      , signoff.enable = True
      , cache.url = if isMaster then Just "https://cache.nixos.asia/oss" else Nothing

@@ -1,5 +1,5 @@
 # Definition of the `haskellProjects.${name}` submodule's `config`
-{ self, name, config, lib, pkgs, ... }:
+{ name, config, lib, pkgs, ... }:
 let
   inherit (lib)
     mkOption
@@ -21,11 +21,9 @@ in
       description = ''
         Path to the root of the project directory.
 
-        Chaning this affects certain functionality, like where to
+        Changing this affects certain functionality, like where to
         look for the 'cabal.project' file.
       '';
-      default = self;
-      defaultText = "Top-level directory of the flake";
     };
     projectFlakeName = mkOption {
       type = types.nullOr types.str;

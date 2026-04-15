@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Enhancements
+  - #495: Add `lib.evalHaskellProject` for using haskell-flake without flake-parts. Also fixes `hls-check.nix` to use `config.projectRoot` instead of `self`.
   - #382: Support for cabal2nix generated expressions (avoiding IFD for local packages)
   - #418: Add `extraCabal2nixOptions` and `cabalFlags` to `packages.*`. The former passes custom options to `cabal2nix`. The later does the same, but formatting the flag options appropriately.
   - #356: Support `meta.description` in flake apps. Requires newer version of flake-parts.

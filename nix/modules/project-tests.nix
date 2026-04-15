@@ -18,7 +18,7 @@ in
         '';
         default = { };
         type = types.lazyAttrsOf (types.submoduleWith {
-          specialArgs = { inherit pkgs self; };
+          specialArgs = { inherit pkgs; };
           modules = [
             {
               options = {

@@ -1,7 +1,8 @@
 {
-  description = "A `flake-parts` module for Haskell development";
+  description = "Nix library for Haskell development (standalone or as a flake-parts module)";
   outputs = inputs: {
     flakeModule = ./nix/modules;
+    lib = import ./nix/lib.nix;
 
     templates.default = {
       description = "A simple flake.nix using haskell-flake";

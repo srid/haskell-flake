@@ -9,7 +9,7 @@ emanote:
 
 # Haskell development using `haskell-flake`
 
-[haskell-flake](https://github.com/srid/haskell-flake) is a [flake-parts](https://flake.parts/) module to make Haskell development [[under-the-hood|simpler]] with [Nix](https://nixos.asia/en/nix).
+[haskell-flake](https://github.com/srid/haskell-flake) is an ergonomic [Nix](https://nixos.asia/en/nix) module for Haskell development that makes things [[under-the-hood|simpler]]. It works with plain Nix (no flakes), Nix flakes, or as a [flake-parts](https://flake.parts/) module (see [[standalone]] for non-flake-parts usage).
 
 To get started, see [[start]]# and thereon see [[guide]]#. To get inspired, see [[examples]]#. For reference, see [[ref]]#.
 

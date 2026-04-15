@@ -13,4 +13,5 @@ order: -9
 - [[modules]]#
 - [[debugging]]#
 - [[incremental-builds]]#
+- [[standalone]]#
 - [[size]]#
