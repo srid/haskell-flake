@@ -1,5 +1,5 @@
 lockfile_version: '1'
-generated_at: '2026-04-15T18:06:20.839665+00:00'
+generated_at: '2026-04-15T18:12:51.373168+00:00'
 apm_version: 0.8.11
 dependencies:
 - repo_url: juspay/skills
@@ -29,3 +29,5 @@ dependencies:
   - .claude/skills/lowy
   - .claude/skills/ralph
   content_hash: sha256:9a38729f5cab4ecf83b23f974eb6c19c848e7bc9c63738b57be4ce2318a54435
+local_deployed_files:
+- .claude/rules/workflow.md

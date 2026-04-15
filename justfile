@@ -7,7 +7,7 @@ ex:
 
 # Run the checks locally using nixci
 check:
-    nixci
+    vira ci -b
 
 # Auto-format the Nix files in project tree
 fmt:
