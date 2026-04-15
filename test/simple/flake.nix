@@ -62,6 +62,9 @@
               #
               # This jailbreak ignores the unsatisfiable version constraints on the library `foo`.
               jailbreak = true;
+              # Test removeReferencesTo setting (cf. https://github.com/srid/haskell-flake/issues/288)
+              # This must work even with buildFromSdist enabled (which is the default).
+              removeReferencesTo = [ pkgs.hello ];
             };
           };
           devShell = {
@@ -101,6 +104,12 @@
               TEST_RAW_ATTR =
                 lib.assertMsg (config.haskellProjects.default.outputs.finalPackages.foo.TEST_RAW_ATTR == "test-value")
                   "drvAttrs option should apply TEST_RAW_ATTR attribute";
+
+              # Test removeReferencesTo: verify disallowedReferences is set on the final package
+              # even with buildFromSdist enabled (regression test for https://github.com/srid/haskell-flake/pull/287)
+              REMOVE_REFS =
+                lib.assertMsg (config.haskellProjects.default.outputs.finalPackages.haskell-flake-test.disallowedReferences == [ pkgs.hello ])
+                  "removeReferencesTo should set disallowedReferences on the final package";
             }
             ''
               (
