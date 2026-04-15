@@ -63,8 +63,9 @@
               # This jailbreak ignores the unsatisfiable version constraints on the library `foo`.
               jailbreak = true;
               # Test removeReferencesTo setting (cf. https://github.com/srid/haskell-flake/issues/288)
-              # This must work even with buildFromSdist enabled (which is the default).
-              removeReferencesTo = [ pkgs.hello ];
+              # gmp is a real runtime reference from integer-gmp; this verifies the
+              # reference is actually stripped even with buildFromSdist enabled.
+              removeReferencesTo = [ pkgs.gmp ];
             };
           };
           devShell = {
@@ -105,14 +106,8 @@
                 lib.assertMsg (config.haskellProjects.default.outputs.finalPackages.foo.TEST_RAW_ATTR == "test-value")
                   "drvAttrs option should apply TEST_RAW_ATTR attribute";
 
-              # Test removeReferencesTo: verify the setting is applied on the final package
-              # even with buildFromSdist enabled (regression test for https://github.com/srid/haskell-flake/pull/287)
-              REMOVE_REFS =
-                let
-                  pkg = config.haskellProjects.default.outputs.finalPackages.haskell-flake-test;
-                in
-                lib.assertMsg (lib.hasInfix "remove-references-to" (pkg.postInstall or ""))
-                  "removeReferencesTo should add remove-references-to to postInstall";
+              # For removeReferencesTo test: the store path to verify is gone
+              GMP_PATH = "${pkgs.gmp}";
             }
             ''
               (
@@ -142,6 +137,13 @@
 
               # extraLibraries works
               runghc ${./script} | grep -F 'TOML-flavored boolean: Bool True'
+
+              # removeReferencesTo: verify gmp reference was actually stripped from the binary
+              # (regression test for https://github.com/srid/haskell-flake/pull/287)
+              if grep -rq "$GMP_PATH" ${self'.packages.haskell-flake-test}/; then
+                echo "FAIL: removeReferencesTo didn't remove gmp reference from binary"
+                exit 2
+              fi
 
               touch $out
               )
