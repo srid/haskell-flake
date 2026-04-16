@@ -1,6 +1,6 @@
 # Revision history for haskell-flake
 
-## Unreleased
+## 1.0.0 (Apr 16, 2026)
 
 - Enhancements
   - #495: Add `lib.evalHaskellProject` for using haskell-flake without flake-parts. Also fixes `hls-check.nix` to use `config.projectRoot` instead of `self`.
