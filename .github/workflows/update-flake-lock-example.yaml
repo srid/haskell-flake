@@ -7,6 +7,9 @@ on:
 jobs:
   example-lock:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -21,3 +24,9 @@ jobs:
             automated
           path-to-flake-dir: 'example/'
           branch: "update_flake_lock_example"
+      - name: Enable auto-merge
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          pr=$(gh pr list --head update_flake_lock_example --state open --json number --jq '.[0].number')
+          [ -n "$pr" ] && gh pr merge "$pr" --auto --squash || echo "no PR to auto-merge"
