@@ -1,6 +1,3 @@
-[![project chat](https://img.shields.io/badge/zulip-join_chat-brightgreen.svg)](https://nixos.zulipchat.com/#narrow/stream/413949-haskell-flake)
-[![Naiveté Compass of Mood](https://img.shields.io/badge/naïve-FF10F0)](https://srid.ca/coc "This project follows the 'Naiveté Compass of Mood'")
-
 # haskell-flake - Ergonomic Nix module for Haskell development
 
 <img src="./doc/haskell-flake.webp" width=100 />
@@ -82,4 +79,4 @@ https://haskell.nixos.asia
 
 ## Discussion
 
-[Zulip](https://nixos.zulipchat.com/#narrow/stream/413949-haskell-flake) is the primary venue for discussion; we also have [Github Discussions](https://github.com/srid/haskell-flake/discussions) enabled.
+Please post questions & ideas in [Github Discussions](https://github.com/srid/haskell-flake/discussions).
