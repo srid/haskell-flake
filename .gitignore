@@ -8,3 +8,4 @@ dist-newstyle
 
 # APM dependencies
 apm_modules/
+.do-results.json
