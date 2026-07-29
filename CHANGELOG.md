@@ -1,5 +1,10 @@
 # Revision history for haskell-flake
 
+## Unreleased
+
+- Fixes
+  - #512: Ignore leading comments and blank lines in the `cabal.project` parser (fixes #193)
+
 ## 1.0.0 (Apr 16, 2026)
 
 - Enhancements
