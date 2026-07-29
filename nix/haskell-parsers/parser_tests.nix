@@ -27,6 +27,19 @@ let
             bar'';
         expected = [ "foo" "bar" ];
       };
+
+      # Comments and blank lines may precede the 'packages' field
+      testLeadingComments = {
+        expr = eval ''
+          -- A header comment.
+          --
+
+          packages:
+            foo
+            bar
+        '';
+        expected = [ "foo" "bar" ];
+      };
     };
   cabalExecutableTests =
     let
