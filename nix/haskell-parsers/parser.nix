@@ -22,6 +22,14 @@ in
       spaces1 = parsec.skipWhile1 (c: c == " " || c == "\t");
       newline = parsec.string "\n";
       path = parsec.fmap lib.concatStrings (parsec.many1 (parsec.anyCharBut "\n"));
+      # Ignore leading '--' comments and blank lines
+      ignoredLine =
+        parsec.choice
+          [
+            (parsec.skipThen (parsec.string "--")
+              (parsec.skipThen (parsec.skipWhile (c: c != "\n")) newline))
+            newline
+          ];
       key = parsec.string "packages:\n";
       val =
         parsec.many1
@@ -31,8 +39,8 @@ in
               (parsec.between spaces1 parsec.eof path)
             ]);
       parser = parsec.skipThen
-        key
-        val;
+        (parsec.skipMany ignoredLine)
+        (parsec.skipThen key val);
     in
     parsec.runParser parser cabalProjectFile;
 
