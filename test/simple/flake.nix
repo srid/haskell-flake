@@ -62,6 +62,12 @@
               #
               # This jailbreak ignores the unsatisfiable version constraints on the library `foo`.
               jailbreak = true;
+              # Test removeReferencesTo (cf. https://github.com/srid/haskell-flake/issues/288)
+              # Uses `hello` as the target. The assertion below verifies that
+              # disallowedReferences survives the buildFromSdist pipeline — the
+              # exact regression from PR #287 where overrideCabal in buildFromSdist
+              # would clobber the overrideAttrs from removeReferencesTo.
+              removeReferencesTo = [ pkgs.hello ];
             };
           };
           devShell = {
@@ -101,6 +107,17 @@
               TEST_RAW_ATTR =
                 lib.assertMsg (config.haskellProjects.default.outputs.finalPackages.foo.TEST_RAW_ATTR == "test-value")
                   "drvAttrs option should apply TEST_RAW_ATTR attribute";
+
+              # Test removeReferencesTo: disallowedReferences must survive buildFromSdist.
+              # If the PR #287 ordering regression returns, overrideCabal in buildFromSdist
+              # will clobber the overrideAttrs from removeReferencesTo, and this assertion
+              # will fail because drvAttrs won't have disallowedReferences.
+              REMOVE_REFS =
+                let
+                  finalPkg = config.haskellProjects.default.outputs.finalPackages.haskell-flake-test;
+                in
+                lib.assertMsg (finalPkg.drvAttrs ? disallowedReferences)
+                  "removeReferencesTo: disallowedReferences missing from final package drvAttrs";
             }
             ''
               (
