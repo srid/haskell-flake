@@ -104,7 +104,7 @@ in
                     else "Executable ${if exe != name then "${exe} from " else "for "}package ${name}";
                 })
               )
-              value.cabal.executables
+              (value.cabal.stanzas.executable or [ ])
             );
       };
 

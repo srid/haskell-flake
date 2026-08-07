@@ -33,10 +33,12 @@ in
       default = "cabal.nix";
     };
 
-    cabal.executables = mkOption {
-      type = types.nullOr (types.listOf types.str);
+    cabal.stanzas = mkOption {
+      type = types.nullOr (types.attrsOf (types.listOf types.str));
       description = ''
-        List of executable names found in the cabal file of the package.
+        Attribute set mapping stanza types to lists of stanza names found in the cabal file.
+        
+        For example: { executable = ["foo" "bar"]; library = ["mylib"]; test-suite = ["tests"]; }
         
         The value is null if 'source' option is Hackage version.
       '';
@@ -45,7 +47,7 @@ in
           haskell-parsers = import ../../../haskell-parsers {
             inherit pkgs lib;
             throwError = msg: project.config.log.throwError ''
-              Unable to determine executable names for package ${name}:
+              Unable to determine stanzas for package ${name}:
 
                 ${msg}
             '';
@@ -54,10 +56,23 @@ in
         if lib.types.path.check config.source
         then
           lib.pipe config.source [
-            haskell-parsers.getCabalExecutables
-            (x: project.config.log.traceDebug "${name}.getCabalExecutables = ${builtins.toString x}" x)
+            haskell-parsers.getCabalStanzas
+            (x: project.config.log.traceDebug "${name}.getCabalStanzas = ${builtins.toJSON x}" x)
           ]
         else null; # cfg.source is Hackage version; nothing to do.
+    };
+
+    cabal.executables = mkOption {
+      type = types.nullOr (types.listOf types.str);
+      description = ''
+        List of executable names found in the cabal file of the package.
+        
+        This is automatically derived from cabal.stanzas.executable.
+      '';
+      default =
+        if config.cabal.stanzas != null
+        then config.cabal.stanzas.executable or [ ]
+        else [ ];
     };
 
     local.toCurrentProject = mkOption {
