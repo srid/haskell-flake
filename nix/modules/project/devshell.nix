@@ -16,6 +16,16 @@ let
         '';
         default = true;
       };
+      packages = mkOption {
+        type = types.lazyAttrsOf types.raw;
+        description = ''
+          Haskell package set used to build development tools.
+
+          By default, this is `basePackages`, before project package
+          overrides are applied.
+        '';
+        default = config.basePackages;
+      };
       tools = mkOption {
         type = functionTo (types.lazyAttrsOf (types.nullOr types.package));
         description = ''
@@ -105,8 +115,8 @@ in
       inherit (config.outputs) finalPackages;
 
       nativeBuildInputs = lib.attrValues (
-        config.defaults.devShell.tools finalPackages //
-        config.devShell.tools finalPackages
+        config.defaults.devShell.tools config.devShell.packages //
+        config.devShell.tools config.devShell.packages
       );
       mkShellArgs = config.devShell.mkShellArgs // {
         nativeBuildInputs = (config.devShell.mkShellArgs.nativeBuildInputs or [ ]) ++ nativeBuildInputs;
