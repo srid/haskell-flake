@@ -6,6 +6,14 @@ order: -8
 
 haskell-flake uses the [`shellFor`][shellFor] function to provide a Haskell development shell. `shellFor` in turn uses the standard [`mkShell`][mkShell] function to create a Nix shell environment. The `mkShellArgs` option can be used to pass custom arguments to `mkShell`.
 
+Development tools are built from `basePackages` by default. Use `devShell.packages` to choose a different Haskell package set for those tools:
+
+```nix
+{
+  haskellProjects.default.devShell.packages = pkgs.haskellPackages;
+}
+```
+
 ```nix
 {
   haskellProjects.default = {
@@ -45,4 +53,3 @@ This sort of composition is either impossible or very complex to do with the `mk
 
 [shellFor]: https://nixos.org/manual/nixpkgs/unstable/#haskell-shellFor
 [mkShell]: https://nixos.org/manual/nixpkgs/stable/#sec-pkgs-mkShell
-

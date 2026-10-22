@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Enhancements
+  - #513: Add `devShell.packages` to choose the Haskell package set used for development tools. It defaults to `basePackages`, so overriding `packages` no longer forces tools such as HLS and hlint to be rebuilt.
 - Fixes
   - #512: Ignore leading comments and blank lines in the `cabal.project` parser (fixes #193)
 
