@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  vira:
+    name: vira ci (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - macos-latest
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: nixbuild/nix-quick-install-action@v33
+      - name: Run vira ci
+        # --only-build builds the current system's outputs and skips the
+        # cache/signoff stages, which need a writable token (unavailable on
+        # pull requests from forks).
+        run: nix --accept-flake-config run github:juspay/vira -- ci --only-build
